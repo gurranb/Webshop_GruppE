@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+
+namespace Webshop_GruppE.Models
+{
+    internal class Customer
+    {
+        
+        public int Id { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public int? Age { get; set; }
+        public string? Country { get; set; }
+        public string? StreetAdress { get; set; }
+        public int? PostalCode { get; set; }
+        //[IsUnique = true]
+        //[Index(IsUnique = true)]
+        public string? CardNumber { get; set; }
+        public string? EMailAdress { get; set;}
+        public int? ShoppingCartId { get; set; }
+        public int? OrderId { get; set; }
+
+        public virtual User? User { get; set; }
+
+        
+    }
+}
