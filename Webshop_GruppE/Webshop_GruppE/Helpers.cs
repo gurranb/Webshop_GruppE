@@ -49,7 +49,7 @@ namespace Webshop_GruppE
             bool loggedin = true;
             while (loggedin)
             {
-                List<string> adminText = new List<string> { "[A] Add product/Category", "[P] Profile page", "[C] Customer page", "[Q] Queries", "[L] Logout" };
+                List<string> adminText = new List<string> { "[1] Add product", "[2] Add Category", "[P] Profile page", "[C] Customer page", "[Q] Queries", "[L] Logout" };
                 var adminWindow = new Window("Admin", 0, 0, adminText);
                 adminWindow.DrawWindow();
 
@@ -57,25 +57,30 @@ namespace Webshop_GruppE
 
                 switch (key.KeyChar)
                 {
-                    case 'a':
-                        Console.WriteLine("");
+                    case '1':
+                        Console.WriteLine("Add Product");
+                        ProductMenu();
+                        break;
+                    case '2':
+                        Console.WriteLine("Add Category");
+                        CategoryMenu(); 
                         break;
                     case 'p':
-                        Console.WriteLine("");
+                        Console.WriteLine("Profile page");
                         break;
                     case 'c':
-                        Console.WriteLine("");
+                        Console.WriteLine("Customer page");
                         break;
                     case 'q':
-                        Console.WriteLine("");
+                        Console.WriteLine("Queries");
                         break;
                     case 'l':
                         loggedin = false;
-                        Console.Clear();
+                        Console.WriteLine("LogOut");
                         Login();
                         break;
                     default:
-                        Console.WriteLine("wrong input");
+                        Console.WriteLine("Wrong Input");
                         Console.ReadKey(true);
                         break;
                 }
@@ -120,5 +125,71 @@ namespace Webshop_GruppE
             }
         }
 
+        public static void ProductMenu()
+        {
+            bool backOut = false;
+            Console.Clear();
+            while (backOut = false)
+            {
+                List<string> productText = new List<string> { "[A] Add product", "[C] Change Product", "[R] Remove Product", "[B] Back" };
+                var productWindow = new Window("Products", 0, 0, productText);
+                productWindow.DrawWindow();
+
+                var key = Console.ReadKey(true);
+                switch (key.KeyChar)
+                {
+                    case 'a':
+                       Console.WriteLine("Add Product");
+                        break;
+                    case 'c':
+                        Console.WriteLine("Change Product");
+                        break;
+                    case 'r':
+                        Console.WriteLine("Remove Product");
+                        break;
+                    case 'b':
+                        Console.WriteLine("Back");
+                        backOut= true;
+                        Admin();
+                        break;
+                    default: Console.WriteLine("Wrong input");
+                        break; 
+                }
+            }
+        }
+
+        public static void CategoryMenu()
+        {
+            Console.Clear();
+            bool backOut = false;
+            while (true)
+            {
+                List<string> categoryText = new List<string> { "[A] Add Category", "[C] Change Category", "[R] Remove Category", "[B] Back" };
+                var categoryWindow = new Window("Categories", 0, 0, categoryText);
+                categoryWindow.DrawWindow(); 
+
+                var key = Console.ReadKey(true);
+                switch (key.KeyChar)
+                {
+                    case 'a':
+                        Console.WriteLine("Add Category");
+                        break;
+                    case 'c':
+                        Console.WriteLine("Change Category");
+                        break;
+                    case 'r':
+                        Console.WriteLine("Remove Category");
+                        break;
+                    case 'b':
+                        Console.WriteLine("Back");
+                        backOut = true;
+                        Admin();
+                        break;
+                    default:
+                        Console.WriteLine("Wrong input");
+                        break;
+                }
+            }
+        }
     }
 }
