@@ -4,13 +4,6 @@ namespace Webshop_GruppE
 {
     internal class Helpers
     {
-        public static void StartMessage()
-        {
-            List<string> welcomeText = new List<string> { "Welcome to FashionCode website" };
-            var welcomeWindow = new Window("", 0, 0, welcomeText);
-            welcomeWindow.DrawWindow();
-            Console.WriteLine("Let us do the code so you can do the fashion");
-        }
 
         public static void Login()
         {
@@ -19,7 +12,7 @@ namespace Webshop_GruppE
             while (loggedin == false)
             {
                 List<string> loginText = new List<string> { "Welcome to FashionCode website", "Login as", "[A]dmin", "[U]ser", "[E]xit" };
-                var loginWindow = new Window("", 0, 0, loginText);
+                var loginWindow = new Window("", 1, 1, loginText);
                 loginWindow.DrawWindow();
                 var key = Console.ReadKey(true);
 
@@ -38,7 +31,7 @@ namespace Webshop_GruppE
                         Environment.Exit(0);
                         break;
                     default:
-                        Console.WriteLine("wrong input");
+                        Console.WriteLine("Wrong Input");
                         Console.ReadKey();
                         break;
                 }
@@ -52,8 +45,8 @@ namespace Webshop_GruppE
             bool loggedin = true;
             while (loggedin)
             {
-                List<string> adminText = new List<string> { "[1] Add product", "[2] Add Category", "[P] Profile page", "[C] Customer page", "[Q] Queries", "[L] Logout" };
-                var adminWindow = new Window("Admin", 0, 0, adminText);
+                List<string> adminText = new List<string> { "[1] Edit Product", "[2] Edit Category", "[P] Profile Page", "[C] Customer Page", "[Q] Queries", "[L] Logout" };
+                var adminWindow = new Window("Admin", 1, 1, adminText);
                 adminWindow.DrawWindow();
 
                 var key = Console.ReadKey(true);
@@ -69,17 +62,17 @@ namespace Webshop_GruppE
                         CategoryMenu(); 
                         break;
                     case 'p':
-                        Console.WriteLine("Profile page");
+                        Console.WriteLine("Profile Page");
                         break;
                     case 'c':
-                        Console.WriteLine("Customer page");
+                        Console.WriteLine("Customer Page");
                         break;
                     case 'q':
                         Console.WriteLine("Queries");
                         break;
                     case 'l':
                         loggedin = false;
-                        Console.WriteLine("LogOut");
+                        Console.WriteLine("Logout");
                         Login();
                         break;
                     default:
@@ -95,8 +88,8 @@ namespace Webshop_GruppE
             bool loggedin = true;
             while (loggedin)
             {
-                List<string> userText = new List<string> { "[S] Shopping cart", "[P] Profile page", "[B] Buy products", "[O] Order history", "[L] Logout" };
-                var userWindow = new Window("Customer", 0, 0, userText);
+                List<string> userText = new List<string> { "[S] Shopping Cart", "[P] Profile Page", "[B] Buy Products", "[O] Order History", "[L] Logout" };
+                var userWindow = new Window("Customer", 1, 1, userText);
                 userWindow.DrawWindow();
 
                 var key = Console.ReadKey(true);
@@ -121,7 +114,7 @@ namespace Webshop_GruppE
                         Login();
                         break;
                     default:
-                        Console.WriteLine("wrong input");
+                        Console.WriteLine("Wrong Input");
                         Console.ReadKey(true);
                         break;
                 }
@@ -134,8 +127,8 @@ namespace Webshop_GruppE
             
             while (true)
             {
-                List<string> productText = new List<string> { "[A] Add product", "[C] Change Product", "[R] Remove Product", "[B] Back" };
-                var productWindow = new Window("Products", 0, 0, productText);
+                List<string> productText = new List<string> { "[A] Add Product", "[C] Change Product", "[R] Remove Product", "[B] Back" };
+                var productWindow = new Window("Products", 1, 1, productText);
                 productWindow.DrawWindow();
 
                 var key = Console.ReadKey(true);
@@ -152,10 +145,9 @@ namespace Webshop_GruppE
                         break;
                     case 'b':
                         Console.WriteLine("Back");
-                       
                         Admin();
                         break;
-                    default: Console.WriteLine("Wrong input");
+                    default: Console.WriteLine("Wrong Input");
                         break; 
                 }
             }
@@ -167,10 +159,10 @@ namespace Webshop_GruppE
          
             while (true)
             {
-                
                 List<string> categoryText = new List<string> { "[A] Add Category", "[C] Change Category", "[R] Remove Category", "[B] Back" };
-                var categoryWindow = new Window("Categories", 0, 0, categoryText);
+                var categoryWindow = new Window("Category Menu", 1, 1, categoryText);
                 categoryWindow.DrawWindow();
+                Database.DisplayAllCategories();
                 using (var myDb = new MyDbContext())
                 {
                     
@@ -184,7 +176,7 @@ namespace Webshop_GruppE
                         AddCategory();
                         break;
                     case 'c':
-                        Console.WriteLine("Change Category");
+                        Console.WriteLine("Change Category Name");
                         ChangeCategory();
                         break;
                     case 'r':
@@ -192,11 +184,10 @@ namespace Webshop_GruppE
                         break;
                     case 'b':
                         Console.WriteLine("Back");
-                        
                         Admin();
                         break;
                     default:
-                        Console.WriteLine("Wrong input");
+                        Console.WriteLine("Wrong Input");
                         break;
                 }
             }
@@ -207,30 +198,38 @@ namespace Webshop_GruppE
             
             using(var myDb = new MyDbContext()) 
             {
-                Console.Write("Type Category name: ");
+                Console.Write("Type Category Name: ");
                 string categoryName = Console.ReadLine();
                 myDb.Add(new Models.Category { CategoryName = categoryName });
                 myDb.SaveChanges();
+                Console.WriteLine("You have added " + categoryName + " to the list");
             }
-        
         }
         public static void ChangeCategory()
         {
-            
-           
-            using(var myDb = new MyDbContext()) 
+            using (var myDb = new MyDbContext())
             {
-                Console.Write("Change Category name: ");
-                string categoryName = Console.ReadLine();
-                myDb.Add(new Models.Category { CategoryName = categoryName });
-                myDb.SaveChanges();
+                
+                Console.Write("Input category Id: ");
+                int categoryId = int.Parse(Console.ReadLine());
+                Console.Write("Input new category Name: ");
+                string categoryName2 = Console.ReadLine();
+                var newName = (from c in myDb.Categories
+                               where c.Id == categoryId
+                               select c).SingleOrDefault();
+
+                if (newName != null)
+                {
+                    newName.CategoryName = categoryName2;
+                    myDb.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine("Error wrong ID");
+                }
             }
-        
+
         }
-
-
-
-
 
     }
 }

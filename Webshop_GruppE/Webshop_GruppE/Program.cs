@@ -7,10 +7,8 @@ namespace Webshop_GruppE
     {
         static void Main(string[] args)
         {
-            //Helpers.StartMessage();
-            
-
             Helpers.Login();
+
         }
 
     }
