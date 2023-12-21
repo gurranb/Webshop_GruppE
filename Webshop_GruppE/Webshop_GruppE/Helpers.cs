@@ -15,10 +15,10 @@ namespace Webshop_GruppE
         public static void Login()
         {
             bool loggedin = false;
-
+            Console.Clear();
             while (loggedin == false)
             {
-                List<string> loginText = new List<string> { "Welcome to FashionCode website", "Login as", "[A]dmin", "[U]ser" };
+                List<string> loginText = new List<string> { "Welcome to FashionCode website", "Login as", "[A]dmin", "[U]ser", "[E]xit" };
                 var loginWindow = new Window("", 0, 0, loginText);
                 loginWindow.DrawWindow();
                 var key = Console.ReadKey(true);
@@ -33,6 +33,9 @@ namespace Webshop_GruppE
                     case 'u':
                         loggedin = true;
                         User();
+                        break;
+                    case 'e':
+                        Environment.Exit(0);
                         break;
                     default:
                         Console.WriteLine("wrong input");
@@ -127,9 +130,9 @@ namespace Webshop_GruppE
 
         public static void ProductMenu()
         {
-            bool backOut = false;
             Console.Clear();
-            while (backOut = false)
+            
+            while (true)
             {
                 List<string> productText = new List<string> { "[A] Add product", "[C] Change Product", "[R] Remove Product", "[B] Back" };
                 var productWindow = new Window("Products", 0, 0, productText);
@@ -149,7 +152,7 @@ namespace Webshop_GruppE
                         break;
                     case 'b':
                         Console.WriteLine("Back");
-                        backOut= true;
+                       
                         Admin();
                         break;
                     default: Console.WriteLine("Wrong input");
@@ -161,28 +164,35 @@ namespace Webshop_GruppE
         public static void CategoryMenu()
         {
             Console.Clear();
-            bool backOut = false;
+         
             while (true)
             {
+                
                 List<string> categoryText = new List<string> { "[A] Add Category", "[C] Change Category", "[R] Remove Category", "[B] Back" };
                 var categoryWindow = new Window("Categories", 0, 0, categoryText);
-                categoryWindow.DrawWindow(); 
+                categoryWindow.DrawWindow();
+                using (var myDb = new MyDbContext())
+                {
+                    
+                }
 
                 var key = Console.ReadKey(true);
                 switch (key.KeyChar)
                 {
                     case 'a':
                         Console.WriteLine("Add Category");
+                        AddCategory();
                         break;
                     case 'c':
                         Console.WriteLine("Change Category");
+                        ChangeCategory();
                         break;
                     case 'r':
                         Console.WriteLine("Remove Category");
                         break;
                     case 'b':
                         Console.WriteLine("Back");
-                        backOut = true;
+                        
                         Admin();
                         break;
                     default:
@@ -191,5 +201,36 @@ namespace Webshop_GruppE
                 }
             }
         }
+   
+        public static void AddCategory() 
+        {
+            
+            using(var myDb = new MyDbContext()) 
+            {
+                Console.Write("Type Category name: ");
+                string categoryName = Console.ReadLine();
+                myDb.Add(new Models.Category { CategoryName = categoryName });
+                myDb.SaveChanges();
+            }
+        
+        }
+        public static void ChangeCategory()
+        {
+            
+           
+            using(var myDb = new MyDbContext()) 
+            {
+                Console.Write("Change Category name: ");
+                string categoryName = Console.ReadLine();
+                myDb.Add(new Models.Category { CategoryName = categoryName });
+                myDb.SaveChanges();
+            }
+        
+        }
+
+
+
+
+
     }
 }
