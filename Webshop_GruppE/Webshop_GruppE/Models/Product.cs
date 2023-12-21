@@ -16,7 +16,6 @@ namespace Webshop_GruppE.Models
         public int? ProductSupplierId { get; set; }
         public string? ProductInfo { get; set; }
         public int? StockBalance { get; set; }
-
         public ICollection<Category> Categories { get; set; }
     }
 }
