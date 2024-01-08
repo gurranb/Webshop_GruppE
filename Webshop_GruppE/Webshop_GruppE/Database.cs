@@ -12,46 +12,55 @@ namespace Webshop_GruppE
             {
                 List<string> categoryText = new List<string>();
 
-                
-                if (categoryText.Count > 0) 
+                foreach (var categories in database.Categories)
                 {
-                    foreach (var categories in database.Categories)
-                    {
-                        categoryText.Add("Id: " + categories.Id + " " + "Name: " + categories.CategoryName);
-                    }
+                    categoryText.Add("Id: " + categories.Id + " " + "Name: " + categories.CategoryName);
                 }
-                else { categoryText.Add("Empty"); }
-                    var categoryWindow = new Window("Categories", 40, 2, categoryText);
-                    categoryWindow.DrawWindow();
+
+                if (categoryText.Count == 0)
+                {
+                    categoryText.Add("Empty");
+                }
+                var categoryWindow = new Window("Categories", 40, 2, categoryText);
+                categoryWindow.DrawWindow();
             }
         }
+
         public static void DisplayAllProducts()
         {
             using (var database = new MyDbContext())
             {
                 List<string> productsText = new List<string>();
-                if(productsText.Count > 0) 
+
+                foreach (var products in database.Products)
                 {
-                    foreach (var products in database.Products)
-                    {
-                        productsText.Add("Id: " + products.Id + " " + "Name: " + products.Name);
-                    }
+                    productsText.Add("Id: " + products.Id + " " + "Name: " + products.Name);
                 }
-                else { productsText.Add("Empty"); }                    
-                    var productsWindow = new Window("Products", 80, 2, productsText);
-                    productsWindow.DrawWindow();
+
+                if (productsText.Count == 0)
+                {
+                    productsText.Add("Empty");
+                }
+                var productsWindow = new Window("Products", 80, 2, productsText);
+                productsWindow.DrawWindow();
             }
         }
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+        static string connString = "data source = .\\SQLEXPRESS; initial catalog = FashionCode; persist security info = True; integrated security = True;";
+        public static bool CategoryExist(int categoryId)
+
+        {
+            using (var connection = new SqlConnection(connString))
+            {
+                connection.Open();
+                string sql = "SELECT COUNT(*) FROM Categories WHERE Id = @categoryId";
+                int count = connection.QuerySingle<int>(sql, new { categoryId });
+                return count > 0;
+            }
+        }
+
     }
-
-
 }
+
+
+

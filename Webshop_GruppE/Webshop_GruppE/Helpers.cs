@@ -1,4 +1,6 @@
-﻿using Webshop_GruppE.Models;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
+using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE
 {
@@ -163,8 +165,25 @@ namespace Webshop_GruppE
 
             using (var myDb = new MyDbContext())
             {
-                Console.Write("Type Category ID: ");
-                int categoryId = int.Parse(Console.ReadLine());
+                int categoryId = 0;
+                
+
+                while (true)
+                {
+                    Console.Write("Type Category ID: ");
+                    //categoryId = int.Parse(Console.ReadLine());
+                    if (!int.TryParse(Console.ReadLine(), out categoryId) || !Database.CategoryExist(categoryId))
+                    {
+                        Console.WriteLine("Invalid categoryID. Please enter a valid categoryId.");
+                        Console.ReadKey();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    
+                }
+                     
                 Console.Write("Type Product Name: ");
                 string productName = Console.ReadLine();
                 Console.Write("Type product Price: ");
@@ -312,6 +331,7 @@ namespace Webshop_GruppE
             Console.Clear();
 
         }
+        
 
     }
 }
