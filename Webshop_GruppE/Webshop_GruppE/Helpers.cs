@@ -159,6 +159,7 @@ namespace Webshop_GruppE
          
             while (true)
             {
+                
                 List<string> categoryText = new List<string> { "[A] Add Category", "[C] Change Category", "[R] Remove Category", "[B] Back" };
                 var categoryWindow = new Window("Category Menu", 1, 1, categoryText);
                 categoryWindow.DrawWindow();
@@ -190,6 +191,7 @@ namespace Webshop_GruppE
                         Console.WriteLine("Wrong Input");
                         break;
                 }
+                
             }
         }
    
@@ -204,6 +206,7 @@ namespace Webshop_GruppE
                 myDb.SaveChanges();
                 Console.WriteLine("You have added " + categoryName + " to the list");
             }
+            Console.Clear();
         }
         public static void ChangeCategory()
         {
@@ -228,6 +231,7 @@ namespace Webshop_GruppE
                     Console.WriteLine("Error wrong ID");
                 }
             }
+            Console.Clear();
 
         }
 
