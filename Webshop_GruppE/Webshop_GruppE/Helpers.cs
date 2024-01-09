@@ -220,15 +220,15 @@ namespace Webshop_GruppE
                         ChangeCategoryId();
                         break;
                     case '4':
-                        Console.WriteLine("[3] Change product supplier Id");
+                        Console.WriteLine("[4] Change product supplier Id");
                         ChangeProductSupplier();
                         break;
                     case '5':
-                        Console.WriteLine("[4] Change product info");
+                        Console.WriteLine("[5] Change product info");
                         ChangeProductInfo();
                         break;
                     case '6':
-                        Console.WriteLine("[5] Change product stock balance");
+                        Console.WriteLine("[6] Change product stock balance");
                         ChangeStockBalance();
                         break;
                     case 'b':
