@@ -1,6 +1,4 @@
-﻿using Dapper;
-using Microsoft.Data.SqlClient;
-using Webshop_GruppE.Models;
+﻿using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE
 {
@@ -130,10 +128,10 @@ namespace Webshop_GruppE
             while (true)
             {
                 List<string> productText = new List<string> { "[A] Add Product", "[C] Change Product", "[R] Remove Product", "[B] Back" };
-                var productWindow = new Window("Products", 1, 1, productText);
+                var productWindow = new Window("Product Menu", 1, 1, productText);
                 Database.DisplayAllCategories();
                 Database.DisplayAllProducts();
-                
+
                 productWindow.DrawWindow();
 
                 var key = Console.ReadKey(true);
@@ -144,7 +142,7 @@ namespace Webshop_GruppE
                         AddProduct();
                         break;
                     case 'c':
-                        Console.WriteLine("Change Product");
+                        ChangeProduct();
                         break;
                     case 'r':
                         Console.WriteLine("Remove Product");
@@ -162,28 +160,11 @@ namespace Webshop_GruppE
         }
         public static void AddProduct()
         {
-
+            // Fixa felinmatningsmetod
             using (var myDb = new MyDbContext())
             {
-                int categoryId = 0;
-                
-
-                while (true)
-                {
-                    Console.Write("Type Category ID: ");
-                    //categoryId = int.Parse(Console.ReadLine());
-                    if (!int.TryParse(Console.ReadLine(), out categoryId) || !Database.CategoryExist(categoryId))
-                    {
-                        Console.WriteLine("Invalid categoryID. Please enter a valid categoryId.");
-                        Console.ReadKey();
-                    }
-                    else
-                    {
-                        break;
-                    }
-                    
-                }
-                     
+                Console.Write("Type Category ID: ");
+                int categoryId = int.Parse(Console.ReadLine());
                 Console.Write("Type Product Name: ");
                 string productName = Console.ReadLine();
                 Console.Write("Type product Price: ");
@@ -194,9 +175,239 @@ namespace Webshop_GruppE
                 string productInfo = Console.ReadLine();
                 Console.Write("Type stockbalance: ");
                 int stockBalance = int.Parse(Console.ReadLine());
-                myDb.Add(new Models.Product { Name = productName, CategoryId = categoryId, Price = productPrice, ProductSupplierId = productSupplierId, ProductInfo = productInfo, StockBalance = stockBalance });
+                Console.Write("Show product on Homepage? Type 'true' or 'false': ");
+                bool selectedProduct = bool.Parse(Console.ReadLine());
+
+                myDb.Add(new Models.Product
+                {
+                    Name = productName,
+                    CategoryId = categoryId,
+                    Price = productPrice,
+                    ProductSupplierId = productSupplierId,
+                    ProductInfo = productInfo,
+                    StockBalance = stockBalance,
+                    SelectedProduct = selectedProduct
+                });
                 myDb.SaveChanges();
                 Console.WriteLine("You have added " + productName + " to the list");
+            }
+            Console.Clear();
+        }
+
+        public static void ChangeProduct()
+        {
+
+            using (var myDb = new MyDbContext())
+            {
+                List<string> changeProductText = new List<string> { "[1] Change product name", "[2] Change product price","[3] Change category Id", "[4] Change product supplier Id",
+                        "[5] Change product info", "[6] Change product stock balance", "[B] Back" };
+                var changeProductWindow = new Window("Change Product Menu", 0, 3, changeProductText);
+                changeProductWindow.DrawWindow();
+
+                var key = Console.ReadKey(true);
+                switch (key.KeyChar)
+                {
+                    case '1':
+                        Console.WriteLine("[1] Change product name");
+                        ChangeProductName();
+                        break;
+                    case '2':
+                        Console.WriteLine("[2] Change product price");
+                        ChangeProductPrice();
+                        break;
+                    case '3':
+                        Console.WriteLine("[3] Change category Id");
+                        ChangeCategoryId();
+                        break;
+                    case '4':
+                        Console.WriteLine("[3] Change product supplier Id");
+                        ChangeProductSupplier();
+                        break;
+                    case '5':
+                        Console.WriteLine("[4] Change product info");
+                        ChangeProductInfo();
+                        break;
+                    case '6':
+                        Console.WriteLine("[5] Change product stock balance");
+                        ChangeStockBalance();
+                        break;
+                    case 'b':
+                        ProductMenu();
+                        break;
+                    default:
+                        Console.WriteLine("Wrong input!");
+                        break;
+
+                }
+            }
+
+        }
+        public static void ChangeProductName()
+        {
+            using (var myDb = new MyDbContext())
+            {
+
+                Console.Write("Input product Id: ");
+                int productId = int.Parse(Console.ReadLine());
+                Console.Write("Input new product Name: ");
+                string productName2 = Console.ReadLine();
+                var newName = (from c in myDb.Products
+                               where c.Id == productId
+                               select c).SingleOrDefault();
+
+                if (newName != null)
+                {
+                    newName.Name = productName2;
+                    Console.WriteLine("You have successfully changed the product Name to " + productName2);
+                    Console.ReadKey();
+                    myDb.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine("Error wrong ID");
+                    Console.ReadKey();
+                }
+            }
+            Console.Clear();
+        }
+        public static void ChangeProductPrice()
+        {
+            using (var myDb = new MyDbContext())
+            {
+
+                Console.Write("Input product Id: ");
+                int productId = int.Parse(Console.ReadLine());
+                Console.Write("Input new product price: ");
+                float productPrice2 = float.Parse(Console.ReadLine());
+                var newPrice = (from c in myDb.Products
+                                where c.Id == productId
+                                select c).SingleOrDefault();
+
+                if (newPrice != null)
+                {
+                    newPrice.Price = productPrice2;
+                    Console.WriteLine("You have successfully changed the product price to " + productPrice2 + " $");
+                    Console.ReadKey();
+                    myDb.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine("Error wrong ID");
+                    Console.ReadKey();
+                }
+            }
+            Console.Clear();
+        }
+        public static void ChangeCategoryId()
+        {
+            using (var myDb = new MyDbContext())
+            {
+
+                Console.Write("Input product Id: ");
+                int productId = int.Parse(Console.ReadLine());
+                Console.Write("Input new category Id: ");
+                int categoryId2 = int.Parse(Console.ReadLine());
+                var newCategoryId = (from c in myDb.Products
+                                where c.Id == productId
+                                select c).SingleOrDefault();
+
+                if (newCategoryId != null)
+                {
+                    newCategoryId.CategoryId = categoryId2;
+                    Console.WriteLine("You have successfully changed the category Id to: " + categoryId2);
+                    Console.ReadKey();
+                    myDb.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine("Error wrong ID");
+                    Console.ReadKey();
+                }
+            }
+            Console.Clear();
+        }
+        public static void ChangeProductSupplier()
+        {
+            using (var myDb = new MyDbContext())
+            {
+
+                Console.Write("Input product Id: ");
+                int productId = int.Parse(Console.ReadLine());
+                Console.Write("Input new product supplier Id: ");
+                int productSupplierId2 = int.Parse(Console.ReadLine());
+                var newSupplierId = (from c in myDb.Products
+                                where c.Id == productId
+                                select c).SingleOrDefault();
+
+                if (newSupplierId != null)
+                {
+                    newSupplierId.ProductSupplierId = productSupplierId2;
+                    Console.WriteLine("You have successfully changed the product supplier Id to " + productSupplierId2);
+                    Console.ReadKey();
+                    myDb.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine("Error wrong ID");
+                    Console.ReadKey();
+                }
+            }
+            Console.Clear();
+        }
+
+        public static void ChangeProductInfo()
+        {
+            using (var myDb = new MyDbContext())
+            {
+
+                Console.Write("Input product Id: ");
+                int productId = int.Parse(Console.ReadLine());
+                Console.WriteLine("Input new product info: ");
+                string productInfo2 = Console.ReadLine();
+                var newProductInfo = (from c in myDb.Products
+                                     where c.Id == productId
+                                     select c).SingleOrDefault();
+
+                if (newProductInfo != null)
+                {
+                    newProductInfo.ProductInfo = productInfo2;
+                    Console.WriteLine("You have successfully changed the product info to\n" + productInfo2);
+                    Console.ReadKey();
+                    myDb.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine("Error wrong ID");
+                    Console.ReadKey();
+                }
+            }
+            Console.Clear();
+        }
+        public static void ChangeStockBalance()
+        {
+            using (var myDb = new MyDbContext())
+            {
+
+                Console.Write("Input product Id: ");
+                int productId = int.Parse(Console.ReadLine());
+                Console.Write("Input new stock balance: ");
+                int productStockBalance2 = int.Parse(Console.ReadLine());
+                var newStockBalance = (from c in myDb.Products
+                                      where c.Id == productId
+                                      select c).SingleOrDefault();
+
+                if (newStockBalance != null)
+                {
+                    newStockBalance.StockBalance = productStockBalance2;
+                    Console.WriteLine("You have successfully changed the product stock balance to: " + productStockBalance2 + " units");
+                    Console.ReadKey();
+                    myDb.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine("Error wrong ID");
+                    Console.ReadKey();
+                }
             }
             Console.Clear();
         }
@@ -209,7 +420,7 @@ namespace Webshop_GruppE
                 Console.Write("Input product Id: ");
                 int productId = int.Parse(Console.ReadLine());
                 var removeProduct = (from c in myDb.Products
-                                      where c.Id == productId
+                                     where c.Id == productId
                                      select c).SingleOrDefault();
 
                 if (removeProduct != null)
@@ -270,7 +481,6 @@ namespace Webshop_GruppE
 
         public static void AddCategory()
         {
-
             using (var myDb = new MyDbContext())
             {
                 Console.Write("Type Category Name: ");
@@ -297,11 +507,14 @@ namespace Webshop_GruppE
                 if (newName != null)
                 {
                     newName.CategoryName = categoryName2;
+                    Console.WriteLine("You have successfully changed the category Name to " + categoryName2);
+                    Console.ReadKey();
                     myDb.SaveChanges();
                 }
                 else
                 {
                     Console.WriteLine("Error wrong ID");
+                    Console.ReadKey();
                 }
             }
             Console.Clear();
@@ -321,17 +534,20 @@ namespace Webshop_GruppE
                 if (removeCategory != null)
                 {
                     myDb.Remove(removeCategory);
+                    Console.WriteLine("You have successfully removed category Id " + categoryId);
+                    Console.ReadKey();
                     myDb.SaveChanges();
+
                 }
                 else
                 {
                     Console.WriteLine("Error wrong ID");
+                    Console.ReadKey();
                 }
+
             }
             Console.Clear();
 
         }
-        
-
     }
 }

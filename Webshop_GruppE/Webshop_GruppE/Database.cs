@@ -46,18 +46,30 @@ namespace Webshop_GruppE
             }
         }
 
-        static string connString = "data source = .\\SQLEXPRESS; initial catalog = FashionCode; persist security info = True; integrated security = True;";
-        public static bool CategoryExist(int categoryId)
+        // Använd till dapper senare ??
 
-        {
-            using (var connection = new SqlConnection(connString))
-            {
-                connection.Open();
-                string sql = "SELECT COUNT(*) FROM Categories WHERE Id = @categoryId";
-                int count = connection.QuerySingle<int>(sql, new { categoryId });
-                return count > 0;
-            }
-        }
+
+        //static string connString = "data source = .\\SQLEXPRESS; initial catalog = FashionCode; persist security info = True; integrated security = True;";
+        //public static bool CategoryExist(int categoryId)
+
+        //{
+        //    try
+        //    {
+        //        using (var connection = new SqlConnection(connString))
+        //        {
+        //            connection.Open();
+        //            string sql = "SELECT COUNT(*) FROM Categories WHERE Id = @categoryId";
+        //            int count = connection.QuerySingle<int>(sql, new { categoryId });
+        //            return count > 0;
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        Console.WriteLine("Invalid categoryID. Please enter a valid categoryId.");
+        //        return false;
+        //    }
+
+        //}
 
     }
 }
