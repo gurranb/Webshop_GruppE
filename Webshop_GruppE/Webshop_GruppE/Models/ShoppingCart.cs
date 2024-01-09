@@ -9,7 +9,8 @@ namespace Webshop_GruppE.Models
     internal class ShoppingCart
     {
         public int Id { get; set; }
-        public int? ProductId { get; set; }
+        public List<Product>? ProductId { get; set; }
+        public float? TotalCost { get; set; }
         public int? Quantity { get; set; }
 
         public virtual Customer? Customer { get; set; }

@@ -26,6 +26,32 @@ namespace Webshop_GruppE
             }
         }
 
+        public static void DisplayChosenProducts()
+        {
+            using (var database = new MyDbContext())
+            {
+                List<string> productsText = new List<string>();
+
+
+
+                foreach (var products in database.Products)
+                {
+                    if(products.SelectedProduct == true)
+                    {
+                        productsText.Add("Id: " + products.Id + " " + "Name: " + products.Name + " Pris: " + products.Price);
+                    }
+                    
+                }
+
+                if (productsText.Count == 0)
+                {
+                    productsText.Add("Empty");
+                }
+                var productsWindow = new Window("Super Products", 30, 1, productsText);
+                productsWindow.DrawWindow();
+            }
+        }
+
         public static void DisplayAllProducts()
         {
             using (var database = new MyDbContext())

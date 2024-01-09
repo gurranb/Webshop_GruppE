@@ -18,9 +18,7 @@ namespace Webshop_GruppE.Models
         public int? Age { get; set; }
         public string? Country { get; set; }
         public string? StreetAdress { get; set; }
-        public int? PostalCode { get; set; }
-        //[IsUnique = true]
-        //[Index(IsUnique = true)]
+        public int? PostalCode { get; set; }      
         public string? CardNumber { get; set; }
         public string? EMailAdress { get; set;}
         public int? ShoppingCartId { get; set; }

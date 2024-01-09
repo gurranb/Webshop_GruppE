@@ -1,4 +1,5 @@
-﻿using Webshop_GruppE.Models;
+﻿using System.Security.Cryptography;
+using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE
 {
@@ -25,7 +26,7 @@ namespace Webshop_GruppE
                         break;
                     case 'u':
                         loggedin = true;
-                        User();
+                        UserLogInPage();
                         break;
                     case 'e':
                         Environment.Exit(0);
@@ -45,7 +46,7 @@ namespace Webshop_GruppE
             bool loggedin = true;
             while (loggedin)
             {
-                List<string> adminText = new List<string> { "[1] Edit Product", "[2] Edit Category", "[P] Profile Page", "[C] Customer Page", "[Q] Queries", "[L] Logout" };
+                List<string> adminText = new List<string> { "[1] Edit Product", "[2] Edit Category", "[3] Product Overview", "[P] Profile Page", "[C] Customer Page", "[Q] Queries", "[L] Logout" };
                 var adminWindow = new Window("Admin", 1, 1, adminText);
                 adminWindow.DrawWindow();
 
@@ -60,6 +61,10 @@ namespace Webshop_GruppE
                     case '2':
                         Console.WriteLine("Add Category");
                         CategoryMenu();
+                        break;
+                    case '3':
+                        Console.WriteLine("Product Overview");
+                        ProductOverview();
                         break;
                     case 'p':
                         Console.WriteLine("Profile Page");
@@ -82,13 +87,36 @@ namespace Webshop_GruppE
                 }
             }
         }
+
+        public static void UserLogInPage()
+        {
+            List<string> profileText = new List<string> { "[1] Log in ", "[2] Sign up", "[B] Back" };
+            var userWindow = new Window("Sign in", 1, 1, profileText);
+            userWindow.DrawWindow();
+            var key = Console.ReadKey(true);
+            switch (key.KeyChar)
+            {
+                case '1':
+                    Console.WriteLine("Log in");
+                    break;
+                case '2':
+                    Console.WriteLine("Sign up");
+                    break;
+                case 'b':
+                    Console.WriteLine("Back");
+                    Login();
+                    break;
+            }
+        }
+
         public static void User()
         {
             Console.Clear();
             bool loggedin = true;
+            Database.DisplayChosenProducts();
             while (loggedin)
             {
-                List<string> userText = new List<string> { "[S] Shopping Cart", "[P] Profile Page", "[B] Buy Products", "[O] Order History", "[L] Logout" };
+                List<string> userText = new List<string> { "[1] Search Products", "[2] Browse Products", "[S] Shopping Cart", "[P] Profile Page", "[B] Buy Products", "[O] Order History", "[L] Logout" };
                 var userWindow = new Window("Customer", 1, 1, userText);
                 userWindow.DrawWindow();
 
@@ -96,6 +124,14 @@ namespace Webshop_GruppE
 
                 switch (key.KeyChar)
                 {
+                    case '1':
+                        Console.WriteLine("Search Products");
+                        SearchProducts();
+                        break;
+                    case '2':
+                        Console.WriteLine("Browse Products");
+                        BrowseProducts();
+                        break;
                     case 's':
                         Console.WriteLine("");
                         break;
@@ -121,6 +157,88 @@ namespace Webshop_GruppE
             }
         }
 
+        public static void SearchProducts()
+        {
+            Console.Write("Input searchword: ");
+            string searchWord = Console.ReadLine();
+
+            using (var myDb = new MyDbContext())
+            {
+                var searchedProduct = (from c in myDb.Products
+                                       where c.Name.Contains(searchWord)
+                                       select c);
+                foreach (var product in searchedProduct)
+                {
+                    Console.WriteLine("Id: " + product.Id + ", " + product.Name);
+                }
+
+                var key = Console.ReadKey();
+                switch (key.KeyChar)
+                {
+                    case 'p':
+                        Console.WriteLine("Purchase product");
+                        break;
+                    case 'b':
+                        Console.WriteLine("Back");
+                        User();
+                        break;
+
+                }
+                PurchaseProduct();
+                Console.Clear();
+            }
+        }
+        public static void BrowseProducts()
+        {
+            Console.Clear();
+            Database.DisplayAllCategories();
+
+            Console.Write("Input Category Id: ");
+            int categoryId = int.Parse(Console.ReadLine());
+            using (var myDb = new MyDbContext())
+            {
+                var chosenCategory = (from c in myDb.Products
+                                      where c.CategoryId == categoryId
+                                      select c);
+
+                foreach(var product in chosenCategory)
+                {
+                    Console.WriteLine(product.Id + " " + product.Name);
+                }
+                PurchaseProduct();
+                Console.Clear();
+            }
+        }
+
+        public static void PurchaseProduct()
+        {
+            Console.Write("Input product Id: ");
+            int productId = int.Parse(Console.ReadLine());
+            using (var myDb = new MyDbContext())
+            {
+                var chosenProduct = (from c in myDb.Products
+                                     where c.Id == productId
+                                     select c).SingleOrDefault();
+
+                Console.WriteLine("Id: " + chosenProduct.Id + " " + " Name: " + chosenProduct.Name + " Price: " + chosenProduct.Price + " Units In Stock: " + chosenProduct.StockBalance +
+                         " Product Info: " + chosenProduct.ProductInfo);
+                Console.WriteLine("Buy this product? y/n");
+                var answer = Console.ReadKey();
+
+                //Lägg till funktionerlig köpfunktion efter att shoppingcart fungerar
+                switch (answer.KeyChar)
+                {
+                    case 'y':
+                        break;
+                    case 'n':
+                        User();
+                        break;
+
+                }
+            }
+
+        }
+
         public static void ProductMenu()
         {
             Console.Clear();
@@ -142,6 +260,7 @@ namespace Webshop_GruppE
                         AddProduct();
                         break;
                     case 'c':
+                        Console.WriteLine("Change Product");
                         ChangeProduct();
                         break;
                     case 'r':
@@ -241,6 +360,32 @@ namespace Webshop_GruppE
                 }
             }
 
+        }
+
+        public static void ProductOverview()
+        {
+            using (var myDb = new MyDbContext())
+            {
+                List<string> productList = new List<string>();
+
+                foreach (var products in myDb.Products)
+                {
+                    productList.Add("Id: " + products.Id + " " + " Name: " + products.Name + " Price: " + products.Price + " Units In Stock: " + products.StockBalance + 
+                        " Product Supplier Id: " + products.ProductSupplierId + " Selected Product: " + (products.SelectedProduct == true ? " Yes " : " No " ) + 
+                        "Product Info: " + products.ProductInfo);
+                }
+
+                if (productList.Count == 0)
+                {
+                    productList.Add("Empty");
+                }
+                var productsWindow = new Window("Product Overview", 1, 20, productList);
+                productsWindow.DrawWindow();
+
+                Console.WriteLine("Press any key to return!");
+                Console.ReadKey();
+                Admin();
+            }
         }
         public static void ChangeProductName()
         {
