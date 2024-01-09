@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Webshop_GruppE.Models;
 
@@ -11,9 +12,11 @@ using Webshop_GruppE.Models;
 namespace Webshop_GruppE.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240109143132_productCategori")]
+    partial class productCategori
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,13 +27,13 @@ namespace Webshop_GruppE.Migrations
 
             modelBuilder.Entity("CategoryProduct", b =>
                 {
-                    b.Property<int>("CategoriesId")
+                    b.Property<int>("CategoriId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductsId")
                         .HasColumnType("int");
 
-                    b.HasKey("CategoriesId", "ProductsId");
+                    b.HasKey("CategoriId", "ProductsId");
 
                     b.HasIndex("ProductsId");
 
@@ -187,6 +190,9 @@ namespace Webshop_GruppE.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
@@ -329,7 +335,7 @@ namespace Webshop_GruppE.Migrations
                 {
                     b.HasOne("Webshop_GruppE.Models.Category", null)
                         .WithMany()
-                        .HasForeignKey("CategoriesId")
+                        .HasForeignKey("CategoriId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -365,7 +371,7 @@ namespace Webshop_GruppE.Migrations
             modelBuilder.Entity("Webshop_GruppE.Models.Product", b =>
                 {
                     b.HasOne("Webshop_GruppE.Models.ShoppingCart", null)
-                        .WithMany("Products")
+                        .WithMany("ProductId")
                         .HasForeignKey("ShoppingCartId");
                 });
 
@@ -373,7 +379,7 @@ namespace Webshop_GruppE.Migrations
                 {
                     b.Navigation("Customer");
 
-                    b.Navigation("Products");
+                    b.Navigation("ProductId");
                 });
 
             modelBuilder.Entity("Webshop_GruppE.Models.User", b =>
