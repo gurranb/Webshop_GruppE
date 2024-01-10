@@ -1,4 +1,5 @@
-﻿using Webshop_GruppE.Models;
+﻿using System.Security.Cryptography;
+using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE
 {
@@ -409,7 +410,7 @@ namespace Webshop_GruppE
 
             while (true)
             {
-                List<string> productText = new List<string> { "[A] Add Product", "[C] Change Product", "[R] Remove Product", "[B] Back" };
+                List<string> productText = new List<string> { "[A] Add Product", "[C] Edit Product", "[R] Remove Product", "[B] Back" };
                 var productWindow = new Window("Product Menu", 1, 1, productText);
                 Database.DisplayAllCategories();
                 Database.DisplayAllProducts();
@@ -425,8 +426,8 @@ namespace Webshop_GruppE
                         AddProduct();
                         break;
                     case 'c':
-                        Console.WriteLine("Change Product");
-                        ChangeProduct();
+                        Console.WriteLine("Edit Product");
+                        EditProduct();
                         break;
                     case 'r':
                         Console.WriteLine("Remove Product");
@@ -449,64 +450,115 @@ namespace Webshop_GruppE
             {
                 while (true)
                 {
-                    //int amountOfCategories = 0;
-
-                    //// ändra ifall man vill kunna lägga till i fler categories ??
-                    //List<int> categoryList = new List<int>();
-
-                    //Console.Write("Input amount of categories for this product: ");
-                    //int.TryParse(Console.ReadLine(), out amountOfCategories);
-
                     Console.Write("Type Category ID: ");
 
                     int.TryParse(Console.ReadLine(), out int category);
 
                     var category3 = (from c in myDb.Categories
                                      where c.Id == category
-                                     select c);
-                    int x = 0;
+                                     select c);                  
 
                     if (category3 != null && category3.Any())
                     {
                         Console.Write("Type Product Name: ");
                         string productName = Console.ReadLine();
-                        Console.Write("Type product Price: ");
-                        //float productPrice = float.Parse(Console.ReadLine());
-                        float.TryParse(Console.ReadLine(), out float productPrice);
-                        Console.Write("Type productsupplier ID: ");
-                        int productSupplierId = int.Parse(Console.ReadLine());
-                        Console.Write("Type productinfo: ");
-                        string productInfo = Console.ReadLine();
-                        Console.Write("Type stockbalance: ");
-                        int stockBalance = int.Parse(Console.ReadLine());
-                        Console.Write("Show product on Homepage? Type 'true' or 'false': ");
-                        bool selectedProduct = bool.Parse(Console.ReadLine());
 
-                        myDb.Add(new Models.Product
+                        Console.Write("Type product Price: ");                      
+                        float.TryParse(Console.ReadLine(), out float productPrice);
+
+                        if(productPrice != null && productPrice > 0)
                         {
-                            Name = productName,
-                            Categories = category3.ToList(),
-                            Price = productPrice,
-                            ProductSupplierId = productSupplierId,
-                            ProductInfo = productInfo,
-                            StockBalance = stockBalance,
-                            SelectedProduct = selectedProduct
-                        });
-                        myDb.SaveChanges();
-                        Console.WriteLine("You have added " + productName + " to the list");
-                        break;
+                            Console.Write("Type productsupplier ID: ");
+                            int.TryParse(Console.ReadLine(), out int productSupplierId);
+
+                            var productSupplierId2 = (from c in myDb.ProductSuppliers
+                                             where c.Id == productSupplierId
+                                             select c);
+
+                            if(productSupplierId2 != null && productSupplierId2.Any())
+                            {
+                                Console.Write("Type productinfo: ");
+                                string productInfo = Console.ReadLine();
+
+                                Console.Write("Type stockbalance: ");
+                                int.TryParse(Console.ReadLine(), out int stockBalance);
+
+                                if(stockBalance != null && stockBalance > 0)
+                                {
+                                    Console.WriteLine("Show product on Homepage ? Type Y/N");
+                                    bool selectedProduct = true;
+
+                                    while (true)
+                                    {
+                                        var key = Console.ReadKey();
+
+                                        switch (key.KeyChar)
+                                        {
+                                            case 'y':
+                                                selectedProduct = true;
+                                                break;
+                                            case 'n':
+                                                selectedProduct = false;
+                                                break;
+                                            default:
+                                                Console.WriteLine("Error, wrong input.");
+                                                break;
+                                        }
+                                        myDb.Add(new Models.Product
+                                        {
+                                            Name = productName,
+                                            Categories = category3.ToList(),
+                                            Price = productPrice,
+                                            ProductSupplierId = productSupplierId,
+                                            ProductInfo = productInfo,
+                                            StockBalance = stockBalance,
+                                            SelectedProduct = selectedProduct
+                                        });
+                                        myDb.SaveChanges();
+                                        Console.WriteLine("You have added " + productName + " to the list");
+                                        ProductMenu();
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Error, invalid input");
+                                    Console.ReadLine();
+                                    ProductMenu();
+                                }
+                                //Console.Write("Show product on Homepage? Type 'true' or 'false': ");
+                                //bool selectedProduct = bool.Parse(Console.ReadLine());
+                                
+                                
+                            }
+                            else
+                            {
+                                Console.WriteLine("Error, invalid supplier Id");
+                                Console.ReadLine();
+                                ProductMenu();
+                            }
+
+                        }
+                        else 
+                        {
+                            Console.WriteLine("Error, invalid price!");
+                            Console.ReadLine();
+                            ProductMenu();
+                        }
                     }
                     else
                     {
                         Console.WriteLine("Error category Id does not exist!");
+                        Console.ReadLine();
+                        ProductMenu();
                     }
+                    
                 }
                 Console.Clear();
             }
 
         }
 
-        public static void ChangeProduct()
+        public static void EditProduct()
         {
 
             using (var myDb = new MyDbContext())
@@ -582,27 +634,38 @@ namespace Webshop_GruppE
             {
 
                 Console.Write("Input product Id: ");
-                int productId = int.Parse(Console.ReadLine());
-                Console.Write("Input new product Name: ");
-                string productName2 = Console.ReadLine();
-                var newName = (from c in myDb.Products
+                int.TryParse(Console.ReadLine(), out int productId);
+                var productId2 = (from c in myDb.Products
                                where c.Id == productId
                                select c).SingleOrDefault();
-
-                if (newName != null)
+                if (productId2 != null )
                 {
-                    newName.Name = productName2;
-                    Console.WriteLine("You have successfully changed the product Name to " + productName2);
-                    Console.ReadKey();
-                    myDb.SaveChanges();
+                    Console.Write("Input new product Name: ");
+                    string productName2 = Console.ReadLine();
+                    
+
+                    if (productId2 != null)
+                    {
+                        productId2.Name = productName2;
+                        Console.WriteLine("You have successfully changed the product Name to " + productName2);
+                        Console.ReadKey();
+                        myDb.SaveChanges();
+                    }
+                    //else
+                    //{
+                    //    Console.WriteLine("Error wrong ID");
+                    //    Console.ReadKey();
+                    //}
                 }
                 else
                 {
-                    Console.WriteLine("Error wrong ID");
+                    Console.WriteLine("Error, wrong Id input.");
                     Console.ReadKey();
+                    
                 }
+                Console.Clear();
             }
-            Console.Clear();
+                
         }
         public static void ChangeProductPrice()
         {
