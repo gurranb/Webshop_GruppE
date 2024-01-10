@@ -6,6 +6,25 @@ namespace Webshop_GruppE
 {
     internal class Database
     {
+        public static void DisplayAllSuppliers()
+        {
+            using (var database = new MyDbContext())
+            {
+                List<string> supplierText = new List<string>();
+
+                foreach (var supplier in database.ProductSuppliers)
+                {
+                    supplierText.Add("Id: " + supplier.Id + " " + "Name: " + supplier.Name);
+                }
+
+                if (supplierText.Count == 0)
+                {
+                    supplierText.Add("Empty");
+                }
+                var categoryWindow = new Window("Suppliers", 25, 1, supplierText);
+                categoryWindow.DrawWindow();
+            }
+        }
         public static void DisplayAllCategories()
         {
             using (var database = new MyDbContext())

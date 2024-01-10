@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Webshop_GruppE.Models;
+﻿using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE
 {
@@ -8,7 +7,7 @@ namespace Webshop_GruppE
 
         public static void Start()
         {
-            
+
             Console.Clear();
             while (true)
             {
@@ -20,11 +19,11 @@ namespace Webshop_GruppE
                 // ändra så detta blir snyggare
                 switch (key.KeyChar)
                 {
-                    case 'a':                       
+                    case 'a':
                         Admin();
                         break;
                     case 'u':
-                        UserLogInPage();                       
+                        UserLogInPage();
                         break;
                     case 'e':
                         Environment.Exit(0);
@@ -41,10 +40,10 @@ namespace Webshop_GruppE
         public static void Admin()
         {
             Console.Clear();
-            
+
             while (true)
             {
-                List<string> adminText = new List<string> { "[1] Edit Product", "[2] Edit Category", "[3] Product Overview", "[P] Profile Page", "[C] Customer Page", "[Q] Queries", "[L] Logout" };
+                List<string> adminText = new List<string> { "[1] Edit Product", "[2] Edit Category", "[3] Product Overview", "[4] Edit Suppliers", "[P] Profile Page", "[C] Customer Page", "[Q] Queries", "[L] Logout" };
                 var adminWindow = new Window("Admin", 1, 1, adminText);
                 adminWindow.DrawWindow();
 
@@ -64,6 +63,10 @@ namespace Webshop_GruppE
                         Console.WriteLine("Product Overview");
                         ProductOverview();
                         break;
+                    case '4':
+                        Console.WriteLine("Edit Suppliers");
+                        supplierMenu();
+                        break;
                     case 'p':
                         Console.WriteLine("Profile Page");
                         break;
@@ -73,7 +76,7 @@ namespace Webshop_GruppE
                     case 'q':
                         Console.WriteLine("Queries");
                         break;
-                    case 'l':                       
+                    case 'l':
                         Console.WriteLine("Logout");
                         Start();
                         break;
@@ -85,9 +88,110 @@ namespace Webshop_GruppE
             }
         }
 
+        public static void supplierMenu()
+        {
+            Console.Clear();
+            Database.DisplayAllSuppliers();
+            List<string> supplierText = new List<string> { "[1] Add supplier", "[2] Change supplier", "[3] Remove supplier", "[B] Back" };
+            var userWindow = new Window("Supplier Menu", 1, 1, supplierText);
+            userWindow.DrawWindow();
+
+            var key = Console.ReadKey(true);
+            switch (key.KeyChar)
+            {
+                case '1':
+                    AddSupplier();
+                    break;
+                case '2':
+                    ChangeSupplier();
+                    break;
+                case '3':
+                    RemoveSupplier();
+                    break;
+                case 'b':
+                    Admin();
+                    break;
+            }
+
+        }
+
+        public static void AddSupplier()
+        {
+
+
+            using (var myDb = new MyDbContext())
+            {
+                Console.WriteLine("Input Supplier Name: ");
+                string supplierName = Console.ReadLine();
+                myDb.Add(new Models.ProductSupplier { Name = supplierName });
+                myDb.SaveChanges();
+                Console.WriteLine("You have added " + supplierName + " to the list");
+            }
+            Console.ReadKey(true);
+
+        }
+
+        public static void ChangeSupplier()
+        {
+
+            using (var myDb = new MyDbContext())
+            {
+                Console.WriteLine("Change supplier name.\n\nInput Supplier Id: ");
+                int.TryParse(Console.ReadLine(), out int supplierId);
+                Console.WriteLine("Input new name for supplier: ");
+                string newNameString = Console.ReadLine();
+
+                var newName = (from c in myDb.ProductSuppliers
+                               where c.Id == supplierId
+                               select c).SingleOrDefault();
+
+                if (newName != null)
+                {
+                    newName.Name = newNameString;
+                    Console.WriteLine("Succesfully changed supplier name to " + newName.Name);
+                    Console.ReadKey();
+                    myDb.SaveChanges();
+
+                }
+                else
+                {
+                    Console.WriteLine("Error, wrong Id");
+                    Console.ReadKey();
+                }
+
+            }
+            Console.Clear();
+
+        }
+
+        public static void RemoveSupplier()
+        {
+            using (var myDb = new MyDbContext())
+            {
+                Console.WriteLine("Input Id for the supplier you wish to remove");
+                int.TryParse(Console.ReadLine(), out int supplierId);
+
+                var removeSupplier = (from c in myDb.ProductSuppliers
+                                      where c.Id == supplierId
+                                      select c).SingleOrDefault();
+                if (removeSupplier != null)
+                {
+                    myDb.Remove(removeSupplier);
+                    Console.WriteLine("You've successfully removed " + removeSupplier.Name + ".");
+                    myDb.SaveChanges();
+                    Console.ReadKey();
+                }
+                else
+                {
+                    Console.WriteLine("Error, wrong Id");
+                    Console.ReadKey();
+                }
+                Console.Clear();
+            }
+        }
         public static void UserLogInPage()
         {
-            while(true) 
+            while (true)
             {
                 Console.Clear();
                 List<string> profileText = new List<string> { "[1] Emergency Log in ", "[2] Log in ", "[3] Sign up", "[B] Back" };
@@ -117,13 +221,13 @@ namespace Webshop_GruppE
                         break;
                 }
             }
-            
+
         }
 
         public static void User()
         {
             Console.Clear();
-            
+
             Database.DisplayChosenProducts();
             while (true)
             {
@@ -155,7 +259,7 @@ namespace Webshop_GruppE
                     case 'o':
                         Console.WriteLine("");
                         break;
-                    case 'l':                      
+                    case 'l':
                         Console.Clear();
                         Start();
                         break;
@@ -271,7 +375,7 @@ namespace Webshop_GruppE
                                      where c.Id == productId
                                      select c).SingleOrDefault();
 
-                if(chosenProduct != null)
+                if (chosenProduct != null)
                 {
                     Console.WriteLine("Id: " + chosenProduct.Id + " " + " Name: " + chosenProduct.Name + " Price: " + chosenProduct.Price + " Units In Stock: " + chosenProduct.StockBalance +
                          " Product Info: " + chosenProduct.ProductInfo);
@@ -294,7 +398,7 @@ namespace Webshop_GruppE
                     Console.WriteLine("The inputted product Id doesn't match with any of our products, please try again.");
                     Console.ReadKey(true);
                 }
-                
+
             }
 
         }
@@ -309,6 +413,7 @@ namespace Webshop_GruppE
                 var productWindow = new Window("Product Menu", 1, 1, productText);
                 Database.DisplayAllCategories();
                 Database.DisplayAllProducts();
+                Database.DisplayAllSuppliers();
 
                 productWindow.DrawWindow();
 
@@ -344,20 +449,30 @@ namespace Webshop_GruppE
             {
                 while (true)
                 {
-                    // ändra ifall man vill kunna lägga till i fler categories ??
+                    //int amountOfCategories = 0;
+
+                    //// ändra ifall man vill kunna lägga till i fler categories ??
+                    //List<int> categoryList = new List<int>();
+
+                    //Console.Write("Input amount of categories for this product: ");
+                    //int.TryParse(Console.ReadLine(), out amountOfCategories);
 
                     Console.Write("Type Category ID: ");
-                    int category = int.Parse(Console.ReadLine());
+
+                    int.TryParse(Console.ReadLine(), out int category);
 
                     var category3 = (from c in myDb.Categories
                                      where c.Id == category
                                      select c);
+                    int x = 0;
+
                     if (category3 != null && category3.Any())
                     {
                         Console.Write("Type Product Name: ");
                         string productName = Console.ReadLine();
                         Console.Write("Type product Price: ");
-                        float productPrice = float.Parse(Console.ReadLine());
+                        //float productPrice = float.Parse(Console.ReadLine());
+                        float.TryParse(Console.ReadLine(), out float productPrice);
                         Console.Write("Type productsupplier ID: ");
                         int productSupplierId = int.Parse(Console.ReadLine());
                         Console.Write("Type productinfo: ");
@@ -637,10 +752,11 @@ namespace Webshop_GruppE
             {
 
                 Console.Write("Input product Id: ");
-                int productId = int.Parse(Console.ReadLine());
+                int.TryParse(Console.ReadLine(), out int productId);
+
                 var removeProduct = (from c in myDb.Products
-                                     where c.Categories.Any(x => x.Id == productId)
-                                     select c);
+                                     where c.Id == productId
+                                     select c).SingleOrDefault();
 
                 if (removeProduct != null)
                 {
@@ -650,11 +766,13 @@ namespace Webshop_GruppE
                 else
                 {
                     Console.WriteLine("Error wrong ID");
+                    Console.ReadKey(true);
                 }
             }
             Console.Clear();
 
         }
+
         public static void CategoryMenu()
         {
             Console.Clear();
@@ -708,6 +826,7 @@ namespace Webshop_GruppE
                 myDb.SaveChanges();
                 Console.WriteLine("You have added " + categoryName + " to the list");
             }
+            Console.ReadKey(true);
             Console.Clear();
         }
         public static void ChangeCategory()

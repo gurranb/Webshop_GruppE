@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Webshop_GruppE.Models;
 
@@ -11,9 +12,11 @@ using Webshop_GruppE.Models;
 namespace Webshop_GruppE.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240110121224_testMigration")]
+    partial class testMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,6 +109,9 @@ namespace Webshop_GruppE.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("PostalCode")
                         .HasColumnType("int");
 
@@ -144,8 +150,6 @@ namespace Webshop_GruppE.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
 
                     b.ToTable("Orders");
                 });
@@ -361,23 +365,11 @@ namespace Webshop_GruppE.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Webshop_GruppE.Models.Order", b =>
-                {
-                    b.HasOne("Webshop_GruppE.Models.Customer", null)
-                        .WithMany("Orders")
-                        .HasForeignKey("CustomerId");
-                });
-
             modelBuilder.Entity("Webshop_GruppE.Models.Product", b =>
                 {
                     b.HasOne("Webshop_GruppE.Models.ShoppingCart", null)
                         .WithMany("Products")
                         .HasForeignKey("ShoppingCartId");
-                });
-
-            modelBuilder.Entity("Webshop_GruppE.Models.Customer", b =>
-                {
-                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Webshop_GruppE.Models.ShoppingCart", b =>

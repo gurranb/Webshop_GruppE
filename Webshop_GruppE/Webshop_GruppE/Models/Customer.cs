@@ -22,9 +22,10 @@ namespace Webshop_GruppE.Models
         public string? CardNumber { get; set; }
         public string? EMailAdress { get; set;}
         public int? ShoppingCartId { get; set; }
-        public int? OrderId { get; set; }
+        // public int? OrderId { get; set; }
 
         public virtual User? User { get; set; }
+        public ICollection<Order> Orders { get; set; }
 
         
     }
