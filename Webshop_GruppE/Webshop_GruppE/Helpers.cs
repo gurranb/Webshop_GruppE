@@ -1,15 +1,16 @@
-﻿using Webshop_GruppE.Models;
+﻿using System.Linq;
+using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE
 {
     internal class Helpers
     {
 
-        public static void Login()
+        public static void Start()
         {
-            bool loggedin = false;
+            
             Console.Clear();
-            while (loggedin == false)
+            while (true)
             {
                 List<string> loginText = new List<string> { "Welcome to FashionCode website", "Login as", "[A]dmin", "[U]ser", "[E]xit" };
                 var loginWindow = new Window("", 1, 1, loginText);
@@ -19,13 +20,11 @@ namespace Webshop_GruppE
                 // ändra så detta blir snyggare
                 switch (key.KeyChar)
                 {
-                    case 'a':
-                        loggedin = true;
+                    case 'a':                       
                         Admin();
                         break;
                     case 'u':
-                        loggedin = true;
-                        BrowseProducts();
+                        UserLogInPage();                       
                         break;
                     case 'e':
                         Environment.Exit(0);
@@ -42,8 +41,8 @@ namespace Webshop_GruppE
         public static void Admin()
         {
             Console.Clear();
-            bool loggedin = true;
-            while (loggedin)
+            
+            while (true)
             {
                 List<string> adminText = new List<string> { "[1] Edit Product", "[2] Edit Category", "[3] Product Overview", "[P] Profile Page", "[C] Customer Page", "[Q] Queries", "[L] Logout" };
                 var adminWindow = new Window("Admin", 1, 1, adminText);
@@ -74,10 +73,9 @@ namespace Webshop_GruppE
                     case 'q':
                         Console.WriteLine("Queries");
                         break;
-                    case 'l':
-                        loggedin = false;
+                    case 'l':                       
                         Console.WriteLine("Logout");
-                        Login();
+                        Start();
                         break;
                     default:
                         Console.WriteLine("Wrong Input");
@@ -89,31 +87,45 @@ namespace Webshop_GruppE
 
         public static void UserLogInPage()
         {
-            List<string> profileText = new List<string> { "[1] Log in ", "[2] Sign up", "[B] Back" };
-            var userWindow = new Window("Sign in", 1, 1, profileText);
-            userWindow.DrawWindow();
-            var key = Console.ReadKey(true);
-            switch (key.KeyChar)
+            while(true) 
             {
-                case '1':
-                    Console.WriteLine("Log in");
-                    break;
-                case '2':
-                    Console.WriteLine("Sign up");
-                    break;
-                case 'b':
-                    Console.WriteLine("Back");
-                    Login();
-                    break;
+                Console.Clear();
+                List<string> profileText = new List<string> { "[1] Emergency Log in ", "[2] Log in ", "[3] Sign up", "[B] Back" };
+                var userWindow = new Window("Sign in", 1, 1, profileText);
+                userWindow.DrawWindow();
+                var key = Console.ReadKey(true);
+                switch (key.KeyChar)
+                {
+                    case '1':
+                        Console.WriteLine("Emergency Log in");
+                        User();
+                        break;
+                    case '2':
+                        Console.WriteLine("Log in");
+                        LogIn();
+                        break;
+                    case '3':
+                        Console.WriteLine("Sign up");
+                        break;
+                    case 'b':
+                        Console.WriteLine("Back");
+                        Start();
+                        break;
+                    default:
+                        Console.WriteLine("Wrong input");
+                        Console.ReadKey();
+                        break;
+                }
             }
+            
         }
 
         public static void User()
         {
             Console.Clear();
-            bool loggedin = true;
+            
             Database.DisplayChosenProducts();
-            while (loggedin)
+            while (true)
             {
                 List<string> userText = new List<string> { "[1] Search Products", "[2] Browse Products", "[S] Shopping Cart", "[P] Profile Page", "[B] Buy Products", "[O] Order History", "[L] Logout" };
                 var userWindow = new Window("Customer", 1, 1, userText);
@@ -138,15 +150,14 @@ namespace Webshop_GruppE
                         Console.WriteLine("");
                         break;
                     case 'b':
-                        Console.WriteLine("");
+                        PurchaseProduct();
                         break;
                     case 'o':
                         Console.WriteLine("");
                         break;
-                    case 'l':
-                        loggedin = false;
+                    case 'l':                      
                         Console.Clear();
-                        Login();
+                        Start();
                         break;
                     default:
                         Console.WriteLine("Wrong Input");
@@ -154,6 +165,14 @@ namespace Webshop_GruppE
                         break;
                 }
             }
+        }
+
+        public static void LogIn()
+        {
+            Console.WriteLine("Input Username: ");
+            string userName = Console.ReadLine();
+            Console.WriteLine("Input Password: ");
+            string password = Console.ReadLine();
         }
 
         public static void SearchProducts()
@@ -171,29 +190,39 @@ namespace Webshop_GruppE
                     Console.WriteLine("Id: " + product.Id + ", " + product.Name);
                 }
 
-                var key = Console.ReadKey();
-                switch (key.KeyChar)
+                if (searchedProduct.Count() > 0)
                 {
-                    case 'p':
-                        Console.WriteLine("Purchase product");
-                        break;
-                    case 'b':
-                        Console.WriteLine("Back");
-                        User();
-                        break;
+                    Console.WriteLine("Press 'P' to purchase product or 'B' to go back");
+                    var key = Console.ReadKey(true);
+                    switch (key.KeyChar)
+                    {
+                        case 'p':
+                            Console.WriteLine("Purchase product");
+                            PurchaseProduct();
+                            break;
+                        case 'b':
+                            Console.WriteLine("Back");
+                            User();
+                            break;
 
+                    }
                 }
-                PurchaseProduct();
+                else
+                {
+                    Console.WriteLine("The searchword doesn't match with any products, try again.");
+                    Console.ReadKey(true);
+                }
                 Console.Clear();
             }
         }
+
         public static void BrowseProducts()
         {
             Console.Clear();
             Database.DisplayAllCategories();
 
             Console.Write("Input Category Id: ");
-            int categoryId = int.Parse(Console.ReadLine());
+            int.TryParse(Console.ReadLine(), out int categoryId);
             using (var myDb = new MyDbContext())
             {
                 var chosenCategory = (from c in myDb.Products
@@ -204,7 +233,30 @@ namespace Webshop_GruppE
                 {
                     Console.WriteLine(product.Id + " " + product.Name);
                 }
-                PurchaseProduct();
+
+
+                if (chosenCategory.Count() > 0)
+                {
+                    Console.WriteLine("Press 'P' to purchase product or 'B' to go back");
+                    var key = Console.ReadKey(true);
+                    switch (key.KeyChar)
+                    {
+                        case 'p':
+                            Console.WriteLine("Purchase product");
+                            PurchaseProduct();
+                            break;
+                        case 'b':
+                            Console.WriteLine("Back");
+                            User();
+                            break;
+
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("The category Id doesn't match with any of our categories, try again.");
+                    Console.ReadKey(true);
+                }
                 Console.Clear();
             }
         }
@@ -219,21 +271,30 @@ namespace Webshop_GruppE
                                      where c.Id == productId
                                      select c).SingleOrDefault();
 
-                Console.WriteLine("Id: " + chosenProduct.Id + " " + " Name: " + chosenProduct.Name + " Price: " + chosenProduct.Price + " Units In Stock: " + chosenProduct.StockBalance +
-                         " Product Info: " + chosenProduct.ProductInfo);
-                Console.WriteLine("Buy this product? y/n");
-                var answer = Console.ReadKey();
-
-                //Lägg till funktionerlig köpfunktion efter att shoppingcart fungerar
-                switch (answer.KeyChar)
+                if(chosenProduct != null)
                 {
-                    case 'y':
-                        break;
-                    case 'n':
-                        User();
-                        break;
+                    Console.WriteLine("Id: " + chosenProduct.Id + " " + " Name: " + chosenProduct.Name + " Price: " + chosenProduct.Price + " Units In Stock: " + chosenProduct.StockBalance +
+                         " Product Info: " + chosenProduct.ProductInfo);
+                    Console.WriteLine("Buy this product? y/n");
+                    var answer = Console.ReadKey();
 
+                    //Lägg till funktionerlig köpfunktion efter att shoppingcart fungerar
+                    switch (answer.KeyChar)
+                    {
+                        case 'y':
+                            break;
+                        case 'n':
+                            User();
+                            break;
+
+                    }
                 }
+                else
+                {
+                    Console.WriteLine("The inputted product Id doesn't match with any of our products, please try again.");
+                    Console.ReadKey(true);
+                }
+                
             }
 
         }
@@ -578,8 +639,8 @@ namespace Webshop_GruppE
                 Console.Write("Input product Id: ");
                 int productId = int.Parse(Console.ReadLine());
                 var removeProduct = (from c in myDb.Products
-                                     where c.Id == productId
-                                     select c).SingleOrDefault();
+                                     where c.Categories.Any(x => x.Id == productId)
+                                     select c);
 
                 if (removeProduct != null)
                 {
