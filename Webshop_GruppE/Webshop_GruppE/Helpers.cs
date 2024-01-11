@@ -4,7 +4,7 @@ namespace Webshop_GruppE
 {
     internal class Helpers
     {
-        public static void Start()
+        public static void StartScreen()
         {
             Console.Clear();
             while (true)
@@ -18,10 +18,10 @@ namespace Webshop_GruppE
                 switch (key.KeyChar)
                 {
                     case 'a':
-                        AdminLogInPage();
+                        LogInAdminMenu();
                         break;
                     case 'u':
-                        UserLogInPage();
+                        LogInCustomerMenu();
                         break;
                     case 'e':
                         Environment.Exit(0);
@@ -35,6 +35,40 @@ namespace Webshop_GruppE
             }
         }
 
+        public static void LogInAdminMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                List<string> profileText = new List<string> { "[1] Emergency Log in ", "[2] Log in ", "[3] Sign up", "[B] Back" };
+                var userWindow = new Window("Sign in as admin", 1, 1, profileText);
+                userWindow.DrawWindow();
+                var key = Console.ReadKey(true);
+                switch (key.KeyChar)
+                {
+                    case '1':
+                        Console.WriteLine("Emergency Log in");
+                        AdminHomePage();
+                        break;
+                    case '2':
+                        Console.WriteLine("Log in");
+                        LogInAdmin();
+                        break;
+                    case '3':
+                        Console.WriteLine("Sign up");
+                        SignUpAdmin();
+                        break;
+                    case 'b':
+                        Console.WriteLine("Back");
+                        StartScreen();
+                        break;
+                    default:
+                        Console.WriteLine("Wrong input");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+        }
         public static void LogInAdmin()
         {
             while (true)
@@ -60,48 +94,15 @@ namespace Webshop_GruppE
                     }
                     else if (findUserName.Contains(userName) && findUserPassword.Contains(password))
                     {
-                        Admin();
+                        AdminHomePage();
                     }
                 }
             }
         }
 
-        public static void AdminLogInPage()
-        {
-            while (true)
-            {
-                Console.Clear();
-                List<string> profileText = new List<string> { "[1] Emergency Log in ", "[2] Log in ", "[3] Sign up", "[B] Back" };
-                var userWindow = new Window("Sign in as admin", 1, 1, profileText);
-                userWindow.DrawWindow();
-                var key = Console.ReadKey(true);
-                switch (key.KeyChar)
-                {
-                    case '1':
-                        Console.WriteLine("Emergency Log in");
-                        Admin();
-                        break;
-                    case '2':
-                        Console.WriteLine("Log in");
-                        LogInAdmin();
-                        break;
-                    case '3':
-                        Console.WriteLine("Sign up");
-                        AdminSignUp();
-                        break;
-                    case 'b':
-                        Console.WriteLine("Back");
-                        Start();
-                        break;
-                    default:
-                        Console.WriteLine("Wrong input");
-                        Console.ReadKey();
-                        break;
-                }
-            }
-        }
+        
 
-        public static void AdminSignUp()
+        public static void SignUpAdmin()
         {
             using (var myDb = new MyDbContext())
             {
@@ -133,7 +134,7 @@ namespace Webshop_GruppE
             Console.Clear();
         }
 
-        public static void Admin()
+        public static void AdminHomePage()
         {
             Console.Clear();
 
@@ -174,7 +175,7 @@ namespace Webshop_GruppE
                         break;
                     case 'l':
                         Console.WriteLine("Logout");
-                        Start();
+                        StartScreen();
                         break;
                     default:
                         Console.WriteLine("Wrong Input");
@@ -191,7 +192,7 @@ namespace Webshop_GruppE
             while (true)
             {
                 Database.DisplayAllSuppliers();
-                List<string> supplierText = new List<string> { "[1] Add supplier", "[2] Change supplier", "[3] Remove supplier", "[B] Back" };
+                List<string> supplierText = new List<string> { "[1] Add supplier", "[2] Edit supplier", "[3] Remove supplier", "[B] Back" };
                 var userWindow = new Window("Supplier Menu", 1, 1, supplierText);
                 userWindow.DrawWindow();
 
@@ -202,13 +203,13 @@ namespace Webshop_GruppE
                         AddSupplier();
                         break;
                     case '2':
-                        ChangeSupplier();
+                        EditSupplier();
                         break;
                     case '3':
                         RemoveSupplier();
                         break;
                     case 'b':
-                        Admin();
+                        AdminHomePage();
                         break;
                 }
             }
@@ -228,7 +229,7 @@ namespace Webshop_GruppE
             Console.Clear();
         }
 
-        public static void ChangeSupplier()
+        public static void EditSupplier()
         {
 
             using (var myDb = new MyDbContext())
@@ -284,7 +285,7 @@ namespace Webshop_GruppE
                 Console.Clear();
             }
         }
-        public static void UserLogInPage()
+        public static void LogInCustomerMenu()
         {
             while (true)
             {
@@ -309,7 +310,7 @@ namespace Webshop_GruppE
                         break;
                     case 'b':
                         Console.WriteLine("Back");
-                        Start();
+                        StartScreen();
                         break;
                     default:
                         Console.WriteLine("Wrong input");
@@ -358,7 +359,7 @@ namespace Webshop_GruppE
                         break;
                     case 'l':
                         Console.Clear();
-                        Start();
+                        StartScreen();
                         break;
                     default:
                         Console.WriteLine("Wrong Input");
@@ -590,7 +591,7 @@ namespace Webshop_GruppE
 
             while (true)
             {
-                List<string> productText = new List<string> { "[A] Add Product", "[C] Edit Product", "[R] Remove Product", "[B] Back" };
+                List<string> productText = new List<string> { "[A] Add Product", "[E] Edit Product", "[R] Remove Product", "[B] Back" };
                 var productWindow = new Window("Product Menu", 1, 1, productText);
                 Database.DisplayAllCategories();
                 Database.DisplayAllProducts();
@@ -615,7 +616,7 @@ namespace Webshop_GruppE
                         break;
                     case 'b':
                         Console.WriteLine("Back");
-                        Admin();
+                        AdminHomePage();
                         break;
                     default:
                         Console.WriteLine("Wrong Input");
@@ -736,33 +737,28 @@ namespace Webshop_GruppE
         {
             using (var myDb = new MyDbContext())
             {
-                List<string> changeProductText = new List<string> { "[1] Change product name", "[2] Change product price", "[3] Change product supplier Id",
-                        "[4] Change product info", "[5] Change product stock balance", "[B] Back" };
+                List<string> changeProductText = new List<string> { "[1] Edit product name", "[2] Edit product price", "[3] Edit product supplier Id",
+                        "[4] Edit product info", "[5] Edit product stock balance", "[B] Back" };
                 var changeProductWindow = new Window("Change Product Menu", 0, 3, changeProductText);
                 changeProductWindow.DrawWindow();
 
                 var key = Console.ReadKey(true);
                 switch (key.KeyChar)
                 {
-                    case '1':
-                        Console.WriteLine("[1] Change product name");
-                        ChangeProductName();
+                    case '1':                       
+                        EditProductName();
                         break;
                     case '2':
-                        Console.WriteLine("[2] Change product price");
-                        ChangeProductPrice();
+                        EditProductPrice();
                         break;
                     case '3':
-                        Console.WriteLine("[4] Change product supplier Id");
-                        ChangeProductSupplier();
+                        EditProductSupplier();
                         break;
                     case '4':
-                        Console.WriteLine("[5] Change product info");
-                        ChangeProductInfo();
+                        EditProductInfo();
                         break;
                     case '5':
-                        Console.WriteLine("[6] Change product stock balance");
-                        ChangeStockBalance();
+                        EditStockBalance();
                         break;
                     case 'b':
                         ProductMenu();
@@ -796,10 +792,10 @@ namespace Webshop_GruppE
 
                 Console.WriteLine("Press any key to return!");
                 Console.ReadKey();
-                Admin();
+                AdminHomePage();
             }
         }
-        public static void ChangeProductName()
+        public static void EditProductName()
         {
             using (var myDb = new MyDbContext())
             {
@@ -837,7 +833,7 @@ namespace Webshop_GruppE
                 Console.Clear();
             }
         }
-        public static void ChangeProductPrice()
+        public static void EditProductPrice()
         {
             using (var myDb = new MyDbContext())
             {
@@ -893,7 +889,7 @@ namespace Webshop_GruppE
         //    }
         //    Console.Clear();
         //}
-        public static void ChangeProductSupplier()
+        public static void EditProductSupplier()
         {
             using (var myDb = new MyDbContext())
             {
@@ -921,7 +917,7 @@ namespace Webshop_GruppE
             Console.Clear();
         }
 
-        public static void ChangeProductInfo()
+        public static void EditProductInfo()
         {
             using (var myDb = new MyDbContext())
             {
@@ -949,7 +945,7 @@ namespace Webshop_GruppE
             }
             Console.Clear();
         }
-        public static void ChangeStockBalance()
+        public static void EditStockBalance()
         {
             using (var myDb = new MyDbContext())
             {
@@ -1011,7 +1007,7 @@ namespace Webshop_GruppE
             while (true)
             {
 
-                List<string> categoryText = new List<string> { "[A] Add Category", "[C] Change Category", "[R] Remove Category", "[B] Back" };
+                List<string> categoryText = new List<string> { "[A] Add Category", "[E] Edit Category", "[R] Remove Category", "[B] Back" };
                 var categoryWindow = new Window("Category Menu", 1, 1, categoryText);
                 categoryWindow.DrawWindow();
                 Database.DisplayAllCategories();
@@ -1024,20 +1020,17 @@ namespace Webshop_GruppE
                 switch (key.KeyChar)
                 {
                     case 'a':
-                        Console.WriteLine("Add Category");
                         AddCategory();
                         break;
                     case 'c':
-                        Console.WriteLine("Change Category Name");
-                        ChangeCategory();
+                        EditCategory();
                         break;
                     case 'r':
-                        Console.WriteLine("Remove Category");
                         RemoveCategory();
                         break;
                     case 'b':
                         Console.WriteLine("Back");
-                        Admin();
+                        AdminHomePage();
                         break;
                     default:
                         Console.WriteLine("Wrong Input");
@@ -1060,7 +1053,7 @@ namespace Webshop_GruppE
             Console.ReadKey(true);
             Console.Clear();
         }
-        public static void ChangeCategory()
+        public static void EditCategory()
         {
             using (var myDb = new MyDbContext())
             {
