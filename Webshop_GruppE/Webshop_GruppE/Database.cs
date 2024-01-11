@@ -6,6 +6,79 @@ namespace Webshop_GruppE
 {
     internal class Database
     {
+        public static void DisplayCustomerDetails(int customerId)
+        {
+            using (var database = new MyDbContext())
+            {
+                List<string> customerText = new List<string>();
+
+                var customerProfileDetails = (from c in database.Customers
+                                        where c.Id == customerId
+                                        select c).SingleOrDefault();
+
+                customerText.Add("Name: " + customerProfileDetails.FirstName + " " + customerProfileDetails.LastName);
+                customerText.Add("Age: " + customerProfileDetails.Age + " y/o");
+                customerText.Add("Country: " + customerProfileDetails.Country);
+                customerText.Add("Street Address: " + customerProfileDetails.StreetAddress);
+                customerText.Add("Postal Code: " + customerProfileDetails.PostalCode);
+                customerText.Add("Card Number: " + customerProfileDetails.CardNumber);
+                customerText.Add("E-mail: " + customerProfileDetails.EMailAdress);
+                
+
+                if (customerText.Count == 0)
+                {
+                    customerText.Add("Empty");
+                }
+                var categoryWindow = new Window("Customer Details", 25, 20, customerText);
+                categoryWindow.DrawWindow();
+            }
+        }
+        public static void DisplayAdminDetails(int adminId)
+        {
+            using (var database = new MyDbContext())
+            {
+                List<string> adminText = new List<string>();
+
+                var adminProfileDetails = (from c in database.Admins
+                                        where c.Id == adminId
+                                        select c).SingleOrDefault();
+
+                adminText.Add("Name: " + adminProfileDetails.FirstName + " " + adminProfileDetails.LastName);
+                adminText.Add("E-mail: " + adminProfileDetails.EMailAdress);
+                
+
+                if (adminText.Count == 0)
+                {
+                    adminText.Add("Empty");
+                }
+                var categoryWindow = new Window("Admin Details", 25, 20, adminText);
+                categoryWindow.DrawWindow();
+            }
+        }
+        public static void DisplayAllCustomers(int adminId)
+        {
+            //using (var database = new MyDbContext())
+            //{
+            //    List<string> customerListText = new List<string>();
+                
+            //    var customerProfileDetails = (from c in database.Customers
+            //                                  select c);
+                
+            //    foreach (var customer in customerProfileDetails)
+            //    {
+            //        Console.WriteLine(customer.FirstName);
+            //        //customerListText.Add(customerProfileDetails);
+
+            //    }
+
+            //    if (customerListText.Count == 0)
+            //    {
+            //        customerListText.Add("Empty");
+            //    }
+            //    var productsWindow = new Window("Products", 80, 2, customerListText);
+            //    productsWindow.DrawWindow();
+            //}
+        }
         public static void DisplayAllSuppliers()
         {
             using (var database = new MyDbContext())

@@ -48,7 +48,7 @@ namespace Webshop_GruppE
                 {
                     case '1':
                         Console.WriteLine("Emergency Log in");
-                        AdminHomePage();
+                        AdminHomePage(1);
                         break;
                     case '2':
                         Console.WriteLine("Log in");
@@ -73,6 +73,8 @@ namespace Webshop_GruppE
         {
             while (true)
             {
+                
+                
                 using (var myDb = new MyDbContext())
                 {
                     Console.WriteLine("Input Username: ");
@@ -94,7 +96,11 @@ namespace Webshop_GruppE
                     }
                     else if (findUserName.Contains(userName) && findUserPassword.Contains(password))
                     {
-                        AdminHomePage();
+                        var adminId = (from c in myDb.Admins
+                                       where c.AdminPassword == password
+                                       select c.Id).SingleOrDefault();
+
+                        AdminHomePage(adminId);
                     }
                 }
             }
@@ -134,41 +140,49 @@ namespace Webshop_GruppE
             Console.Clear();
         }
 
-        public static void AdminHomePage()
+        public static void AdminHomePage(int adminId)
         {
             Console.Clear();
 
             while (true)
             {
-                List<string> adminText = new List<string> { "[1] Edit Product", "[2] Edit Category", "[3] Product Overview", "[4] Edit Suppliers", "[P] Profile Page", "[C] Customer Page", "[Q] Queries", "[L] Logout" };
-                var adminWindow = new Window("Admin", 1, 1, adminText);
-                adminWindow.DrawWindow();
+                using (var myDb = new MyDbContext())
+                {
+                    var adminUserName = (from c in myDb.Admins
+                                            where c.Id == adminId
+                                            select c.AdminName).SingleOrDefault();
 
+                    List<string> adminText = new List<string> { "[1] Edit Product", "[2] Edit Category", "[3] Product Overview", "[4] Edit Suppliers", "[P] Profile Page", "[C] Customer Page", "[Q] Queries", "[L] Logout" };
+                    var adminWindow = new Window("Welcome " + adminUserName, 1, 1, adminText);
+                    adminWindow.DrawWindow();
+                }
                 var key = Console.ReadKey(true);
 
                 switch (key.KeyChar)
                 {
                     case '1':
                         Console.WriteLine("Add Product");
-                        ProductMenu();
+                        ProductMenu(adminId);
                         break;
                     case '2':
                         Console.WriteLine("Add Category");
-                        CategoryMenu();
+                        CategoryMenu(adminId);
                         break;
                     case '3':
                         Console.WriteLine("Product Overview");
-                        ProductOverview();
+                        ProductOverview(adminId);
                         break;
                     case '4':
                         Console.WriteLine("Edit Suppliers");
-                        SupplierMenu();
+                        SupplierMenu(adminId);
                         break;
                     case 'p':
                         Console.WriteLine("Profile Page");
+                        Database.DisplayAdminDetails(adminId);
                         break;
                     case 'c':
                         Console.WriteLine("Customer Page");
+                        Database.DisplayAllCustomers(adminId);
                         break;
                     case 'q':
                         Console.WriteLine("Queries");
@@ -185,7 +199,7 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void SupplierMenu()
+        public static void SupplierMenu(int adminId)
         {
             Console.Clear();
 
@@ -200,22 +214,22 @@ namespace Webshop_GruppE
                 switch (key.KeyChar)
                 {
                     case '1':
-                        AddSupplier();
+                        AddSupplier(adminId);
                         break;
                     case '2':
-                        EditSupplier();
+                        EditSupplier(adminId);
                         break;
                     case '3':
-                        RemoveSupplier();
+                        RemoveSupplier(adminId);
                         break;
                     case 'b':
-                        AdminHomePage();
+                        AdminHomePage(adminId);
                         break;
                 }
             }
         }
 
-        public static void AddSupplier()
+        public static void AddSupplier(int adminId)
         {
             using (var myDb = new MyDbContext())
             {
@@ -229,7 +243,7 @@ namespace Webshop_GruppE
             Console.Clear();
         }
 
-        public static void EditSupplier()
+        public static void EditSupplier(int adminId)
         {
 
             using (var myDb = new MyDbContext())
@@ -260,7 +274,7 @@ namespace Webshop_GruppE
             Console.Clear();
         }
 
-        public static void RemoveSupplier()
+        public static void RemoveSupplier(int adminId)
         {
             using (var myDb = new MyDbContext())
             {
@@ -298,7 +312,7 @@ namespace Webshop_GruppE
                 {
                     case '1':
                         Console.WriteLine("Emergency Log in");
-                        CustomerHomePage();
+                        CustomerHomePage(1);
                         break;
                     case '2':
                         Console.WriteLine("Log in");
@@ -322,16 +336,24 @@ namespace Webshop_GruppE
 
 
 
-        public static void CustomerHomePage()
+        public static void CustomerHomePage(int customerId)
         {
             Console.Clear();
-
+           
             Database.DisplayChosenProducts();
             while (true)
             {
+                using (var myDb = new MyDbContext()) 
+                {
+                    var customerUserName = (from c in myDb.Customers
+                                              where c.Id == customerId
+                                              select c.CustomerUserName).SingleOrDefault();
+                
                 List<string> userText = new List<string> { "[1] Search Products", "[2] Browse Products", "[S] Shopping Cart", "[P] Profile Page", "[B] Buy Products", "[O] Order History", "[L] Logout" };
-                var userWindow = new Window("Customer", 1, 1, userText);
+                var userWindow = new Window("Welcome " + customerUserName, 1, 1, userText);
                 userWindow.DrawWindow();
+                }
+
 
                 var key = Console.ReadKey(true);
 
@@ -339,20 +361,22 @@ namespace Webshop_GruppE
                 {
                     case '1':
                         Console.WriteLine("Search Products");
-                        SearchProducts();
+                        SearchProducts(customerId);
                         break;
                     case '2':
                         Console.WriteLine("Browse Products");
-                        BrowseProducts();
+                        BrowseProducts(customerId);
                         break;
                     case 's':
                         Console.WriteLine("");
+                        
                         break;
                     case 'p':
                         Console.WriteLine("");
+                        Database.DisplayCustomerDetails(customerId);
                         break;
                     case 'b':
-                        PurchaseProduct();
+                        PurchaseProduct(customerId);
                         break;
                     case 'o':
                         Console.WriteLine("");
@@ -370,6 +394,7 @@ namespace Webshop_GruppE
             }
         }
 
+     
         public static void LogInCustomer()
         {
             while (true)
@@ -395,11 +420,14 @@ namespace Webshop_GruppE
                     }
                     else if (findUserName.Contains(userName) && findUserPassword.Contains(password))
                     {
-                        CustomerHomePage();
+                        var customerId = (from c in myDb.Customers
+                                          where c.CustomerUserName == userName
+                                          select c.Id).SingleOrDefault();
+                        CustomerHomePage(customerId);
                     }
                 }
+                
             }
-
         }
 
         public static void CustomerSignUp()
@@ -465,7 +493,7 @@ namespace Webshop_GruppE
             Console.ReadKey(true);
             Console.Clear();
         }
-        public static void SearchProducts()
+        public static void SearchProducts(int customerId)
         {
             Console.Write("Input searchword: ");
             string searchWord = Console.ReadLine();
@@ -488,11 +516,11 @@ namespace Webshop_GruppE
                     {
                         case 'p':
                             Console.WriteLine("Purchase product");
-                            PurchaseProduct();
+                            PurchaseProduct(customerId);
                             break;
                         case 'b':
                             Console.WriteLine("Back");
-                            CustomerHomePage();
+                            CustomerHomePage(customerId);
                             break;
 
                     }
@@ -506,7 +534,7 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void BrowseProducts()
+        public static void BrowseProducts(int customerId)
         {
             Console.Clear();
             Database.DisplayAllCategories();
@@ -533,11 +561,11 @@ namespace Webshop_GruppE
                     {
                         case 'p':
                             Console.WriteLine("Purchase product");
-                            PurchaseProduct();
+                            PurchaseProduct(customerId);
                             break;
                         case 'b':
                             Console.WriteLine("Back");
-                            CustomerHomePage();
+                            CustomerHomePage(customerId);
                             break;
                     }
                 }
@@ -550,7 +578,7 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void PurchaseProduct()
+        public static void PurchaseProduct( int customerId)
         {
             Console.Write("Input product Id: ");
             int productId = int.Parse(Console.ReadLine());
@@ -573,7 +601,7 @@ namespace Webshop_GruppE
                         case 'y':
                             break;
                         case 'n':
-                            CustomerHomePage();
+                            CustomerHomePage(customerId);
                             break;
                     }
                 }
@@ -585,7 +613,7 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void ProductMenu()
+        public static void ProductMenu(int adminId)
         {
             Console.Clear();
 
@@ -604,19 +632,19 @@ namespace Webshop_GruppE
                 {
                     case 'a':
                         Console.WriteLine("Add Product");
-                        AddProduct();
+                        AddProduct(adminId);
                         break;
                     case 'c':
                         Console.WriteLine("Edit Product");
-                        EditProduct();
+                        EditProduct(adminId);
                         break;
                     case 'r':
                         Console.WriteLine("Remove Product");
-                        RemoveProduct();
+                        RemoveProduct(adminId);
                         break;
                     case 'b':
                         Console.WriteLine("Back");
-                        AdminHomePage();
+                        AdminHomePage(adminId);
                         break;
                     default:
                         Console.WriteLine("Wrong Input");
@@ -624,7 +652,7 @@ namespace Webshop_GruppE
                 }
             }
         }
-        public static void AddProduct()
+        public static void AddProduct(int adminId)
         {
             // Fixa felinmatningsmetod
             using (var myDb = new MyDbContext())
@@ -697,14 +725,14 @@ namespace Webshop_GruppE
                                         });
                                         myDb.SaveChanges();
                                         Console.WriteLine("You have added " + productName + " to the list");
-                                        ProductMenu();
+                                        ProductMenu(adminId);
                                     }
                                 }
                                 else
                                 {
                                     Console.WriteLine("Error, invalid input");
                                     Console.ReadLine();
-                                    ProductMenu();
+                                    ProductMenu(adminId);
                                 }
                                 //Console.Write("Show product on Homepage? Type 'true' or 'false': ");
                                 //bool selectedProduct = bool.Parse(Console.ReadLine());
@@ -713,27 +741,27 @@ namespace Webshop_GruppE
                             {
                                 Console.WriteLine("Error, invalid supplier Id");
                                 Console.ReadLine();
-                                ProductMenu();
+                                ProductMenu(adminId);
                             }
                         }
                         else
                         {
                             Console.WriteLine("Error, invalid price!");
                             Console.ReadLine();
-                            ProductMenu();
+                            ProductMenu(adminId);
                         }
                     }
                     else
                     {
                         Console.WriteLine("Error category Id does not exist!");
                         Console.ReadLine();
-                        ProductMenu();
+                        ProductMenu(adminId);
                     }
                 }
             }
         }
 
-        public static void EditProduct()
+        public static void EditProduct(int adminId)
         {
             using (var myDb = new MyDbContext())
             {
@@ -761,7 +789,7 @@ namespace Webshop_GruppE
                         EditStockBalance();
                         break;
                     case 'b':
-                        ProductMenu();
+                        ProductMenu(adminId);
                         break;
                     default:
                         Console.WriteLine("Wrong input!");
@@ -770,7 +798,7 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void ProductOverview()
+        public static void ProductOverview(int adminId)
         {
             using (var myDb = new MyDbContext())
             {
@@ -792,7 +820,7 @@ namespace Webshop_GruppE
 
                 Console.WriteLine("Press any key to return!");
                 Console.ReadKey();
-                AdminHomePage();
+                AdminHomePage(adminId);
             }
         }
         public static void EditProductName()
@@ -974,7 +1002,7 @@ namespace Webshop_GruppE
             Console.Clear();
         }
 
-        public static void RemoveProduct()
+        public static void RemoveProduct(int adminId)
         {
             using (var myDb = new MyDbContext())
             {
@@ -1000,7 +1028,7 @@ namespace Webshop_GruppE
             Console.Clear();
         }
 
-        public static void CategoryMenu()
+        public static void CategoryMenu(int adminId)
         {
             Console.Clear();
 
@@ -1020,17 +1048,17 @@ namespace Webshop_GruppE
                 switch (key.KeyChar)
                 {
                     case 'a':
-                        AddCategory();
+                        AddCategory(adminId);
                         break;
                     case 'c':
-                        EditCategory();
+                        EditCategory(adminId);
                         break;
                     case 'r':
-                        RemoveCategory();
+                        RemoveCategory(adminId);
                         break;
                     case 'b':
                         Console.WriteLine("Back");
-                        AdminHomePage();
+                        AdminHomePage(adminId);
                         break;
                     default:
                         Console.WriteLine("Wrong Input");
@@ -1040,7 +1068,7 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void AddCategory()
+        public static void AddCategory(int adminId)
         {
             using (var myDb = new MyDbContext())
             {
@@ -1053,7 +1081,7 @@ namespace Webshop_GruppE
             Console.ReadKey(true);
             Console.Clear();
         }
-        public static void EditCategory()
+        public static void EditCategory(int adminId)
         {
             using (var myDb = new MyDbContext())
             {
@@ -1082,7 +1110,7 @@ namespace Webshop_GruppE
             Console.Clear();
 
         }
-        public static void RemoveCategory()
+        public static void RemoveCategory(int adminId)
         {
             using (var myDb = new MyDbContext())
             {
