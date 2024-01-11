@@ -18,7 +18,7 @@ namespace Webshop_GruppE
                 switch (key.KeyChar)
                 {
                     case 'a':
-                        Admin();
+                        AdminLogInPage();
                         break;
                     case 'u':
                         UserLogInPage();
@@ -33,6 +33,104 @@ namespace Webshop_GruppE
                 }
                 Console.Clear();
             }
+        }
+
+        public static void LogInAdmin()
+        {
+            while (true)
+            {
+                using (var myDb = new MyDbContext())
+                {
+                    Console.WriteLine("Input Username: ");
+                    string userName = Console.ReadLine();
+                    var findUserName = (from c in myDb.Admins
+                                        where c.AdminName == userName
+                                        select c.AdminName).SingleOrDefault();
+
+                    Console.WriteLine("Input Password: ");
+                    string password = Console.ReadLine();
+                    var findUserPassword = (from c in myDb.Admins
+                                            where c.AdminPassword == password
+                                            select c.AdminPassword).SingleOrDefault();
+
+                    if (findUserName == null || findUserPassword == null)
+                    {
+                        Console.WriteLine("Error, username or password doesn´t exist!");
+                        Console.ReadKey(true);
+                    }
+                    else if (findUserName.Contains(userName) && findUserPassword.Contains(password))
+                    {
+                        Admin();
+                    }
+                }
+            }
+        }
+
+        public static void AdminLogInPage()
+        {
+            while (true)
+            {
+                Console.Clear();
+                List<string> profileText = new List<string> { "[1] Emergency Log in ", "[2] Log in ", "[3] Sign up", "[B] Back" };
+                var userWindow = new Window("Sign in as admin", 1, 1, profileText);
+                userWindow.DrawWindow();
+                var key = Console.ReadKey(true);
+                switch (key.KeyChar)
+                {
+                    case '1':
+                        Console.WriteLine("Emergency Log in");
+                        Admin();
+                        break;
+                    case '2':
+                        Console.WriteLine("Log in");
+                        LogInAdmin();
+                        break;
+                    case '3':
+                        Console.WriteLine("Sign up");
+                        AdminSignUp();
+                        break;
+                    case 'b':
+                        Console.WriteLine("Back");
+                        Start();
+                        break;
+                    default:
+                        Console.WriteLine("Wrong input");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+        }
+
+        public static void AdminSignUp()
+        {
+            using (var myDb = new MyDbContext())
+            {
+                Console.Write("Input your first name: ");
+                string adminFirstName = Console.ReadLine();
+                Console.Write("Input your last name: ");
+                string adminLastName = Console.ReadLine();
+                Console.Write("Input your user name: ");
+                string adminUserName = Console.ReadLine();
+                Console.Write("Input your password: ");
+                string adminPassword = Console.ReadLine();
+                Console.Write("Input your mail address: ");
+                string adminMailAddress = Console.ReadLine();
+
+                myDb.Add(new Models.Admin
+                {
+                    FirstName = adminFirstName,
+                    LastName = adminLastName,
+                    AdminName = adminUserName,
+                    AdminPassword = adminPassword,
+                    EMailAdress = adminMailAddress
+
+                });
+                Console.WriteLine("You have successfully created your account!");
+                Console.ReadKey(true);
+                myDb.SaveChanges();
+            }
+            Console.ReadKey(true);
+            Console.Clear();
         }
 
         public static void Admin()
@@ -199,14 +297,15 @@ namespace Webshop_GruppE
                 {
                     case '1':
                         Console.WriteLine("Emergency Log in");
-                        User();
+                        CustomerHomePage();
                         break;
                     case '2':
                         Console.WriteLine("Log in");
-                        LogIn();
+                        LogInCustomer();
                         break;
                     case '3':
                         Console.WriteLine("Sign up");
+                        CustomerSignUp();
                         break;
                     case 'b':
                         Console.WriteLine("Back");
@@ -220,7 +319,9 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void User()
+
+
+        public static void CustomerHomePage()
         {
             Console.Clear();
 
@@ -264,17 +365,105 @@ namespace Webshop_GruppE
                         Console.ReadKey(true);
                         break;
                 }
+
             }
         }
 
-        public static void LogIn()
+        public static void LogInCustomer()
         {
-            Console.WriteLine("Input Username: ");
-            string userName = Console.ReadLine();
-            Console.WriteLine("Input Password: ");
-            string password = Console.ReadLine();
+            while (true)
+            {
+                using (var myDb = new MyDbContext())
+                {
+                    Console.WriteLine("Input Username: ");
+                    string userName = Console.ReadLine();
+                    var findUserName = (from c in myDb.Customers
+                                           where c.CustomerUserName == userName
+                                           select c.CustomerUserName).SingleOrDefault();
+
+                    Console.WriteLine("Input Password: ");
+                    string password = Console.ReadLine();
+                    var findUserPassword = (from c in myDb.Customers
+                                               where c.CustomerPassword == password
+                                               select c.CustomerPassword).SingleOrDefault();
+
+                    if(findUserName == null || findUserPassword == null)
+                    {
+                        Console.WriteLine("Error, username or password doesn´t exist!");
+                        Console.ReadKey(true);
+                    }
+                    else if (findUserName.Contains(userName) && findUserPassword.Contains(password))
+                    {
+                        CustomerHomePage();
+                    }
+                }
+            }
+
         }
 
+        public static void CustomerSignUp()
+        {
+            using (var myDb = new MyDbContext())
+            {
+
+                Console.Write("Input your first name: ");
+                string customerFirstName = Console.ReadLine();
+                Console.Write("Input your last name: ");
+                string customerLastName = Console.ReadLine();
+                Console.Write("Input your age: ");
+                int.TryParse(Console.ReadLine(), out int customerAge);
+                Console.Write("Input your user name: ");
+                string customerUserName = Console.ReadLine();
+                Console.Write("Input your password: ");
+                string customerPassword = Console.ReadLine();
+                Console.Write("Input your country: ");
+                string customerCountry = Console.ReadLine();
+                Console.Write("Input your street adress: ");
+                string customerStreetAddress = Console.ReadLine();
+                Console.Write("Input your postal code: ");
+                int.TryParse(Console.ReadLine(), out int customerPostalCode);
+                Console.Write("Input card number: ");
+                int.TryParse(Console.ReadLine(), out int customerCardNumber);
+                Console.Write("Input your mail address: ");
+                string customerMailAddress = Console.ReadLine();
+
+                // Listan products dyker inte upp i SSMS FIXA!
+                myDb.Add(new Models.ShoppingCart
+                {
+                    Products = new List<Product>(),
+                    TotalCost = null,
+                    Quantity = null
+                });
+
+                myDb.SaveChanges();
+                int x = 0;
+
+                var shoppingCartId = (from c in myDb.ShoppingCarts
+                                      select c.Id).Max();
+
+                myDb.Add(new Models.Customer
+                {
+                    FirstName = customerFirstName,
+                    LastName = customerLastName,
+                    Age = customerAge,
+                    CustomerUserName = customerUserName,
+                    CustomerPassword = customerPassword,
+                    Country = customerCountry,
+                    StreetAddress = customerStreetAddress,
+                    PostalCode = customerPostalCode,
+                    CardNumber = customerCardNumber,
+                    EMailAdress = customerMailAddress,
+                    ShoppingCartId = shoppingCartId
+
+                });
+                Console.WriteLine("You have successfully created your account!");
+                Console.ReadKey(true);
+                myDb.SaveChanges();
+
+            }
+            Console.ReadKey(true);
+            Console.Clear();
+        }
         public static void SearchProducts()
         {
             Console.Write("Input searchword: ");
@@ -302,7 +491,7 @@ namespace Webshop_GruppE
                             break;
                         case 'b':
                             Console.WriteLine("Back");
-                            User();
+                            CustomerHomePage();
                             break;
 
                     }
@@ -347,9 +536,8 @@ namespace Webshop_GruppE
                             break;
                         case 'b':
                             Console.WriteLine("Back");
-                            User();
+                            CustomerHomePage();
                             break;
-
                     }
                 }
                 else
@@ -384,9 +572,8 @@ namespace Webshop_GruppE
                         case 'y':
                             break;
                         case 'n':
-                            User();
+                            CustomerHomePage();
                             break;
-
                     }
                 }
                 else
@@ -394,9 +581,7 @@ namespace Webshop_GruppE
                     Console.WriteLine("The inputted product Id doesn't match with any of our products, please try again.");
                     Console.ReadKey(true);
                 }
-
             }
-
         }
 
         public static void ProductMenu()
@@ -522,8 +707,6 @@ namespace Webshop_GruppE
                                 }
                                 //Console.Write("Show product on Homepage? Type 'true' or 'false': ");
                                 //bool selectedProduct = bool.Parse(Console.ReadLine());
-
-
                             }
                             else
                             {
@@ -531,7 +714,6 @@ namespace Webshop_GruppE
                                 Console.ReadLine();
                                 ProductMenu();
                             }
-
                         }
                         else
                         {
@@ -546,16 +728,12 @@ namespace Webshop_GruppE
                         Console.ReadLine();
                         ProductMenu();
                     }
-
                 }
-                Console.Clear();
             }
-
         }
 
         public static void EditProduct()
         {
-
             using (var myDb = new MyDbContext())
             {
                 List<string> changeProductText = new List<string> { "[1] Change product name", "[2] Change product price", "[3] Change product supplier Id",
@@ -592,10 +770,8 @@ namespace Webshop_GruppE
                     default:
                         Console.WriteLine("Wrong input!");
                         break;
-
                 }
             }
-
         }
 
         public static void ProductOverview()
@@ -660,7 +836,6 @@ namespace Webshop_GruppE
                 }
                 Console.Clear();
             }
-
         }
         public static void ChangeProductPrice()
         {
@@ -722,7 +897,6 @@ namespace Webshop_GruppE
         {
             using (var myDb = new MyDbContext())
             {
-
                 Console.Write("Input product Id: ");
                 int productId = int.Parse(Console.ReadLine());
                 Console.Write("Input new product supplier Id: ");
@@ -828,7 +1002,6 @@ namespace Webshop_GruppE
                 }
             }
             Console.Clear();
-
         }
 
         public static void CategoryMenu()

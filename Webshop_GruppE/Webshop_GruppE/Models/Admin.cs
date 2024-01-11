@@ -12,7 +12,9 @@ namespace Webshop_GruppE.Models
         public int Id { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
+        public string? AdminName { get; set; }
+        public string? AdminPassword { get; set; }       
         public string? EMailAdress { get; set; }
-        public virtual User? User { get; set; }
+        //public virtual User? User { get; set; }
     }
 }
