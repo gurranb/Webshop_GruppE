@@ -1,14 +1,11 @@
-﻿using System.Security.Cryptography;
-using Webshop_GruppE.Models;
+﻿using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE
 {
     internal class Helpers
     {
-
         public static void Start()
         {
-
             Console.Clear();
             while (true)
             {
@@ -66,7 +63,7 @@ namespace Webshop_GruppE
                         break;
                     case '4':
                         Console.WriteLine("Edit Suppliers");
-                        supplierMenu();
+                        SupplierMenu();
                         break;
                     case 'p':
                         Console.WriteLine("Profile Page");
@@ -89,37 +86,38 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void supplierMenu()
+        public static void SupplierMenu()
         {
             Console.Clear();
-            Database.DisplayAllSuppliers();
-            List<string> supplierText = new List<string> { "[1] Add supplier", "[2] Change supplier", "[3] Remove supplier", "[B] Back" };
-            var userWindow = new Window("Supplier Menu", 1, 1, supplierText);
-            userWindow.DrawWindow();
 
-            var key = Console.ReadKey(true);
-            switch (key.KeyChar)
+            while (true)
             {
-                case '1':
-                    AddSupplier();
-                    break;
-                case '2':
-                    ChangeSupplier();
-                    break;
-                case '3':
-                    RemoveSupplier();
-                    break;
-                case 'b':
-                    Admin();
-                    break;
-            }
+                Database.DisplayAllSuppliers();
+                List<string> supplierText = new List<string> { "[1] Add supplier", "[2] Change supplier", "[3] Remove supplier", "[B] Back" };
+                var userWindow = new Window("Supplier Menu", 1, 1, supplierText);
+                userWindow.DrawWindow();
 
+                var key = Console.ReadKey(true);
+                switch (key.KeyChar)
+                {
+                    case '1':
+                        AddSupplier();
+                        break;
+                    case '2':
+                        ChangeSupplier();
+                        break;
+                    case '3':
+                        RemoveSupplier();
+                        break;
+                    case 'b':
+                        Admin();
+                        break;
+                }
+            }
         }
 
         public static void AddSupplier()
         {
-
-
             using (var myDb = new MyDbContext())
             {
                 Console.WriteLine("Input Supplier Name: ");
@@ -129,7 +127,7 @@ namespace Webshop_GruppE
                 Console.WriteLine("You have added " + supplierName + " to the list");
             }
             Console.ReadKey(true);
-
+            Console.Clear();
         }
 
         public static void ChangeSupplier()
@@ -159,10 +157,8 @@ namespace Webshop_GruppE
                     Console.WriteLine("Error, wrong Id");
                     Console.ReadKey();
                 }
-
             }
             Console.Clear();
-
         }
 
         public static void RemoveSupplier()
@@ -222,7 +218,6 @@ namespace Webshop_GruppE
                         break;
                 }
             }
-
         }
 
         public static void User()
@@ -456,26 +451,26 @@ namespace Webshop_GruppE
 
                     var category3 = (from c in myDb.Categories
                                      where c.Id == category
-                                     select c);                  
+                                     select c);
 
                     if (category3 != null && category3.Any())
                     {
                         Console.Write("Type Product Name: ");
                         string productName = Console.ReadLine();
 
-                        Console.Write("Type product Price: ");                      
+                        Console.Write("Type product Price: ");
                         float.TryParse(Console.ReadLine(), out float productPrice);
 
-                        if(productPrice != null && productPrice > 0)
+                        if (productPrice != null && productPrice > 0)
                         {
                             Console.Write("Type productsupplier ID: ");
                             int.TryParse(Console.ReadLine(), out int productSupplierId);
 
                             var productSupplierId2 = (from c in myDb.ProductSuppliers
-                                             where c.Id == productSupplierId
-                                             select c);
+                                                      where c.Id == productSupplierId
+                                                      select c);
 
-                            if(productSupplierId2 != null && productSupplierId2.Any())
+                            if (productSupplierId2 != null && productSupplierId2.Any())
                             {
                                 Console.Write("Type productinfo: ");
                                 string productInfo = Console.ReadLine();
@@ -483,7 +478,7 @@ namespace Webshop_GruppE
                                 Console.Write("Type stockbalance: ");
                                 int.TryParse(Console.ReadLine(), out int stockBalance);
 
-                                if(stockBalance != null && stockBalance > 0)
+                                if (stockBalance != null && stockBalance > 0)
                                 {
                                     Console.WriteLine("Show product on Homepage ? Type Y/N");
                                     bool selectedProduct = true;
@@ -527,8 +522,8 @@ namespace Webshop_GruppE
                                 }
                                 //Console.Write("Show product on Homepage? Type 'true' or 'false': ");
                                 //bool selectedProduct = bool.Parse(Console.ReadLine());
-                                
-                                
+
+
                             }
                             else
                             {
@@ -538,7 +533,7 @@ namespace Webshop_GruppE
                             }
 
                         }
-                        else 
+                        else
                         {
                             Console.WriteLine("Error, invalid price!");
                             Console.ReadLine();
@@ -551,7 +546,7 @@ namespace Webshop_GruppE
                         Console.ReadLine();
                         ProductMenu();
                     }
-                    
+
                 }
                 Console.Clear();
             }
@@ -636,13 +631,13 @@ namespace Webshop_GruppE
                 Console.Write("Input product Id: ");
                 int.TryParse(Console.ReadLine(), out int productId);
                 var productId2 = (from c in myDb.Products
-                               where c.Id == productId
-                               select c).SingleOrDefault();
-                if (productId2 != null )
+                                  where c.Id == productId
+                                  select c).SingleOrDefault();
+                if (productId2 != null)
                 {
                     Console.Write("Input new product Name: ");
                     string productName2 = Console.ReadLine();
-                    
+
 
                     if (productId2 != null)
                     {
@@ -661,11 +656,11 @@ namespace Webshop_GruppE
                 {
                     Console.WriteLine("Error, wrong Id input.");
                     Console.ReadKey();
-                    
+
                 }
                 Console.Clear();
             }
-                
+
         }
         public static void ChangeProductPrice()
         {
