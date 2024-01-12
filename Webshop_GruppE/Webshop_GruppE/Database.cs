@@ -55,30 +55,6 @@ namespace Webshop_GruppE
                 categoryWindow.DrawWindow();
             }
         }
-        public static void DisplayAllCustomers(int adminId)
-        {
-            //using (var database = new MyDbContext())
-            //{
-            //    List<string> customerListText = new List<string>();
-                
-            //    var customerProfileDetails = (from c in database.Customers
-            //                                  select c);
-                
-            //    foreach (var customer in customerProfileDetails)
-            //    {
-            //        Console.WriteLine(customer.FirstName);
-            //        //customerListText.Add(customerProfileDetails);
-
-            //    }
-
-            //    if (customerListText.Count == 0)
-            //    {
-            //        customerListText.Add("Empty");
-            //    }
-            //    var productsWindow = new Window("Products", 80, 2, customerListText);
-            //    productsWindow.DrawWindow();
-            //}
-        }
         public static void DisplayAllSuppliers()
         {
             using (var database = new MyDbContext())
@@ -163,32 +139,6 @@ namespace Webshop_GruppE
                 productsWindow.DrawWindow();
             }
         }
-
-        // Använd till dapper senare ??
-
-
-        //static string connString = "data source = .\\SQLEXPRESS; initial catalog = FashionCode; persist security info = True; integrated security = True;";
-        //public static bool CategoryExist(int categoryId)
-
-        //{
-        //    try
-        //    {
-        //        using (var connection = new SqlConnection(connString))
-        //        {
-        //            connection.Open();
-        //            string sql = "SELECT COUNT(*) FROM Categories WHERE Id = @categoryId";
-        //            int count = connection.QuerySingle<int>(sql, new { categoryId });
-        //            return count > 0;
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        Console.WriteLine("Invalid categoryID. Please enter a valid categoryId.");
-        //        return false;
-        //    }
-
-        //}
-
     }
 }
 

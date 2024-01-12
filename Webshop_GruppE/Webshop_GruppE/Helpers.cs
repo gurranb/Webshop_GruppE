@@ -1,4 +1,6 @@
-﻿using Webshop_GruppE.Models;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
+using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE
 {
@@ -73,8 +75,8 @@ namespace Webshop_GruppE
         {
             while (true)
             {
-                
-                
+
+
                 using (var myDb = new MyDbContext())
                 {
                     Console.WriteLine("Input Username: ");
@@ -106,7 +108,7 @@ namespace Webshop_GruppE
             }
         }
 
-        
+
 
         public static void SignUpAdmin()
         {
@@ -149,8 +151,8 @@ namespace Webshop_GruppE
                 using (var myDb = new MyDbContext())
                 {
                     var adminUserName = (from c in myDb.Admins
-                                            where c.Id == adminId
-                                            select c.AdminName).SingleOrDefault();
+                                         where c.Id == adminId
+                                         select c.AdminName).SingleOrDefault();
 
                     List<string> adminText = new List<string> { "[1] Edit Product", "[2] Edit Category", "[3] Product Overview", "[4] Edit Suppliers", "[P] Profile Page", "[C] Customer Page", "[Q] Queries", "[L] Logout" };
                     var adminWindow = new Window("Welcome " + adminUserName, 1, 1, adminText);
@@ -182,7 +184,7 @@ namespace Webshop_GruppE
                         break;
                     case 'c':
                         Console.WriteLine("Customer Page");
-                        Database.DisplayAllCustomers(adminId);
+                        ListCustomers(adminId);
                         break;
                     case 'q':
                         Console.WriteLine("Queries");
@@ -339,19 +341,19 @@ namespace Webshop_GruppE
         public static void CustomerHomePage(int customerId)
         {
             Console.Clear();
-           
+
             Database.DisplayChosenProducts();
             while (true)
             {
-                using (var myDb = new MyDbContext()) 
+                using (var myDb = new MyDbContext())
                 {
                     var customerUserName = (from c in myDb.Customers
-                                              where c.Id == customerId
-                                              select c.CustomerUserName).SingleOrDefault();
-                
-                List<string> userText = new List<string> { "[1] Search Products", "[2] Browse Products", "[S] Shopping Cart", "[P] Profile Page", "[B] Buy Products", "[O] Order History", "[L] Logout" };
-                var userWindow = new Window("Welcome " + customerUserName, 1, 1, userText);
-                userWindow.DrawWindow();
+                                            where c.Id == customerId
+                                            select c.CustomerUserName).SingleOrDefault();
+
+                    List<string> userText = new List<string> { "[1] Search Products", "[2] Browse Products", "[S] Shopping Cart", "[P] Profile Page", "[B] Buy Products", "[O] Order History", "[L] Logout" };
+                    var userWindow = new Window("Welcome " + customerUserName, 1, 1, userText);
+                    userWindow.DrawWindow();
                 }
 
 
@@ -369,7 +371,7 @@ namespace Webshop_GruppE
                         break;
                     case 's':
                         Console.WriteLine("");
-                        
+
                         break;
                     case 'p':
                         Console.WriteLine("");
@@ -394,7 +396,7 @@ namespace Webshop_GruppE
             }
         }
 
-     
+
         public static void LogInCustomer()
         {
             while (true)
@@ -404,16 +406,16 @@ namespace Webshop_GruppE
                     Console.WriteLine("Input Username: ");
                     string userName = Console.ReadLine();
                     var findUserName = (from c in myDb.Customers
-                                           where c.CustomerUserName == userName
-                                           select c.CustomerUserName).SingleOrDefault();
+                                        where c.CustomerUserName == userName
+                                        select c.CustomerUserName).SingleOrDefault();
 
                     Console.WriteLine("Input Password: ");
                     string password = Console.ReadLine();
                     var findUserPassword = (from c in myDb.Customers
-                                               where c.CustomerPassword == password
-                                               select c.CustomerPassword).SingleOrDefault();
+                                            where c.CustomerPassword == password
+                                            select c.CustomerPassword).SingleOrDefault();
 
-                    if(findUserName == null || findUserPassword == null)
+                    if (findUserName == null || findUserPassword == null)
                     {
                         Console.WriteLine("Error, username or password doesn´t exist!");
                         Console.ReadKey(true);
@@ -426,7 +428,7 @@ namespace Webshop_GruppE
                         CustomerHomePage(customerId);
                     }
                 }
-                
+
             }
         }
 
@@ -580,7 +582,7 @@ namespace Webshop_GruppE
 
         public static void PurchaseProduct(int customerId)
         {
-           
+
             while (true)
             {
                 Console.Write("Input product Id: ");
@@ -781,7 +783,7 @@ namespace Webshop_GruppE
                 var key = Console.ReadKey(true);
                 switch (key.KeyChar)
                 {
-                    case '1':                       
+                    case '1':
                         EditProductName();
                         break;
                     case '2':
@@ -1142,10 +1144,82 @@ namespace Webshop_GruppE
                     Console.WriteLine("Error wrong ID");
                     Console.ReadKey();
                 }
-
             }
             Console.Clear();
 
         }
+
+        public static List<Customer> GetAllCustomers()
+        {
+            var connstring = "Server=.\\SQLExpress;Database=FashionCode;Trusted_Connection=True;TrustServerCertificate=True;";
+            string sql = "SELECT * FROM Customers";
+            List<Customer> customers = new List<Customer>();
+            using (var myDb = new SqlConnection(connstring))
+            {
+                customers = myDb.Query<Customer>(sql).ToList();
+            }
+            return customers;
+        }
+
+        public static void ListCustomers(int adminId)
+        {
+            Console.Clear();
+
+            Console.WriteLine("All customer details!\n");
+            List<Customer> customers = GetAllCustomers();
+            Console.WriteLine("{0,-5}{1,-15}{2,-15}{3,-5}{4,-15}{5,-15}{6,-10}{7,-20}{8,-15}{9,-20}{10,-20}{11,-15}",
+                      "ID", "First Name", "Last Name", "Age", "Username", "Password", "Country",
+                      "Street Address", "Postal Code", "Card Number", "E-Mail", "Shopping Cart Id");
+
+            Console.WriteLine("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+            foreach (var customer in customers)
+            {
+                Console.WriteLine($"{customer.Id,-5}{customer.FirstName,-15}{customer.LastName,-15}" +
+                                  $"{customer.Age,-5}{customer.CustomerUserName,-15}{customer.CustomerPassword,-15}" +
+                                  $"{customer.Country,-10}{customer.StreetAddress,-20}{customer.PostalCode,-15}" +
+                                  $"{customer.CardNumber,-20}{customer.EMailAdress,-20}{customer.ShoppingCartId,-15}");
+            }
+            // Gör klart alla metoder här!!!!!!!!!!!!!!!
+
+            Console.WriteLine("\n[1] Edit first name\n[2] Edit last name\n[3] Edit Age\n[4] Edit username\n" +
+                "[5] Edit password\n[6] Edit country\n[7] Edit Address\n[8] Edit postal code\n" +
+                "[9] Edit card number\n[E] Edit E-Mail\n[B] Back");
+            var key = Console.ReadKey(true);
+            switch (key.KeyChar)
+            {
+                case '1':
+                    EditCustomerHelper.EditFirstName();
+                    break;
+                case '2':
+
+                    break;
+                case '3':
+
+                    break;
+                case '4':
+
+                    break;
+                case '5':
+                    break;
+                case '6':
+                    break;
+                case '7':
+                    break;
+                case '8':
+                    break;
+                case '9':
+                    break;
+                case 'e':
+                    break;
+                case 'b':
+                    AdminHomePage(adminId);
+                    break;
+                default:
+                    Console.WriteLine("Wrong Input");
+                    break;
+            }
+            Console.ReadKey(true);
+        }      
     }
 }
