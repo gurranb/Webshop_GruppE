@@ -578,37 +578,45 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void PurchaseProduct( int customerId)
+        public static void PurchaseProduct(int customerId)
         {
-            Console.Write("Input product Id: ");
-            int productId = int.Parse(Console.ReadLine());
-            using (var myDb = new MyDbContext())
+           
+            while (true)
             {
-                var chosenProduct = (from c in myDb.Products
-                                     where c.Id == productId
-                                     select c).SingleOrDefault();
+                Console.Write("Input product Id: ");
 
-                if (chosenProduct != null)
+                int.TryParse(Console.ReadLine(), out int productId);
+                using (var myDb = new MyDbContext())
                 {
-                    Console.WriteLine("Id: " + chosenProduct.Id + " " + " Name: " + chosenProduct.Name + " Price: " + chosenProduct.Price + " Units In Stock: " + chosenProduct.StockBalance +
-                         " Product Info: " + chosenProduct.ProductInfo);
-                    Console.WriteLine("Buy this product? y/n");
-                    var answer = Console.ReadKey();
+                    var chosenProduct = (from c in myDb.Products
+                                         where c.Id == productId
+                                         select c).SingleOrDefault();
 
-                    //Lägg till funktionerlig köpfunktion efter att shoppingcart fungerar
-                    switch (answer.KeyChar)
+                    if (chosenProduct != null)
                     {
-                        case 'y':
-                            break;
-                        case 'n':
-                            CustomerHomePage(customerId);
-                            break;
+                        Console.WriteLine("Id: " + chosenProduct.Id + " " + " Name: " + chosenProduct.Name + " Price: " + chosenProduct.Price + " Units In Stock: " + chosenProduct.StockBalance +
+                             " Product Info: " + chosenProduct.ProductInfo);
+                        Console.WriteLine("Buy this product? y/n");
+                        var answer = Console.ReadKey();
+
+                        //Lägg till funktionerlig köpfunktion efter att shoppingcart fungerar
+                        switch (answer.KeyChar)
+                        {
+                            case 'y':
+                                CustomerHomePage(customerId);
+                                break;
+                            case 'n':
+                                CustomerHomePage(customerId);
+                                break;
+                        }
                     }
-                }
-                else
-                {
-                    Console.WriteLine("The inputted product Id doesn't match with any of our products, please try again.");
-                    Console.ReadKey(true);
+                    else
+                    {
+                        Console.WriteLine("The inputted product Id doesn't match with any of our products, please try again.");
+
+                        Console.ReadKey(true);
+                        CustomerHomePage(customerId);
+                    }
                 }
             }
         }
