@@ -8,10 +8,11 @@ namespace Webshop_GruppE
     {
         public static void StartScreen()
         {
+
             Console.Clear();
             while (true)
             {
-                List<string> loginText = new List<string> { "Welcome to FashionCode website", "Login as", "[A]dmin", "[U]ser", "[E]xit" };
+                List<string> loginText = new List<string> { "Welcome to FashionCode website", "Login as", "[A]dmin", "[U]ser", "[C]reate test accounts", "[E]xit" };
                 var loginWindow = new Window("", 1, 1, loginText);
                 loginWindow.DrawWindow();
                 var key = Console.ReadKey(true);
@@ -24,6 +25,9 @@ namespace Webshop_GruppE
                         break;
                     case 'u':
                         LogInCustomerMenu();
+                        break;
+                    case 'c':
+                        CreateTestAccounts();
                         break;
                     case 'e':
                         Environment.Exit(0);
@@ -467,7 +471,6 @@ namespace Webshop_GruppE
                 });
 
                 myDb.SaveChanges();
-                int x = 0;
 
                 var shoppingCartId = (from c in myDb.ShoppingCarts
                                       select c.Id).Max();
@@ -1220,6 +1223,78 @@ namespace Webshop_GruppE
                     break;
             }
             Console.ReadKey(true);
-        }      
+        }
+
+        public static void CreateTestAccounts()
+        {
+
+            using (var myDb = new MyDbContext())
+            {
+                var testAdmin = (from c in myDb.Admins
+                                 where c.AdminName == "TestAdmin"
+                                 select c).SingleOrDefault();
+
+                var testCustomer = (from c in myDb.Customers
+                                    where c.CustomerUserName == "TestCustomer"
+                                    select c).SingleOrDefault();
+
+
+                if (testCustomer == null)
+                {
+                    myDb.Add(new Models.Customer()
+                    {
+                        FirstName = "Test",
+                        LastName = "Customer",
+                        Age = 20,
+                        CustomerUserName = "TestCustomer",
+                        CustomerPassword = "test1",
+                        Country = "TestCountry",
+                        StreetAddress = "TestAddress",
+                        PostalCode = 11111,
+                        CardNumber = 11111111,
+                        EMailAdress = "test@mail.com"
+                    });
+
+                    myDb.Add(new Models.ShoppingCart
+                    {
+                        Products = new List<Product>(),
+                        TotalCost = null,
+                        Quantity = null
+                    });     
+
+                    myDb.SaveChanges();
+
+                    var shoppingCartId = (from c in myDb.ShoppingCarts
+                                          select c.Id).Max();
+                }
+                else
+                {
+                    
+                    Console.WriteLine("A customer test account already exists!");
+                    Console.ReadKey(true);
+                    
+                }
+
+                if (testAdmin == null)
+                {
+                    myDb.Add(new Models.Admin() { FirstName = "Test", LastName = "Admin", AdminName = "TestAdmin", AdminPassword = "test1", EMailAdress = "admin@mail.com" });
+                }
+                else
+                {
+                    Console.WriteLine("An admin test account already exists!");
+                    Console.ReadKey(true);
+                  
+                    Console.WriteLine("Test accounts were successfully made.");
+                    Console.ReadKey(true);
+                }
+
+                myDb.SaveChanges();
+
+
+
+            }
+
+        }
+
     }
 }
