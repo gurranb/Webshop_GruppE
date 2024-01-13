@@ -55,7 +55,7 @@ namespace Webshop_GruppE
                 categoryWindow.DrawWindow();
             }
         }
-        public static void DisplayAllSuppliers()
+        public static List<string> DisplayAllSuppliers()
         {
             using (var database = new MyDbContext())
             {
@@ -70,11 +70,10 @@ namespace Webshop_GruppE
                 {
                     supplierText.Add("Empty");
                 }
-                var categoryWindow = new Window("Suppliers", 25, 1, supplierText);
-                categoryWindow.DrawWindow();
+                return supplierText;
             }
         }
-        public static void DisplayAllCategories()
+        public static List<string> DisplayAllCategories()
         {
             using (var database = new MyDbContext())
             {
@@ -89,8 +88,7 @@ namespace Webshop_GruppE
                 {
                     categoryText.Add("Empty");
                 }
-                var categoryWindow = new Window("Categories", 40, 2, categoryText);
-                categoryWindow.DrawWindow();
+                return categoryText;
             }
         }
 
@@ -106,7 +104,7 @@ namespace Webshop_GruppE
                 {
                     if(products.SelectedProduct == true)
                     {
-                        productsText.Add("Id: " + products.Id + " " + "Name: " + products.Name + " Pris: " + products.Price);
+                        productsText.Add("Id: " + products.Id + " " + "Name: " + products.Name + " Pris: " + products.Price + "$");
                     }
                     
                 }
@@ -115,12 +113,12 @@ namespace Webshop_GruppE
                 {
                     productsText.Add("Empty");
                 }
-                var productsWindow = new Window("Super Products", 30, 1, productsText);
+                var productsWindow = new Window("Fashion Deals", 30, 1, productsText);
                 productsWindow.DrawWindow();
             }
         }
 
-        public static void DisplayAllProducts()
+        public static List<string> DisplayAllProducts()
         {
             using (var database = new MyDbContext())
             {
@@ -135,8 +133,7 @@ namespace Webshop_GruppE
                 {
                     productsText.Add("Empty");
                 }
-                var productsWindow = new Window("Products", 80, 2, productsText);
-                productsWindow.DrawWindow();
+                return productsText;
             }
         }
     }
