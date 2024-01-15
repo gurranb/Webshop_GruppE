@@ -504,7 +504,7 @@ namespace Webshop_GruppE
 
                 myDb.SaveChanges();
 
-                var shoppingCartId = (from c in myDb.ShoppingCarts
+                var shoppingCartId = (from c in myDb.Customers
                                       select c.Id).Max();
 
                 myDb.Add(new Models.Customer
@@ -519,7 +519,7 @@ namespace Webshop_GruppE
                     PostalCode = customerPostalCode,
                     CardNumber = customerCardNumber,
                     EMailAdress = customerMailAddress,
-                    ShoppingCartId = shoppingCartId
+                    ShoppingCartId = shoppingCartId += 1
 
                 });
                 Console.WriteLine("You have successfully created your account!");
@@ -1270,12 +1270,15 @@ namespace Webshop_GruppE
         public static void CreateTestData()
         {
             bool noMoreProducts = false;
+
             using (var myDb = new MyDbContext())
             {
 
                 var testCustomer = (from c in myDb.Customers
                                     where c.CustomerUserName == "TestCustomer"
                                     select c).SingleOrDefault();
+
+                
 
                 if (testCustomer == null)
                 {
@@ -1286,8 +1289,11 @@ namespace Webshop_GruppE
                         Quantity = null
                     });
                     myDb.SaveChanges();
-                    var shoppingCartId = (from c in myDb.ShoppingCarts
-                                          select c.Id).Max();
+                    var sci = (from c in myDb.ShoppingCarts
+                              select c.Id).SingleOrDefault();
+                    
+                    
+                    
                     myDb.Add(new Models.Customer()
                     {
                         FirstName = "Test",
@@ -1299,15 +1305,14 @@ namespace Webshop_GruppE
                         StreetAddress = "TestAddress",
                         PostalCode = 11111,
                         CardNumber = 11111111,
-                        EMailAdress = "test@mail.com",
-                        ShoppingCartId = shoppingCartId,
-
+                        EMailAdress = "test@mail.com",  
+                        ShoppingCartId = sci,
+                    
                     });
-
+                   
                     myDb.SaveChanges();
                     Console.WriteLine("Customer Test account was successfully created!");
                     Console.ReadKey(true);
-
                 }
                 else
                 {
@@ -1345,7 +1350,7 @@ namespace Webshop_GruppE
                 else
                 {
                     Console.WriteLine("Category test data already exists!");
-                    noMoreProducts = true;
+                    
                     Console.ReadKey(true);
                 }
 
@@ -1361,7 +1366,7 @@ namespace Webshop_GruppE
                 else
                 {
                     Console.WriteLine("Supplier test data already exists!");
-                    noMoreProducts = true;
+                    
                     Console.ReadKey(true);
                 }
 
@@ -1373,13 +1378,16 @@ namespace Webshop_GruppE
                 var supplierList = (from c in myDb.ProductSuppliers
                                     where c.Name == "India Export" || c.Name == "MadeinChina" || c.Name == "Children Exploits"
                                     select c.Id).ToList();
+                var productList = (from c in myDb.Products
+                                   where c.Name == "Summer Jacket" && c.ProductSupplierId == supplierList[0] && c.Categories.Contains(categoryList[0])
+                                   select c).ToList();
 
 
                 if(categoryList != null && supplierList != null)
                 {
-                    if(noMoreProducts = false)
+                    if(productList.Count < 1)
                     {
-                        myDb.AddRange(
+                       myDb.AddRange(
                        new Models.Product()
                        {
                            Name = "Summer Jacket",
@@ -1544,22 +1552,7 @@ namespace Webshop_GruppE
 }
 
 
-//var category1 = (from c in myDb.Categories
-//                 where c.CategoryName == "Jackets"
-//                 select c).SingleOrDefault();
-//var category2 = (from c in myDb.Categories
-//                 where c.CategoryName == "Trousers"
-//                 select c).SingleOrDefault();
-//var category3 = (from c in myDb.Categories
-//                 where c.CategoryName == "Tops"
-//                 select c).SingleOrDefault();
-//         public string? Name { get; set; }
-//public bool? SelectedProduct { get; set; }
-//public float? Price { get; set; }
-//public int? ProductSupplierId { get; set; }
-//public string? ProductInfo { get; set; }
-//public int? StockBalance { get; set; }
-//public ICollection<Category> Categories { get; set; }
+
 
 
 
