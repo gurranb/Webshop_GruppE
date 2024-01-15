@@ -105,8 +105,7 @@ namespace Webshop_GruppE
                     if(products.SelectedProduct == true)
                     {
                         productsText.Add("Id: " + products.Id + " " + "Name: " + products.Name + " Pris: " + products.Price + "$");
-                    }
-                    
+                    }                   
                 }
 
                 if (productsText.Count == 0)
@@ -126,7 +125,7 @@ namespace Webshop_GruppE
 
                 foreach (var products in database.Products)
                 {
-                    productsText.Add("Id: " + products.Id + " " + "Name: " + products.Name);
+                    productsText.Add("Id: " + products.Id + " " + "Name: " + products.Name + " Brand: " + products.ProductBrand);
                 }
 
                 if (productsText.Count == 0)

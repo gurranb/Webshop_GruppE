@@ -6,41 +6,7 @@ namespace Webshop_GruppE
 {
     internal class Helpers
     {
-        public static void StartScreen()
-        {
-           
-            Console.Clear();
-            while (true)
-            {
-                List<string> loginText = new List<string> { "Welcome to FashionCode website", "Login as", "[A]dmin", "[U]ser", "[C]reate test accounts", "[E]xit" };
-                var loginWindow = new Window("", 1, 1, loginText);
-                loginWindow.DrawWindow();
-                var key = Console.ReadKey(true);
-
-                // ändra så detta blir snyggare
-                switch (key.KeyChar)
-                {
-                    case 'a':
-                        AdminLogInMenu();
-                        break;
-                    case 'u':
-                        CustomerLogInMenu();
-                        break;
-                    case 'c':
-                         
-                        CreateTestData();
-                        break;
-                    case 'e':
-                        Environment.Exit(0);
-                        break;
-                    default:
-                        Console.WriteLine("Wrong Input");
-                        Console.ReadKey();
-                        break;
-                }
-                Console.Clear();
-            }
-        }
+       
 
         public static void AdminLogInMenu()
         {
@@ -80,7 +46,7 @@ namespace Webshop_GruppE
                             break;
                         case 'b':
                             Console.WriteLine("Back");
-                            StartScreen();
+                            Program.StartScreen();
                             break;
                         default:
                             Console.WriteLine("Wrong input");
@@ -212,7 +178,7 @@ namespace Webshop_GruppE
                         break;
                     case 'l':
                         Console.WriteLine("Logout");
-                        StartScreen();
+                        Program.StartScreen();
                         break;
                     default:
                         Console.WriteLine("Wrong Input");
@@ -360,7 +326,7 @@ namespace Webshop_GruppE
                             break;
                         case 'b':
                             Console.WriteLine("Back");
-                            StartScreen();
+                            Program.StartScreen();
                             break;
                         default:
                             Console.WriteLine("Wrong input");
@@ -421,7 +387,7 @@ namespace Webshop_GruppE
                         break;
                     case 'l':
                         Console.Clear();
-                        StartScreen();
+                        Program.StartScreen();
                         break;
                     default:
                         Console.WriteLine("Wrong Input");
@@ -632,7 +598,7 @@ namespace Webshop_GruppE
                     if (chosenProduct != null)
                     {
                         Console.WriteLine("Id: " + chosenProduct.Id + " " + " Name: " + chosenProduct.Name + " Price: " + chosenProduct.Price + " Units In Stock: " + chosenProduct.StockBalance +
-                             " Product Info: " + chosenProduct.ProductInfo);
+                             " Product Info: " + chosenProduct.ProductInfoText);
                         Console.WriteLine("Buy this product? y/n");
                         var answer = Console.ReadKey();
 
@@ -741,8 +707,41 @@ namespace Webshop_GruppE
 
                             if (productSupplierId2 != null && productSupplierId2.Any())
                             {
+                                Console.Write("Type product brand: ");
+                                string productBrand = Console.ReadLine();
+
                                 Console.Write("Type productinfo: ");
                                 string productInfo = Console.ReadLine();
+
+                                bool chosenSize = false;
+                                int productSize = 0;
+                                string sizeText = "";
+                                while (chosenSize == false)
+                                {
+                                    Console.WriteLine("Size Guide\n1.Small\t2.Medium\t3.Large");
+                                    Console.Write("Type size: ");
+                                    productSize = int.Parse(Console.ReadLine());
+
+                                    switch (productSize)
+                                    {
+                                        case 1:
+                                            sizeText = "Small";
+                                            chosenSize = true;
+                                            break;
+                                        case 2:
+                                            sizeText = "Medium";
+                                            chosenSize = true;
+                                            break;
+                                        case 3:
+                                            sizeText = "Large";
+                                            chosenSize = true;
+                                            break;
+                                        default:
+                                            Console.WriteLine("Error, size does not exist! Type in 1 to 3!");
+                                            break;
+                                    }
+                                   
+                                }                              
 
                                 Console.Write("Type stockbalance: ");
                                 int.TryParse(Console.ReadLine(), out int stockBalance);
@@ -774,11 +773,17 @@ namespace Webshop_GruppE
                                             Categories = category3.ToList(),
                                             Price = productPrice,
                                             ProductSupplierId = productSupplierId,
-                                            ProductInfo = productInfo,
+                                            ProductInfoText = productInfo,
                                             StockBalance = stockBalance,
-                                            SelectedProduct = selectedProduct
-                                        });
+                                            SelectedProduct = selectedProduct,
+                                            ProductBrand = productBrand,
+                                            Size = sizeText
+                                            
+                                            
+                                        });;
                                         myDb.SaveChanges();
+
+                                       
                                         Console.WriteLine("You have added " + productName + " to the list");
                                         ProductMenu(adminId);
                                     }
@@ -863,7 +868,7 @@ namespace Webshop_GruppE
                 {
                     productList.Add("Id: " + products.Id + " " + " Name: " + products.Name + " Price: " + products.Price + " Units In Stock: " + products.StockBalance +
                         " Product Supplier Id: " + products.ProductSupplierId + " Selected Product: " + (products.SelectedProduct == true ? " Yes " : " No ") +
-                        "Product Info: " + products.ProductInfo);
+                        "Product Info: " + products.ProductInfoText);
                 }
 
                 if (productList.Count == 0)
@@ -1015,7 +1020,7 @@ namespace Webshop_GruppE
 
                 if (newProductInfo != null)
                 {
-                    newProductInfo.ProductInfo = productInfo2;
+                    newProductInfo.ProductInfoText = productInfo2;
                     Console.WriteLine("You have successfully changed the product info to\n" + productInfo2);
                     Console.ReadKey();
                     myDb.SaveChanges();
@@ -1395,7 +1400,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[0],
                            Price = (float)(59.99),
                            StockBalance = 12,
-                           ProductInfo = "A nice jacket for the summer",
+                           ProductInfoText = "A nice jacket for the summer",
                            SelectedProduct = true
 
                        },
@@ -1406,7 +1411,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[2],
                            Price = (float)(25.49),
                            StockBalance = 22,
-                           ProductInfo = "A warm jacket for winter",
+                           ProductInfoText = "A warm jacket for winter",
                            SelectedProduct = false
                        },
                        new Models.Product()
@@ -1416,7 +1421,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[1],
                            Price = (float)(39.29),
                            StockBalance = 5,
-                           ProductInfo = "A cool jacket made of leather",
+                           ProductInfoText = "A cool jacket made of leather",
                            SelectedProduct = true
                        },
                        new Models.Product()
@@ -1426,7 +1431,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[0],
                            Price = (float)(19.99),
                            StockBalance = 17,
-                           ProductInfo = "A jacket made of Denim",
+                           ProductInfoText = "A jacket made of Denim",
                            SelectedProduct = false
                        },
                        new Models.Product()
@@ -1436,7 +1441,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[2],
                            Price = (float)(18.99),
                            StockBalance = 36,
-                           ProductInfo = "A jacket that keeps you dry",
+                           ProductInfoText = "A jacket that keeps you dry",
                            SelectedProduct = false
                        },
                        new Models.Product()
@@ -1446,7 +1451,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[0],
                            Price = (float)(29.99),
                            StockBalance = 7,
-                           ProductInfo = "Short denim shorts",
+                           ProductInfoText = "Short denim shorts",
                            SelectedProduct = true
                        },
                        new Models.Product()
@@ -1456,7 +1461,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[1],
                            Price = (float)(59.99),
                            StockBalance = 5,
-                           ProductInfo = "Pants made for sweatin'",
+                           ProductInfoText = "Pants made for sweatin'",
                            SelectedProduct = false
                        },
                        new Models.Product()
@@ -1466,7 +1471,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[2],
                            Price = (float)(49.99),
                            StockBalance = 27,
-                           ProductInfo = "Pants, nothing more nothing less",
+                           ProductInfoText = "Pants, nothing more nothing less",
                            SelectedProduct = false
                        },
                        new Models.Product()
@@ -1476,7 +1481,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[2],
                            Price = (float)(39.99),
                            StockBalance = 17,
-                           ProductInfo = "Meant to cover up your legs",
+                           ProductInfoText = "Meant to cover up your legs",
                            SelectedProduct = false
                        },
                        new Models.Product()
@@ -1486,7 +1491,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[2],
                            Price = (float)(9.99),
                            StockBalance = 41,
-                           ProductInfo = "As basic as it comes",
+                           ProductInfoText = "As basic as it comes",
                            SelectedProduct = false
                        },
                        new Models.Product()
@@ -1496,7 +1501,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[1],
                            Price = (float)(19.99),
                            StockBalance = 11,
-                           ProductInfo = "If you can't make a successfull brand, copy another one!",
+                           ProductInfoText = "If you can't make a successfull brand, copy another one!",
                            SelectedProduct = false
                        },
                        new Models.Product()
@@ -1506,7 +1511,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[1],
                            Price = (float)(499.99),
                            StockBalance = 41,
-                           ProductInfo = "You pay for the brand, not the clothes",
+                           ProductInfoText = "You pay for the brand, not the clothes",
                            SelectedProduct = true
                        },
                        new Models.Product()
@@ -1516,7 +1521,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[0],
                            Price = (float)(29.99),
                            StockBalance = 14,
-                           ProductInfo = "A pretty blouse for every occation",
+                           ProductInfoText = "A pretty blouse for every occation",
                            SelectedProduct = false
                        },
                        new Models.Product()
@@ -1526,7 +1531,7 @@ namespace Webshop_GruppE
                            ProductSupplierId = supplierList[1],
                            Price = (float)(29.99),
                            StockBalance = 14,
-                           ProductInfo = "To be in an office, you got to look the part",
+                           ProductInfoText = "To be in an office, you got to look the part",
                            SelectedProduct = false
                        }
                        );
