@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Webshop_GruppE.Models;
 
@@ -11,9 +12,11 @@ using Webshop_GruppE.Models;
 namespace Webshop_GruppE.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240115124217_test123")]
+    partial class test123
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,6 +127,10 @@ namespace Webshop_GruppE.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ShoppingCartId")
+                        .IsUnique()
+                        .HasFilter("[ShoppingCartId] IS NOT NULL");
+
                     b.ToTable("Customers");
                 });
 
@@ -202,6 +209,9 @@ namespace Webshop_GruppE.Migrations
                     b.Property<bool?>("SelectedProduct")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("ShoppingCartId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Size")
                         .HasColumnType("nvarchar(max)");
 
@@ -209,6 +219,8 @@ namespace Webshop_GruppE.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ShoppingCartId");
 
                     b.ToTable("Products");
                 });
@@ -287,10 +299,13 @@ namespace Webshop_GruppE.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CustomerId")
+                    b.Property<int?>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProductId")
+                    b.Property<float?>("TotalCost")
+                        .HasColumnType("real");
+
+                    b.Property<int?>("test123")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -313,6 +328,13 @@ namespace Webshop_GruppE.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Webshop_GruppE.Models.Customer", b =>
+                {
+                    b.HasOne("Webshop_GruppE.Models.ShoppingCart", null)
+                        .WithOne("Customer")
+                        .HasForeignKey("Webshop_GruppE.Models.Customer", "ShoppingCartId");
+                });
+
             modelBuilder.Entity("Webshop_GruppE.Models.Order", b =>
                 {
                     b.HasOne("Webshop_GruppE.Models.Customer", null)
@@ -320,9 +342,23 @@ namespace Webshop_GruppE.Migrations
                         .HasForeignKey("CustomerId");
                 });
 
+            modelBuilder.Entity("Webshop_GruppE.Models.Product", b =>
+                {
+                    b.HasOne("Webshop_GruppE.Models.ShoppingCart", null)
+                        .WithMany("Products")
+                        .HasForeignKey("ShoppingCartId");
+                });
+
             modelBuilder.Entity("Webshop_GruppE.Models.Customer", b =>
                 {
                     b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("Webshop_GruppE.Models.ShoppingCart", b =>
+                {
+                    b.Navigation("Customer");
+
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

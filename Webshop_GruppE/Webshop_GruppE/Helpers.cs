@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using Webshop_GruppE.Methods;
 using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE
@@ -308,7 +309,8 @@ namespace Webshop_GruppE
                         case '1':
                             if (emergencyLogIn == 1)
                             {
-                                CustomerHomePage(1);
+                                List<int> boughtProducts = new List<int>();
+                                CustomerHomePage(1, boughtProducts);
                             }
                             else
                             {
@@ -338,15 +340,13 @@ namespace Webshop_GruppE
             }
         }
 
-
-
-        public static void CustomerHomePage(int customerId)
+        public static void CustomerHomePage(int customerId, List<int>boughtProducts)
         {
             Console.Clear();
-
-            Database.DisplayChosenProducts();
+           
             while (true)
-            {
+            { 
+                Database.DisplayChosenProducts();
                 using (var myDb = new MyDbContext())
                 {
                     var customerUserName = (from c in myDb.Customers
@@ -358,32 +358,31 @@ namespace Webshop_GruppE
                     userWindow.DrawWindow();
                 }
 
-
                 var key = Console.ReadKey(true);
 
                 switch (key.KeyChar)
                 {
                     case '1':
                         Console.WriteLine("Search Products");
-                        SearchProducts(customerId);
+                        SearchProducts(customerId, boughtProducts);
                         break;
                     case '2':
                         Console.WriteLine("Browse Products");
-                        BrowseProducts(customerId);
+                        BrowseProducts(customerId, boughtProducts);
                         break;
                     case 's':
-                        Console.WriteLine("");
-
+                        Console.WriteLine("");                       
+                        ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId, boughtProducts);                         
                         break;
                     case 'p':
                         Console.WriteLine("");
                         Database.DisplayCustomerDetails(customerId);
                         break;
                     case 'b':
-                        PurchaseProduct(customerId);
+                        PurchaseProduct(customerId, boughtProducts);
                         break;
                     case 'o':
-                        Console.WriteLine("");
+                        Console.WriteLine(""); // orderhistory
                         break;
                     case 'l':
                         Console.Clear();
@@ -397,7 +396,6 @@ namespace Webshop_GruppE
 
             }
         }
-
 
         public static void CustomerLogIn()
         {
@@ -427,7 +425,8 @@ namespace Webshop_GruppE
                         var customerId = (from c in myDb.Customers
                                           where c.CustomerUserName == userName
                                           select c.Id).SingleOrDefault();
-                        CustomerHomePage(customerId);
+                        List<int> boughtProducts = new List<int>();
+                        CustomerHomePage(customerId, boughtProducts);
                     }
                 }
 
@@ -461,12 +460,7 @@ namespace Webshop_GruppE
                 string customerMailAddress = Console.ReadLine();
 
                 // Listan products dyker inte upp i SSMS FIXA!
-                myDb.Add(new Models.ShoppingCart
-                {
-                    Products = new List<Product>(),
-                    TotalCost = null,
-                    Quantity = null
-                });
+                myDb.Add(new Models.ShoppingCart{});
 
                 myDb.SaveChanges();
 
@@ -496,7 +490,7 @@ namespace Webshop_GruppE
             Console.ReadKey(true);
             Console.Clear();
         }
-        public static void SearchProducts(int customerId)
+        public static void SearchProducts(int customerId, List<int>boughtProducts)
         {
             Console.Write("Input searchword: ");
             string searchWord = Console.ReadLine();
@@ -519,11 +513,11 @@ namespace Webshop_GruppE
                     {
                         case 'p':
                             Console.WriteLine("Purchase product");
-                            PurchaseProduct(customerId);
+                            PurchaseProduct(customerId, boughtProducts);
                             break;
                         case 'b':
                             Console.WriteLine("Back");
-                            CustomerHomePage(customerId);
+                            CustomerHomePage(customerId, boughtProducts);
                             break;
 
                     }
@@ -537,7 +531,7 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void BrowseProducts(int customerId)
+        public static void BrowseProducts(int customerId, List<int>boughtProducts)
         {
             Console.Clear();
             Database.DisplayAllCategories();
@@ -564,11 +558,11 @@ namespace Webshop_GruppE
                     {
                         case 'p':
                             Console.WriteLine("Purchase product");
-                            PurchaseProduct(customerId);
+                            PurchaseProduct(customerId, boughtProducts);
                             break;
                         case 'b':
                             Console.WriteLine("Back");
-                            CustomerHomePage(customerId);
+                            CustomerHomePage(customerId, boughtProducts);
                             break;
                     }
                 }
@@ -581,7 +575,7 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void PurchaseProduct(int customerId)
+        public static void PurchaseProduct(int customerId, List<int>boughtProducts)
         {
 
             while (true)
@@ -595,30 +589,41 @@ namespace Webshop_GruppE
                                          where c.Id == productId
                                          select c).SingleOrDefault();
 
+                    var shoppingCart = (from c in myDb.ShoppingCarts
+                                        where c.Id == customerId
+                                        select c).SingleOrDefault();
+
                     if (chosenProduct != null)
                     {
                         Console.WriteLine("Id: " + chosenProduct.Id + " " + " Name: " + chosenProduct.Name + " Price: " + chosenProduct.Price + " Units In Stock: " + chosenProduct.StockBalance +
                              " Product Info: " + chosenProduct.ProductInfoText);
                         Console.WriteLine("Buy this product? y/n");
-                        var answer = Console.ReadKey();
+                        var answer = Console.ReadKey(true);
 
                         //Lägg till funktionerlig köpfunktion efter att shoppingcart fungerar
                         switch (answer.KeyChar)
                         {
                             case 'y':
-                                CustomerHomePage(customerId);
+                                shoppingCart.ProductId = chosenProduct.Id;
+                                shoppingCart.CustomerId = customerId;
+                                boughtProducts.Add(chosenProduct.Id);
+                                Console.WriteLine("You have added " + chosenProduct.Name + " to your shopping cart.");
+                                Console.ReadKey(true);
                                 break;
                             case 'n':
-                                CustomerHomePage(customerId);
+                                CustomerHomePage(customerId, boughtProducts);
                                 break;
                         }
+                        myDb.SaveChanges();
+                        Console.Clear();
+                        break;                       
                     }
                     else
                     {
                         Console.WriteLine("The inputted product Id doesn't match with any of our products, please try again.");
 
                         Console.ReadKey(true);
-                        CustomerHomePage(customerId);
+                        CustomerHomePage(customerId, boughtProducts);
                     }
                 }
             }
@@ -906,11 +911,6 @@ namespace Webshop_GruppE
                         Console.ReadKey();
                         myDb.SaveChanges();
                     }
-                    //else
-                    //{
-                    //    Console.WriteLine("Error wrong ID");
-                    //    Console.ReadKey();
-                    //}
                 }
                 else
                 {
@@ -949,34 +949,7 @@ namespace Webshop_GruppE
             }
             Console.Clear();
         }
-        //public static void ChangeCategoryId()
-        //{
-        //    using (var myDb = new MyDbContext())
-        //    {
 
-        //        Console.Write("Input product Id: ");
-        //        int productId = int.Parse(Console.ReadLine());
-        //        Console.Write("Input new category Id: ");
-        //        int categoryId2 = int.Parse(Console.ReadLine());
-        //        var newCategoryId = (from c in myDb.Products
-        //                        where c.Id == productId
-        //                        select c).SingleOrDefault();
-
-        //        if (newCategoryId != null)
-        //        {
-        //            newCategoryId.CategoryId = categoryId2;
-        //            Console.WriteLine("You have successfully changed the category Id to: " + categoryId2);
-        //            Console.ReadKey();
-        //            myDb.SaveChanges();
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine("Error wrong ID");
-        //            Console.ReadKey();
-        //        }
-        //    }
-        //    Console.Clear();
-        //}
         public static void EditProductSupplier()
         {
             using (var myDb = new MyDbContext())
@@ -1230,7 +1203,6 @@ namespace Webshop_GruppE
                                   $"{customer.Country,-10}{customer.StreetAddress,-20}{customer.PostalCode,-15}" +
                                   $"{customer.CardNumber,-20}{customer.EMailAdress,-20}{customer.ShoppingCartId,-15}");
             }
-            // Gör klart alla metoder här!!!!!!!!!!!!!!!
 
             Console.WriteLine("\n[1] Edit first name\n[2] Edit last name\n[3] Edit Age\n[4] Edit username\n" +
                 "[5] Edit password\n[6] Edit country\n[7] Edit Address\n[8] Edit postal code\n" +
@@ -1239,28 +1211,34 @@ namespace Webshop_GruppE
             switch (key.KeyChar)
             {
                 case '1':
-                    EditCustomerHelper.EditFirstName();
+                    EditCustomerHelper.EditFirstName(adminId);
                     break;
                 case '2':
-
+                    EditCustomerHelper.EditLastName(adminId);
                     break;
                 case '3':
-
+                    EditCustomerHelper.EditCustomerAge(adminId);
                     break;
                 case '4':
-
+                    EditCustomerHelper.EditCustomerUserName(adminId);
                     break;
                 case '5':
+                    EditCustomerHelper.EditCustomerPassword(adminId);
                     break;
                 case '6':
+                    EditCustomerHelper.EditCustomerCountry(adminId);
                     break;
                 case '7':
+                    EditCustomerHelper.EditCustomerAddress(adminId);
                     break;
                 case '8':
+                    EditCustomerHelper.EditCustomerPostalCode(adminId);
                     break;
                 case '9':
+                    EditCustomerHelper.EditCustomerCardNumber(adminId);
                     break;
                 case 'e':
+                    EditCustomerHelper.EditCustomerEmail(adminId);
                     break;
                 case 'b':
                     AdminHomePage(adminId);
@@ -1283,21 +1261,13 @@ namespace Webshop_GruppE
                                     where c.CustomerUserName == "TestCustomer"
                                     select c).SingleOrDefault();
 
-                
-
                 if (testCustomer == null)
                 {
-                    myDb.Add(new Models.ShoppingCart
-                    {
-                        Products = new List<Product>(),
-                        TotalCost = null,
-                        Quantity = null
-                    });
+                    myDb.Add(new Models.ShoppingCart{});
                     myDb.SaveChanges();
                     var sci = (from c in myDb.ShoppingCarts
                               select c.Id).SingleOrDefault();
-                    
-                    
+                                       
                     
                     myDb.Add(new Models.Customer()
                     {
