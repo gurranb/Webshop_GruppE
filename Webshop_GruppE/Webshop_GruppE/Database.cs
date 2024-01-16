@@ -29,7 +29,7 @@ namespace Webshop_GruppE
                 {
                     customerText.Add("Empty");
                 }
-                var categoryWindow = new Window("Customer Details", 55, 01, customerText);
+                var categoryWindow = new Window("Customer Details", 55, 10, customerText);
                 categoryWindow.DrawWindow();
             }
         }
@@ -51,7 +51,7 @@ namespace Webshop_GruppE
                 {
                     adminText.Add("Empty");
                 }
-                var categoryWindow = new Window("Admin Details", 25, 01, adminText);
+                var categoryWindow = new Window("Admin Details", 25, 10, adminText);
                 categoryWindow.DrawWindow();
             }
         }
@@ -112,7 +112,7 @@ namespace Webshop_GruppE
                 {
                     productsText.Add("Empty");
                 }
-                var productsWindow = new Window("Fashion Deals", 30, 1, productsText);
+                var productsWindow = new Window("Fashion Deals", 60, 25, productsText);
                 productsWindow.DrawWindow();
             }
         }

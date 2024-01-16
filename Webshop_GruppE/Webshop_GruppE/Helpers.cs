@@ -20,8 +20,9 @@ namespace Webshop_GruppE
                                           select c.Id).SingleOrDefault();
 
                     Console.Clear();
+                    LogoWindow.LogoWindowMeth(1, 1, 24, 7);
                     List<string> profileText = new List<string> { "[1] Express Log in ", "[2] Log in ", "[3] Sign up", "[B] Back" };
-                    var userWindow = new Window("Sign in as admin", 1, 1, profileText);
+                    var userWindow = new Window("Sign in as admin", 1, 10, profileText);
                     userWindow.DrawWindow();
                     var key = Console.ReadKey(true);
                     switch (key.KeyChar)
@@ -141,9 +142,9 @@ namespace Webshop_GruppE
                     var adminUserName = (from c in myDb.Admins
                                          where c.Id == adminId
                                          select c.AdminName).SingleOrDefault();
-
+                    LogoWindow.LogoWindowMeth(1, 1, 24, 7);
                     List<string> adminText = new List<string> { "[1] Edit Product", "[2] Edit Category", "[3] Product Overview", "[4] Edit Suppliers", "[P] Profile Page", "[C] Customer Page", "[Q] Queries", "[L] Logout" };
-                    var adminWindow = new Window("Welcome " + adminUserName, 1, 1, adminText);
+                    var adminWindow = new Window("Welcome " + adminUserName, 1, 10, adminText);
                     adminWindow.DrawWindow();
                 }
                 var key = Console.ReadKey(true);
@@ -195,9 +196,10 @@ namespace Webshop_GruppE
 
             while (true)
             {
+                LogoWindow.LogoWindowMeth(1, 1, 24, 7);
                 Database.DisplayAllSuppliers();
                 List<string> supplierText = new List<string> { "[1] Add supplier", "[2] Edit supplier", "[3] Remove supplier", "[B] Back" };
-                var userWindow = new Window("Supplier Menu", 1, 1, supplierText);
+                var userWindow = new Window("Supplier Menu", 1, 10, supplierText);
                 userWindow.DrawWindow();
 
                 var key = Console.ReadKey(true);
@@ -298,10 +300,10 @@ namespace Webshop_GruppE
                     var emergencyLogIn = (from c in myDb.Customers
                                           where c.Id == 1
                                           select c.Id).SingleOrDefault();
-
                     Console.Clear();
+                    LogoWindow.LogoWindowMeth(1, 1, 24, 7);
                     List<string> profileText = new List<string> { "[1] Express Log in ", "[2] Log in ", "[3] Sign up", "[B] Back" };
-                    var userWindow = new Window("Sign in", 1, 1, profileText);
+                    var userWindow = new Window("Sign in", 0, 10, profileText);
                     userWindow.DrawWindow();
                     var key = Console.ReadKey(true);
                     switch (key.KeyChar)
@@ -345,7 +347,8 @@ namespace Webshop_GruppE
             Console.Clear();
            
             while (true)
-            { 
+            {
+                LogoWindow.LogoWindowMeth(1, 1, 24, 7);
                 Database.DisplayChosenProducts();
                 using (var myDb = new MyDbContext())
                 {
@@ -354,7 +357,7 @@ namespace Webshop_GruppE
                                             select c.CustomerUserName).SingleOrDefault();
 
                     List<string> userText = new List<string> { "[1] Search Products", "[2] Browse Products", "[S] Shopping Cart", "[P] Profile Page", "[B] Buy Products", "[O] Order History", "[L] Logout" };
-                    var userWindow = new Window("Welcome " + customerUserName, 1, 1, userText);
+                    var userWindow = new Window("Welcome " + customerUserName, 1, 10, userText);
                     userWindow.DrawWindow();
                 }
 
@@ -534,8 +537,10 @@ namespace Webshop_GruppE
         public static void BrowseProducts(int customerId, List<int>boughtProducts)
         {
             Console.Clear();
-            Database.DisplayAllCategories();
-
+            LogoWindow.LogoWindowMeth(1, 1, 24, 7);
+            List<string> categoryText = Database.DisplayAllCategories();
+            var categoryWindow = new Window("Category List", 30, 1, categoryText);
+            categoryWindow.DrawWindow();
             Console.Write("Input Category Id: ");
             int.TryParse(Console.ReadLine(), out int categoryId);
             using (var myDb = new MyDbContext())
@@ -635,16 +640,17 @@ namespace Webshop_GruppE
 
             while (true)
             {
+                LogoWindow.LogoWindowMeth(1, 1, 24, 7);
                 List<string> productText = new List<string> { "[A] Add Product", "[E] Edit Product", "[R] Remove Product", "[B] Back" };
-                var productWindow = new Window("Product Menu", 1, 1, productText);
+                var productWindow = new Window("Product Menu", 1, 10, productText);
                 productWindow.DrawWindow();
 
                 List<string> categoryText = Database.DisplayAllCategories();
-                var categoryWindow = new Window("Categories", 1, 7, categoryText);
+                var categoryWindow = new Window("Categories", 1, 17, categoryText);
                 categoryWindow.DrawWindow();
 
                 List<string> supplierText = Database.DisplayAllSuppliers();
-                var supplierWindow = new Window("Suppliers", 25, 1, supplierText);
+                var supplierWindow = new Window("Suppliers", 27, 1, supplierText);
                 supplierWindow.DrawWindow();
 
                 List<string> productsText = Database.DisplayAllProducts();
@@ -660,7 +666,7 @@ namespace Webshop_GruppE
                         Console.WriteLine("Add Product");
                         AddProduct(adminId);
                         break;
-                    case 'e':
+                    case 'c':
                         Console.WriteLine("Edit Product");
                         EditProduct(adminId);
                         break;
@@ -830,9 +836,10 @@ namespace Webshop_GruppE
         {
             using (var myDb = new MyDbContext())
             {
+                LogoWindow.LogoWindowMeth(1, 1, 24, 7);
                 List<string> changeProductText = new List<string> { "[1] Edit product name", "[2] Edit product price", "[3] Edit product supplier Id",
                         "[4] Edit product info", "[5] Edit product stock balance", "[B] Back" };
-                var changeProductWindow = new Window("Change Product Menu", 1, 3, changeProductText);
+                var changeProductWindow = new Window("Change Product Menu", 1, 13, changeProductText);
                 changeProductWindow.DrawWindow();
 
                 var key = Console.ReadKey(true);
@@ -880,7 +887,7 @@ namespace Webshop_GruppE
                 {
                     productList.Add("Empty");
                 }
-                var productsWindow = new Window("Product Overview", 1, 20, productList);
+                var productsWindow = new Window("Product Overview", 1, 30, productList);
                 productsWindow.DrawWindow();
 
                 Console.WriteLine("Press any key to return!");
@@ -1067,11 +1074,13 @@ namespace Webshop_GruppE
 
             while (true)
             {
-
+                LogoWindow.LogoWindowMeth(1, 1, 24, 7);
                 List<string> categoryText = new List<string> { "[A] Add Category", "[E] Edit Category", "[R] Remove Category", "[B] Back" };
-                var categoryWindow = new Window("Category Menu", 1, 1, categoryText);
+                var categoryWindow = new Window("Category Menu", 1, 10, categoryText);
                 categoryWindow.DrawWindow();
-                Database.DisplayAllCategories();
+                List<string> categoryText2 = Database.DisplayAllCategories();
+                var categoryWindow2 = new Window("Category List", 30, 1, categoryText2);
+                categoryWindow2.DrawWindow();
                 using (var myDb = new MyDbContext())
                 {
 

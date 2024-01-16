@@ -7,8 +7,10 @@ namespace Webshop_GruppE.Methods
     {
         public static void ChooseDeliveryMethod(int customerId, List<int> boughtProducts, float? totalMoms)
         {
-            List<string> deliveryText = new List<string> { "[1] Standard delivery ", "[2] Express delivery ", "[B] Back" };
-            var userWindow = new Window("Payment", 60, 1, deliveryText);
+            Console.Clear();
+            LogoWindow.LogoWindowMeth(1, 1, 24, 7);
+            List<string> deliveryText = new List<string> { "[1] Standard delivery +5$ ", "[2] Express delivery +10$ ", "[B] Back" };
+            var userWindow = new Window("Payment", 62, 1, deliveryText);
             userWindow.DrawWindow();
 
             var key = Console.ReadKey(true);
@@ -34,7 +36,7 @@ namespace Webshop_GruppE.Methods
         public static void ChoosePaymentMethod(int customerId, List<int> boughtProducts)
         {
             List<string> paymentText = new List<string> { "[1] Pay now ", "[2] Pay later ", "[B] Back" };
-            var userWindow = new Window("Payment", 60, 1, paymentText);
+            var userWindow = new Window("Payment", 30, 1, paymentText);
             userWindow.DrawWindow();
 
             var key = Console.ReadKey(true);

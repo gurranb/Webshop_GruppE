@@ -73,7 +73,6 @@ namespace Webshop_GruppE
             Console.Write("E");
             Console.BackgroundColor = 0;
             Console.BackgroundColor = 0;
-            
         
         }
 

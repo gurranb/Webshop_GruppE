@@ -15,11 +15,11 @@ namespace Webshop_GruppE
         public static void StartScreen()
         {
             Console.Clear();
-            //LogoWindow.LogoWindowMeth(50, 20, 24, 7);
+            LogoWindow.LogoWindowMeth(1, 1, 24, 7);
             while (true)
             {
                 List<string> loginText = new List<string> {"Login as", "[A] Admin", "[U] User", "[C] Ceate test data", "[E] Exit" };
-                var loginWindow = new Window("Welcome to FashionCode website", 1, 1, loginText);
+                var loginWindow = new Window("Welcome to FashionCode website", 0, 10, loginText);
                 loginWindow.DrawWindow();
                 var key = Console.ReadKey(true);
 
