@@ -15,6 +15,7 @@ namespace Webshop_GruppE.Methods
         {
             using (var myDb = new MyDbContext())
             {
+                Console.Clear();
                 float? totalSum = 0f;
                 float? moms = 1.25f;
                 var productInfo = (from c in myDb.Products
@@ -38,16 +39,20 @@ namespace Webshop_GruppE.Methods
                 Console.WriteLine("Total cost for products: " + Math.Round((decimal)totalSum, 2) + "$\nTotal cost inclusive moms: " + Math.Round((decimal)totalMoms, 2) + "$");
                 Console.ReadKey(true);
 
-                Console.WriteLine("[1] Remove Product\n[B] Back");
+                Console.WriteLine("[1] Buy all products\n[2] Remove Product\n[B] Back");
+
                 var key = Console.ReadKey(true);
                 switch(key.KeyChar)
-                {
-                    case '1':
+                {   case '1':
+                        ShippingHelper.ChooseDeliveryMethod(customerId, boughtProducts, totalMoms);
+                        break;
+                    case '2':
                         RemoveProductFromShoppingList(customerId, boughtProducts);
                         break;
                     case 'b':
                         Helpers.CustomerHomePage(customerId, boughtProducts);
                         break;
+                    
                 }
                 
             }

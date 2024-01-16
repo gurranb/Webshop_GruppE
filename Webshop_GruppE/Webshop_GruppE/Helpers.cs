@@ -660,7 +660,7 @@ namespace Webshop_GruppE
                         Console.WriteLine("Add Product");
                         AddProduct(adminId);
                         break;
-                    case 'c':
+                    case 'e':
                         Console.WriteLine("Edit Product");
                         EditProduct(adminId);
                         break;
