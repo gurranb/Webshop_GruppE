@@ -15,7 +15,7 @@ namespace Webshop_GruppE
         public static void StartScreen()
         {
             Console.Clear();
-            //LogoWindow.LogoWindowMeth(100, 20, 25, 8);
+            //LogoWindow.LogoWindowMeth(50, 20, 24, 7);
             while (true)
             {
                 List<string> loginText = new List<string> {"Login as", "[A] Admin", "[U] User", "[C] Ceate test data", "[E] Exit" };

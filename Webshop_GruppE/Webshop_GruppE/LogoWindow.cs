@@ -50,15 +50,11 @@ namespace Webshop_GruppE
             Console.WriteLine("   ");
             Console.SetCursorPosition(left + 1, top + 4);
             Console.WriteLine("   ");
-            Console.SetCursorPosition(left + 1, top + 5);
-            Console.WriteLine("   ");
             Console.SetCursorPosition(left + 10, top + 2);
             Console.WriteLine("       ");    
             Console.SetCursorPosition(left + 10, top + 3);
             Console.WriteLine("   ");        
             Console.SetCursorPosition(left + 10, top + 4);
-            Console.WriteLine("   ");        
-            Console.SetCursorPosition(left + 10, top + 5);
             Console.WriteLine("       ");
             Console.BackgroundColor = 0;
             Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -69,7 +65,7 @@ namespace Webshop_GruppE
             Console.BackgroundColor = 0;
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write("ASHION");
-            Console.SetCursorPosition(left + 18, top + 5);
+            Console.SetCursorPosition(left + 18, top + 4);
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.Write("COD");
             Console.ForegroundColor = 0;
