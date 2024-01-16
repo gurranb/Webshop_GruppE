@@ -8,7 +8,7 @@ namespace Webshop_GruppE
 {
     internal class Helpers
     {
-       
+
         public static void AdminLogInMenu()
         {
             while (true)
@@ -312,7 +312,7 @@ namespace Webshop_GruppE
                             if (emergencyLogIn == 1)
                             {
                                 List<int> boughtProducts = new List<int>();
-                                CustomerHomePage(1, boughtProducts);
+                                CustomerHomePage(1);
                             }
                             else
                             {
@@ -342,10 +342,10 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void CustomerHomePage(int customerId, List<int>boughtProducts)
+        public static void CustomerHomePage(int customerId)
         {
             Console.Clear();
-           
+
             while (true)
             {
                 LogoWindow.LogoWindowMeth(1, 1, 24, 7);
@@ -367,22 +367,22 @@ namespace Webshop_GruppE
                 {
                     case '1':
                         Console.WriteLine("Search Products");
-                        SearchProducts(customerId, boughtProducts);
+                        SearchProducts(customerId);
                         break;
                     case '2':
                         Console.WriteLine("Browse Products");
-                        BrowseProducts(customerId, boughtProducts);
+                        BrowseProducts(customerId);
                         break;
                     case 's':
-                        Console.WriteLine("");                       
-                        ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId, boughtProducts);                         
+                        Console.WriteLine("");
+                        ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId);
                         break;
                     case 'p':
                         Console.WriteLine("");
                         Database.DisplayCustomerDetails(customerId);
                         break;
                     case 'b':
-                        PurchaseProduct(customerId, boughtProducts);
+                        PurchaseProduct(customerId);
                         break;
                     case 'o':
                         Console.WriteLine(""); // orderhistory
@@ -428,8 +428,8 @@ namespace Webshop_GruppE
                         var customerId = (from c in myDb.Customers
                                           where c.CustomerUserName == userName
                                           select c.Id).SingleOrDefault();
-                        List<int> boughtProducts = new List<int>();
-                        CustomerHomePage(customerId, boughtProducts);
+                        
+                        CustomerHomePage(customerId);
                     }
                 }
 
@@ -462,14 +462,6 @@ namespace Webshop_GruppE
                 Console.Write("Input your mail address: ");
                 string customerMailAddress = Console.ReadLine();
 
-                // Listan products dyker inte upp i SSMS FIXA!
-                myDb.Add(new Models.ShoppingCart{});
-
-                myDb.SaveChanges();
-
-                var shoppingCartId = (from c in myDb.Customers
-                                      select c.Id).Max();
-
                 myDb.Add(new Models.Customer
                 {
                     FirstName = customerFirstName,
@@ -482,9 +474,8 @@ namespace Webshop_GruppE
                     PostalCode = customerPostalCode,
                     CardNumber = customerCardNumber,
                     EMailAdress = customerMailAddress,
-                    ShoppingCartId = shoppingCartId += 1
-
                 });
+
                 Console.WriteLine("You have successfully created your account!");
                 Console.ReadKey(true);
                 myDb.SaveChanges();
@@ -493,7 +484,7 @@ namespace Webshop_GruppE
             Console.ReadKey(true);
             Console.Clear();
         }
-        public static void SearchProducts(int customerId, List<int>boughtProducts)
+        public static void SearchProducts(int customerId)
         {
             Console.Write("Input searchword: ");
             string searchWord = Console.ReadLine();
@@ -516,11 +507,11 @@ namespace Webshop_GruppE
                     {
                         case 'p':
                             Console.WriteLine("Purchase product");
-                            PurchaseProduct(customerId, boughtProducts);
+                            PurchaseProduct(customerId);
                             break;
                         case 'b':
                             Console.WriteLine("Back");
-                            CustomerHomePage(customerId, boughtProducts);
+                            CustomerHomePage(customerId);
                             break;
 
                     }
@@ -534,7 +525,7 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void BrowseProducts(int customerId, List<int>boughtProducts)
+        public static void BrowseProducts(int customerId)
         {
             Console.Clear();
             LogoWindow.LogoWindowMeth(1, 1, 24, 7);
@@ -563,11 +554,11 @@ namespace Webshop_GruppE
                     {
                         case 'p':
                             Console.WriteLine("Purchase product");
-                            PurchaseProduct(customerId, boughtProducts);
+                            PurchaseProduct(customerId);
                             break;
                         case 'b':
                             Console.WriteLine("Back");
-                            CustomerHomePage(customerId, boughtProducts);
+                            CustomerHomePage(customerId);
                             break;
                     }
                 }
@@ -580,7 +571,7 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void PurchaseProduct(int customerId, List<int>boughtProducts)
+        public static void PurchaseProduct(int customerId)
         {
 
             while (true)
@@ -594,7 +585,7 @@ namespace Webshop_GruppE
                                          where c.Id == productId
                                          select c).SingleOrDefault();
 
-                    
+
                     if (chosenProduct != null)
                     {
                         Console.WriteLine("Id: " + chosenProduct.Id + " " + " Name: " + chosenProduct.Name + " Price: " + chosenProduct.Price + " Units In Stock: " + chosenProduct.StockBalance +
@@ -602,7 +593,7 @@ namespace Webshop_GruppE
                         Console.WriteLine("Buy this product? y/n");
                         var answer = Console.ReadKey(true);
 
-                        //Lägg till funktionerlig köpfunktion efter att shoppingcart fungerar
+
                         switch (answer.KeyChar)
                         {
                             case 'y':
@@ -610,7 +601,7 @@ namespace Webshop_GruppE
                                     .Include(c => c.ShoppingCartItems)
                                     .ThenInclude(p => p.Product)
                                     .FirstOrDefault(c => c.CustomerId == customerId);
-                                if(shoppingCart == null)
+                                if (shoppingCart == null)
                                 {
                                     shoppingCart = new ShoppingCart
                                     {
@@ -622,24 +613,24 @@ namespace Webshop_GruppE
                                 shoppingCart.ShoppingCartItems.Add(new ShoppingCartItem
                                 {
                                     Product = chosenProduct
-                                });                           
+                                });
                                 Console.WriteLine("You have added " + chosenProduct.Name + " to your shopping cart.");
                                 Console.ReadKey(true);
                                 break;
                             case 'n':
-                                CustomerHomePage(customerId, boughtProducts);
+                                CustomerHomePage(customerId);
                                 break;
                         }
                         myDb.SaveChanges();
                         Console.Clear();
-                        break;                       
+                        break;
                     }
                     else
                     {
                         Console.WriteLine("The inputted product Id doesn't match with any of our products, please try again.");
 
                         Console.ReadKey(true);
-                        CustomerHomePage(customerId, boughtProducts);
+                        CustomerHomePage(customerId);
                     }
                 }
             }
@@ -762,8 +753,8 @@ namespace Webshop_GruppE
                                             Console.WriteLine("Error, size does not exist! Type in 1 to 3!");
                                             break;
                                     }
-                                   
-                                }                              
+
+                                }
 
                                 Console.Write("Type stockbalance: ");
                                 int.TryParse(Console.ReadLine(), out int stockBalance);
@@ -775,7 +766,7 @@ namespace Webshop_GruppE
                                     Price = productPrice,
                                     ProductSupplierId = productSupplierId,
                                     ProductInfoText = productInfo,
-                                    StockBalance = stockBalance,                                   
+                                    StockBalance = stockBalance,
                                     ProductBrand = productBrand,
                                     Size = sizeText
 
@@ -815,9 +806,9 @@ namespace Webshop_GruppE
                                                 Console.WriteLine("Error, wrong input.");
                                                 break;
                                         }
-                                        
 
-                                       
+
+
                                         Console.WriteLine("You have added " + productName + " to the list");
                                         ProductMenu(adminId);
                                     }
@@ -904,9 +895,8 @@ namespace Webshop_GruppE
 
                 foreach (var products in myDb.Products)
                 {
-                    productList.Add("Id: " + products.Id + " " + " Name: " + products.Name + " Price: " + products.Price + " Units In Stock: " + products.StockBalance +
-                        " Product Supplier Id: " + products.ProductSupplierId + " Selected Product: " + (products.SelectedProduct == true ? " Yes " : " No ") +
-                        "Product Info: " + products.ProductInfoText);
+                    productList.Add("Id: " + products.Id + " " + " Name: " + products.Name + " Price: " + products.Price + "$" + " Units In Stock: " + products.StockBalance +
+                        " Product Supplier Id: " + products.ProductSupplierId + " Product Info: " + products.ProductInfoText);
                 }
 
                 if (productList.Count == 0)
@@ -1078,13 +1068,13 @@ namespace Webshop_GruppE
                 var selectedProduct = (from c in myDb.Products
                                        where c.Id == productId
                                        select c).FirstOrDefault();
-                if(selectedProduct != null )
+                if (selectedProduct != null)
                 {
                     var productList = (from c in myDb.SelectTopDealItems
                                        select c).ToList();
                     myDb.Add(new Models.SelectTopDealItem { Product = selectedProduct });
 
-                    if(productList.Count <= 5)
+                    if (productList.Count <= 5)
                     {
                         myDb.SaveChanges();
                         Console.WriteLine("Items successfully added to deals!");
@@ -1094,15 +1084,15 @@ namespace Webshop_GruppE
                     {
                         Console.WriteLine("Too many items in product deals, please remove at least one");
                     }
-                    
+
                 }
                 else
                 {
                     Console.WriteLine("Invalid input, please try again.");
                 }
 
-               
-                
+
+
 
 
 
@@ -1331,23 +1321,17 @@ namespace Webshop_GruppE
 
         public static void CreateTestData()
         {
-            bool noMoreProducts = false;
-
+            
             using (var myDb = new MyDbContext())
             {
-
+                bool keepAdding = true;
                 var testCustomer = (from c in myDb.Customers
                                     where c.CustomerUserName == "TestCustomer"
                                     select c).SingleOrDefault();
 
                 if (testCustomer == null)
-                {
-                    myDb.Add(new Models.ShoppingCart{});
-                    myDb.SaveChanges();
-                    var sci = (from c in myDb.ShoppingCarts
-                              select c.Id).SingleOrDefault();
-                                       
-                    
+                {                   
+
                     myDb.Add(new Models.Customer()
                     {
                         FirstName = "Test",
@@ -1359,11 +1343,10 @@ namespace Webshop_GruppE
                         StreetAddress = "TestAddress",
                         PostalCode = 11111,
                         CardNumber = 11111111,
-                        EMailAdress = "test@mail.com",  
-                        ShoppingCartId = sci,
-                    
+                        EMailAdress = "test@mail.com",                      
+
                     });
-                   
+
                     myDb.SaveChanges();
                     Console.WriteLine("Customer Test account was successfully created!");
                     Console.ReadKey(true);
@@ -1372,6 +1355,7 @@ namespace Webshop_GruppE
                 {
 
                     Console.WriteLine("A customer test account already exists!");
+                    keepAdding = false;
                     Console.ReadKey(true);
 
                 }
@@ -1380,12 +1364,12 @@ namespace Webshop_GruppE
                                  where c.AdminName == "TestAdmin"
                                  select c).SingleOrDefault();
 
-                if (testAdmin == null)
+                if (keepAdding == true && testAdmin == null)
                 {
                     myDb.Add(new Models.Admin() { FirstName = "Test", LastName = "Admin", AdminName = "TestAdmin", AdminPassword = "test1", EMailAdress = "admin@mail.com" });
-                    Console.WriteLine("Admin Test account was successfully created!");
-                    Console.ReadKey(true);
                     myDb.SaveChanges();
+                    Console.WriteLine("Admin Test account was successfully created!");
+                    Console.ReadKey(true);                  
                 }
                 else
                 {
@@ -1394,21 +1378,27 @@ namespace Webshop_GruppE
                 }
 
                 var findCategories = (from c in myDb.Categories
+                                      where c.CategoryName == "Jackets" || c.CategoryName == "Trousers" || c.CategoryName == "Tops" 
+                                      || c.CategoryName == "Men's Clothing" || c.CategoryName == "Women's Clothing"
                                       select c).ToList();
+               
                 if (findCategories.Count == 0)
                 {
                     myDb.AddRange(new Models.Category() { CategoryName = "Jackets" }, new Models.Category() { CategoryName = "Trousers" }, new Models.Category() { CategoryName = "Tops" },
                     new Models.Category() { CategoryName = "Men's Clothing" }, new Models.Category() { CategoryName = "Women's Clothing" });
                     myDb.SaveChanges();
+                    Console.WriteLine("Category test data was successfully created!");
+                    Console.ReadKey(true);
                 }
                 else
                 {
                     Console.WriteLine("Category test data already exists!");
-                    
+
                     Console.ReadKey(true);
                 }
 
                 var findProductSuppliers = (from c in myDb.ProductSuppliers
+                                            where c.Name == "India Export" || c.Name == "MadeinChina" || c.Name == "Children Exploits"
                                             select c).ToList();
 
                 if (findProductSuppliers.Count == 0)
@@ -1416,11 +1406,13 @@ namespace Webshop_GruppE
                     myDb.AddRange(new Models.ProductSupplier() { Name = "India Export", Country = "India" }, new Models.ProductSupplier() { Name = "MadeinChina", Country = "China" },
                                            new Models.ProductSupplier() { Name = "Children Exploits", Country = "Thailand" });
                     myDb.SaveChanges();
+                    Console.WriteLine("Supplier test data was successfully created!");
+                    Console.ReadKey(true);
                 }
                 else
                 {
                     Console.WriteLine("Supplier test data already exists!");
-                    
+
                     Console.ReadKey(true);
                 }
 
@@ -1433,158 +1425,176 @@ namespace Webshop_GruppE
                                     where c.Name == "India Export" || c.Name == "MadeinChina" || c.Name == "Children Exploits"
                                     select c.Id).ToList();
                 var productList = (from c in myDb.Products
-                                   where c.Name == "Summer Jacket" && c.ProductSupplierId == supplierList[0] && c.Categories.Contains(categoryList[0])
+                                   where c.Name == "Summer Jacket" && c.ProductSupplierId == 1
                                    select c).ToList();
 
 
-                if(categoryList != null && supplierList != null)
+                if (categoryList != null && supplierList != null)
                 {
-                    if(productList.Count < 1)
+                    if (productList.Count < 1)
                     {
-                       myDb.AddRange(
-                       new Models.Product()
-                       {
-                           Name = "Summer Jacket",
-                           Categories = new List<Models.Category>() { categoryList[0], categoryList[4] },
-                           ProductSupplierId = supplierList[0],
-                           Price = (float)(59.99),
-                           StockBalance = 12,
-                           ProductInfoText = "A nice jacket for the summer",
-                           SelectedProduct = true
+                        myDb.AddRange(
+                        new Models.Product()
+                        {
+                            Name = "Summer Jacket",
+                            Categories = new List<Models.Category>() { categoryList[0], categoryList[4] },
+                            ProductSupplierId = supplierList[0],
+                            Price = (float)(59.99),
+                            StockBalance = 12,
+                            ProductInfoText = "A nice jacket for the summer",
+                            ProductBrand = "Summertime Jam",
+                            Size = "Small"
 
-                       },
-                       new Models.Product()
-                       {
-                           Name = "Winter Jacket",
-                           Categories = new List<Models.Category>() { categoryList[0], categoryList[3] },
-                           ProductSupplierId = supplierList[2],
-                           Price = (float)(25.49),
-                           StockBalance = 22,
-                           ProductInfoText = "A warm jacket for winter",
-                           SelectedProduct = false
-                       },
-                       new Models.Product()
-                       {
-                           Name = "Leather Jacket",
-                           Categories = new List<Models.Category>() { categoryList[0] },
-                           ProductSupplierId = supplierList[1],
-                           Price = (float)(39.29),
-                           StockBalance = 5,
-                           ProductInfoText = "A cool jacket made of leather",
-                           SelectedProduct = true
-                       },
-                       new Models.Product()
-                       {
-                           Name = "Denim Jacket",
-                           Categories = new List<Models.Category>() { categoryList[0], },
-                           ProductSupplierId = supplierList[0],
-                           Price = (float)(19.99),
-                           StockBalance = 17,
-                           ProductInfoText = "A jacket made of Denim",
-                           SelectedProduct = false
-                       },
-                       new Models.Product()
-                       {
-                           Name = "Rain Coat",
-                           Categories = new List<Models.Category>() { categoryList[0] },
-                           ProductSupplierId = supplierList[2],
-                           Price = (float)(18.99),
-                           StockBalance = 36,
-                           ProductInfoText = "A jacket that keeps you dry",
-                           SelectedProduct = false
-                       },
-                       new Models.Product()
-                       {
-                           Name = "Denim Shorts",
-                           Categories = new List<Models.Category>() { categoryList[1], categoryList[4] },
-                           ProductSupplierId = supplierList[0],
-                           Price = (float)(29.99),
-                           StockBalance = 7,
-                           ProductInfoText = "Short denim shorts",
-                           SelectedProduct = true
-                       },
-                       new Models.Product()
-                       {
-                           Name = "Sweatpants",
-                           Categories = new List<Models.Category>() { categoryList[1], categoryList[3] },
-                           ProductSupplierId = supplierList[1],
-                           Price = (float)(59.99),
-                           StockBalance = 5,
-                           ProductInfoText = "Pants made for sweatin'",
-                           SelectedProduct = false
-                       },
-                       new Models.Product()
-                       {
-                           Name = "Cargo Pants",
-                           Categories = new List<Models.Category>() { categoryList[1], categoryList[3] },
-                           ProductSupplierId = supplierList[2],
-                           Price = (float)(49.99),
-                           StockBalance = 27,
-                           ProductInfoText = "Pants, nothing more nothing less",
-                           SelectedProduct = false
-                       },
-                       new Models.Product()
-                       {
-                           Name = "Leggings",
-                           Categories = new List<Models.Category>() { categoryList[1], categoryList[4] },
-                           ProductSupplierId = supplierList[2],
-                           Price = (float)(39.99),
-                           StockBalance = 17,
-                           ProductInfoText = "Meant to cover up your legs",
-                           SelectedProduct = false
-                       },
-                       new Models.Product()
-                       {
-                           Name = "T-Shirt",
-                           Categories = new List<Models.Category>() { categoryList[2] },
-                           ProductSupplierId = supplierList[2],
-                           Price = (float)(9.99),
-                           StockBalance = 41,
-                           ProductInfoText = "As basic as it comes",
-                           SelectedProduct = false
-                       },
-                       new Models.Product()
-                       {
-                           Name = "Off-Brand Shirt",
-                           Categories = new List<Models.Category>() { categoryList[2], categoryList[3] },
-                           ProductSupplierId = supplierList[1],
-                           Price = (float)(19.99),
-                           StockBalance = 11,
-                           ProductInfoText = "If you can't make a successfull brand, copy another one!",
-                           SelectedProduct = false
-                       },
-                       new Models.Product()
-                       {
-                           Name = "Brand Shirt",
-                           Categories = new List<Models.Category>() { categoryList[2], categoryList[3] },
-                           ProductSupplierId = supplierList[1],
-                           Price = (float)(499.99),
-                           StockBalance = 41,
-                           ProductInfoText = "You pay for the brand, not the clothes",
-                           SelectedProduct = true
-                       },
-                       new Models.Product()
-                       {
-                           Name = "Women's Blouse",
-                           Categories = new List<Models.Category>() { categoryList[2], categoryList[4] },
-                           ProductSupplierId = supplierList[0],
-                           Price = (float)(29.99),
-                           StockBalance = 14,
-                           ProductInfoText = "A pretty blouse for every occation",
-                           SelectedProduct = false
-                       },
-                       new Models.Product()
-                       {
-                           Name = "Office Shirt",
-                           Categories = new List<Models.Category>() { categoryList[2], categoryList[3] },
-                           ProductSupplierId = supplierList[1],
-                           Price = (float)(29.99),
-                           StockBalance = 14,
-                           ProductInfoText = "To be in an office, you got to look the part",
-                           SelectedProduct = false
-                       }
-                       );
+                        },
+                        new Models.Product()
+                        {
+                            Name = "Winter Jacket",
+                            Categories = new List<Models.Category>() { categoryList[0], categoryList[3] },
+                            ProductSupplierId = supplierList[2],
+                            Price = (float)(25.49),
+                            StockBalance = 22,
+                            ProductInfoText = "A warm jacket for winter",
+                            ProductBrand = "Wintertime Jam",
+                            Size = "Medium"
+                        },
+                        new Models.Product()
+                        {
+                            Name = "Leather Jacket",
+                            Categories = new List<Models.Category>() { categoryList[0] },
+                            ProductSupplierId = supplierList[1],
+                            Price = (float)(39.29),
+                            StockBalance = 5,
+                            ProductInfoText = "A cool jacket made of leather",
+                            ProductBrand = "Coolio",
+                            Size = "Medium"
+
+                        },
+                        new Models.Product()
+                        {
+                            Name = "Denim Jacket",
+                            Categories = new List<Models.Category>() { categoryList[0], },
+                            ProductSupplierId = supplierList[0],
+                            Price = (float)(19.99),
+                            StockBalance = 17,
+                            ProductInfoText = "A jacket made of Denim",
+                            ProductBrand = "Reita",
+                            Size = "Large"
+                        },
+                        new Models.Product()
+                        {
+                            Name = "Rain Coat",
+                            Categories = new List<Models.Category>() { categoryList[0] },
+                            ProductSupplierId = supplierList[2],
+                            Price = (float)(18.99),
+                            StockBalance = 36,
+                            ProductInfoText = "A jacket that keeps you dry",
+                            ProductBrand = "Dry Timez",
+                            Size = "Medium"
+                        },
+                        new Models.Product()
+                        {
+                            Name = "Denim Shorts",
+                            Categories = new List<Models.Category>() { categoryList[1], categoryList[4] },
+                            ProductSupplierId = supplierList[0],
+                            Price = (float)(29.99),
+                            StockBalance = 7,
+                            ProductInfoText = "Short denim shorts",
+                            ProductBrand = "Shortys",
+                            Size = "Small"
+                        },
+                        new Models.Product()
+                        {
+                            Name = "Sweatpants",
+                            Categories = new List<Models.Category>() { categoryList[1], categoryList[3] },
+                            ProductSupplierId = supplierList[1],
+                            Price = (float)(59.99),
+                            StockBalance = 5,
+                            ProductInfoText = "Pants made for sweatin'",
+                            ProductBrand = "Gymrat",
+                            Size = "Medium"
+                        },
+                        new Models.Product()
+                        {
+                            Name = "Cargo Pants",
+                            Categories = new List<Models.Category>() { categoryList[1], categoryList[3] },
+                            ProductSupplierId = supplierList[2],
+                            Price = (float)(49.99),
+                            StockBalance = 27,
+                            ProductInfoText = "Pants, nothing more nothing less",
+                            ProductBrand = "Radz",
+                            Size = "Large"
+                        },
+                        new Models.Product()
+                        {
+                            Name = "Leggings",
+                            Categories = new List<Models.Category>() { categoryList[1], categoryList[4] },
+                            ProductSupplierId = supplierList[2],
+                            Price = (float)(39.99),
+                            StockBalance = 17,
+                            ProductInfoText = "Meant to cover up your legs",
+                            ProductBrand = "Fo'Shoz",
+                            Size = "Large"
+                        },
+                        new Models.Product()
+                        {
+                            Name = "T-Shirt",
+                            Categories = new List<Models.Category>() { categoryList[2] },
+                            ProductSupplierId = supplierList[2],
+                            Price = (float)(9.99),
+                            StockBalance = 41,
+                            ProductInfoText = "As basic as it comes",
+                            ProductBrand = "Basic",
+                            Size = "Small"
+                        },
+                        new Models.Product()
+                        {
+                            Name = "Off-Brand Shirt",
+                            Categories = new List<Models.Category>() { categoryList[2], categoryList[3] },
+                            ProductSupplierId = supplierList[1],
+                            Price = (float)(19.99),
+                            StockBalance = 11,
+                            ProductInfoText = "If you can't make a successfull brand, copy another one!",
+                            ProductBrand = "Wannabe",
+                            Size = "Medium"
+                        },
+                        new Models.Product()
+                        {
+                            Name = "Brand Shirt",
+                            Categories = new List<Models.Category>() { categoryList[2], categoryList[3] },
+                            ProductSupplierId = supplierList[1],
+                            Price = (float)(499.99),
+                            StockBalance = 41,
+                            ProductInfoText = "You pay for the brand, not the clothes",
+                            ProductBrand = "Brand'biz",
+                            Size = "Small"
+                        },
+                        new Models.Product()
+                        {
+                            Name = "Women's Blouse",
+                            Categories = new List<Models.Category>() { categoryList[2], categoryList[4] },
+                            ProductSupplierId = supplierList[0],
+                            Price = (float)(29.99),
+                            StockBalance = 14,
+                            ProductInfoText = "A pretty blouse for every occation",
+                            ProductBrand = "Sozies",
+                            Size = "Medium"
+                        },
+                        new Models.Product()
+                        {
+                            Name = "Office Shirt",
+                            Categories = new List<Models.Category>() { categoryList[2], categoryList[3] },
+                            ProductSupplierId = supplierList[1],
+                            Price = (float)(29.99),
+                            StockBalance = 14,
+                            ProductInfoText = "To be in an office, you got to look the part",
+                            ProductBrand = "Workaholic",
+                            Size = "Large"
+                        }
+                        );
+                        
                         myDb.SaveChanges();
+                        Console.WriteLine("Product data was successfully created");
+                        Console.ReadKey(true);
                     }
                     else
                     {

@@ -5,7 +5,7 @@ namespace Webshop_GruppE.Methods
     internal class ShippingHelper
 
     {
-        public static void ChooseDeliveryMethod(int customerId, List<int> boughtProducts, float? totalMoms)
+        public static void ChooseDeliveryMethod(int customerId, float? totalMoms)
         {
             Console.Clear();
             LogoWindow.LogoWindowMeth(1, 1, 24, 7);
@@ -25,7 +25,7 @@ namespace Webshop_GruppE.Methods
 
                 case 'b':
                     Console.WriteLine("Back");
-                    ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId, boughtProducts);
+                    ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId);
                     break;
                 default:
                     Console.WriteLine("Wrong input");
@@ -52,7 +52,7 @@ namespace Webshop_GruppE.Methods
 
                 case 'b':
                     Console.WriteLine("Back");
-                    ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId, boughtProducts);
+                    ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId);
                     break;
                 default:
                     Console.WriteLine("Wrong input");

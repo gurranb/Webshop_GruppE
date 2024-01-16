@@ -15,9 +15,10 @@ namespace Webshop_GruppE
         public static void StartScreen()
         {
             Console.Clear();
-            LogoWindow.LogoWindowMeth(1, 1, 24, 7);
+            
             while (true)
             {
+                LogoWindow.LogoWindowMeth(1, 1, 24, 7);
                 List<string> loginText = new List<string> {"Login as", "[A] Admin", "[U] User", "[C] Ceate test data", "[E] Exit" };
                 var loginWindow = new Window("Welcome to FashionCode website", 0, 10, loginText);
                 loginWindow.DrawWindow();
@@ -33,7 +34,6 @@ namespace Webshop_GruppE
                         Helpers.CustomerLogInMenu();
                         break;
                     case 'c':
-
                         Helpers.CreateTestData();
                         break;
                     case 'e':

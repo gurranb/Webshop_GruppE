@@ -5,7 +5,7 @@ namespace Webshop_GruppE.Methods
 {
     internal class ShoppingCartHelper
     {
-        public static void DisplayAllShoppingCartProducts(int customerId, List<int> boughtProducts)
+        public static void DisplayAllShoppingCartProducts(int customerId)
         {
             using (var myDb = new MyDbContext())
             {
@@ -40,13 +40,13 @@ namespace Webshop_GruppE.Methods
                 switch (key.KeyChar)
                 {
                     case '1':
-                        ShippingHelper.ChooseDeliveryMethod(customerId, boughtProducts, totalMoms);
+                        ShippingHelper.ChooseDeliveryMethod(customerId, totalMoms);
                         break;
                     case '2':
-                        RemoveProductFromShoppingList(customerId, boughtProducts);
+                        RemoveProductFromShoppingList(customerId);
                         break;
                     case 'b':
-                        Helpers.CustomerHomePage(customerId, boughtProducts);
+                        Helpers.CustomerHomePage(customerId);
                         break;
 
                 }
@@ -54,7 +54,7 @@ namespace Webshop_GruppE.Methods
             }
         }
 
-        public static void RemoveProductFromShoppingList(int customerId, List<int> boughtProducts)
+        public static void RemoveProductFromShoppingList(int customerId)
         {
             using (var myDB = new MyDbContext())
             {
@@ -90,7 +90,7 @@ namespace Webshop_GruppE.Methods
                     
 
                 Console.ReadKey(true);
-                Helpers.CustomerHomePage(customerId, boughtProducts);
+                Helpers.CustomerHomePage(customerId);
 
             }
 
