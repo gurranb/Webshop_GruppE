@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Webshop_GruppE.Methods;
 using Webshop_GruppE.Models;
 
@@ -8,7 +9,6 @@ namespace Webshop_GruppE
     internal class Helpers
     {
        
-
         public static void AdminLogInMenu()
         {
             while (true)
@@ -594,10 +594,7 @@ namespace Webshop_GruppE
                                          where c.Id == productId
                                          select c).SingleOrDefault();
 
-                    var shoppingCart = (from c in myDb.ShoppingCarts
-                                        where c.Id == customerId
-                                        select c).SingleOrDefault();
-
+                    
                     if (chosenProduct != null)
                     {
                         Console.WriteLine("Id: " + chosenProduct.Id + " " + " Name: " + chosenProduct.Name + " Price: " + chosenProduct.Price + " Units In Stock: " + chosenProduct.StockBalance +
@@ -609,9 +606,23 @@ namespace Webshop_GruppE
                         switch (answer.KeyChar)
                         {
                             case 'y':
-                                shoppingCart.ProductId = chosenProduct.Id;
-                                shoppingCart.CustomerId = customerId;
-                                boughtProducts.Add(chosenProduct.Id);
+                                var shoppingCart = myDb.ShoppingCarts
+                                    .Include(c => c.ShoppingCartItems)
+                                    .ThenInclude(p => p.Product)
+                                    .FirstOrDefault(c => c.CustomerId == customerId);
+                                if(shoppingCart == null)
+                                {
+                                    shoppingCart = new ShoppingCart
+                                    {
+                                        CustomerId = customerId,
+                                        ShoppingCartItems = new List<ShoppingCartItem>()
+                                    };
+                                    myDb.ShoppingCarts.Add(shoppingCart);
+                                }
+                                shoppingCart.ShoppingCartItems.Add(new ShoppingCartItem
+                                {
+                                    Product = chosenProduct
+                                });                           
                                 Console.WriteLine("You have added " + chosenProduct.Name + " to your shopping cart.");
                                 Console.ReadKey(true);
                                 break;
@@ -666,7 +677,7 @@ namespace Webshop_GruppE
                         Console.WriteLine("Add Product");
                         AddProduct(adminId);
                         break;
-                    case 'c':
+                    case 'e':
                         Console.WriteLine("Edit Product");
                         EditProduct(adminId);
                         break;
@@ -757,9 +768,31 @@ namespace Webshop_GruppE
                                 Console.Write("Type stockbalance: ");
                                 int.TryParse(Console.ReadLine(), out int stockBalance);
 
+                                myDb.Add(new Models.Product
+                                {
+                                    Name = productName,
+                                    Categories = category3.ToList(),
+                                    Price = productPrice,
+                                    ProductSupplierId = productSupplierId,
+                                    ProductInfoText = productInfo,
+                                    StockBalance = stockBalance,                                   
+                                    ProductBrand = productBrand,
+                                    Size = sizeText
+
+
+                                }); ;
+                                myDb.SaveChanges();
+
+                                var newProductId = (from c in myDb.Products
+                                                    select c.Id).Max();
+
+                                var selectNewProductId = (from c in myDb.Products
+                                                          where c.Id == newProductId
+                                                          select c).SingleOrDefault();
+
                                 if (stockBalance != null && stockBalance > 0)
                                 {
-                                    Console.WriteLine("Show product on Homepage ? Type Y/N");
+                                    Console.WriteLine("Show product in selected deals frontpage? Type Y/N");
                                     bool selectedProduct = true;
 
                                     while (true)
@@ -770,6 +803,10 @@ namespace Webshop_GruppE
                                         {
                                             case 'y':
                                                 selectedProduct = true;
+                                                myDb.Add(new Models.SelectTopDealItem { Product = selectNewProductId });
+                                                myDb.SaveChanges();
+                                                Console.WriteLine("Items successfully added to deals!");
+                                                Console.ReadKey(true);
                                                 break;
                                             case 'n':
                                                 selectedProduct = false;
@@ -778,21 +815,7 @@ namespace Webshop_GruppE
                                                 Console.WriteLine("Error, wrong input.");
                                                 break;
                                         }
-                                        myDb.Add(new Models.Product
-                                        {
-                                            Name = productName,
-                                            Categories = category3.ToList(),
-                                            Price = productPrice,
-                                            ProductSupplierId = productSupplierId,
-                                            ProductInfoText = productInfo,
-                                            StockBalance = stockBalance,
-                                            SelectedProduct = selectedProduct,
-                                            ProductBrand = productBrand,
-                                            Size = sizeText
-                                            
-                                            
-                                        });;
-                                        myDb.SaveChanges();
+                                        
 
                                        
                                         Console.WriteLine("You have added " + productName + " to the list");
@@ -838,7 +861,7 @@ namespace Webshop_GruppE
             {
                 LogoWindow.LogoWindowMeth(1, 1, 24, 7);
                 List<string> changeProductText = new List<string> { "[1] Edit product name", "[2] Edit product price", "[3] Edit product supplier Id",
-                        "[4] Edit product info", "[5] Edit product stock balance", "[B] Back" };
+                        "[4] Edit product info", "[5] Edit product stock balance", "[6] Edit if on deal", "[B] Back" };
                 var changeProductWindow = new Window("Change Product Menu", 1, 13, changeProductText);
                 changeProductWindow.DrawWindow();
 
@@ -859,6 +882,9 @@ namespace Webshop_GruppE
                         break;
                     case '5':
                         EditStockBalance();
+                        break;
+                    case '6':
+                        EditIfDeal();
                         break;
                     case 'b':
                         ProductMenu(adminId);
@@ -1041,7 +1067,51 @@ namespace Webshop_GruppE
             }
             Console.Clear();
         }
+        public static void EditIfDeal()
+        {
+            using (var myDb = new MyDbContext())
+            {
 
+                Console.Write("Input product Id: ");
+                int.TryParse(Console.ReadLine(), out int productId);
+
+                var selectedProduct = (from c in myDb.Products
+                                       where c.Id == productId
+                                       select c).FirstOrDefault();
+                if(selectedProduct != null )
+                {
+                    var productList = (from c in myDb.SelectTopDealItems
+                                       select c).ToList();
+                    myDb.Add(new Models.SelectTopDealItem { Product = selectedProduct });
+
+                    if(productList.Count <= 5)
+                    {
+                        myDb.SaveChanges();
+                        Console.WriteLine("Items successfully added to deals!");
+                        Console.ReadKey(true);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Too many items in product deals, please remove at least one");
+                    }
+                    
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input, please try again.");
+                }
+
+               
+                
+
+
+
+
+
+
+            }
+
+        }
         public static void RemoveProduct(int adminId)
         {
             using (var myDb = new MyDbContext())

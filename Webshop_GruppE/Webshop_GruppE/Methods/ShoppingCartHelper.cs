@@ -1,11 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 using Webshop_GruppE.Models;
-using Dapper;
 
 namespace Webshop_GruppE.Methods
 {
@@ -18,23 +12,24 @@ namespace Webshop_GruppE.Methods
                 Console.Clear();
                 float? totalSum = 0f;
                 float? moms = 1.25f;
-                var productInfo = (from c in myDb.Products
-                                   select c).ToList();
+                //var productInfo = (from c in myDb.Products
+                //                   select c).ToList();
 
+                var productList = myDb.ShoppingCarts
+                                   .Include(c => c.ShoppingCartItems)
+                                   .ThenInclude(p => p.Product)
+                                   .FirstOrDefault(c => c.CustomerId == customerId);
 
-                foreach (var boughtProduct in boughtProducts)
+                if (productList != null)
                 {
-                    Console.Write("Id: " + boughtProduct);
-                    foreach(var product in productInfo)
+                    foreach (var shoppingItem in productList.ShoppingCartItems)
                     {
-                        if(product.Id == boughtProduct)
-                        {
-                            Console.WriteLine(" Name: " + product.Name + " Price: " + product.Price + "$");
-                            totalSum += product.Price;
-                        }
-                    }    
+                        var product = shoppingItem.Product;
+                        Console.WriteLine("Id: " + product.Id + " Name: " + product.Name + " Price: " + product.Price + "$");
+                        totalSum += product.Price;
+                    }
                 }
-               
+
                 float? totalMoms = totalSum * moms;
                 Console.WriteLine("Total cost for products: " + Math.Round((decimal)totalSum, 2) + "$\nTotal cost inclusive moms: " + Math.Round((decimal)totalMoms, 2) + "$");
                 Console.ReadKey(true);
@@ -42,8 +37,9 @@ namespace Webshop_GruppE.Methods
                 Console.WriteLine("[1] Buy all products\n[2] Remove Product\n[B] Back");
 
                 var key = Console.ReadKey(true);
-                switch(key.KeyChar)
-                {   case '1':
+                switch (key.KeyChar)
+                {
+                    case '1':
                         ShippingHelper.ChooseDeliveryMethod(customerId, boughtProducts, totalMoms);
                         break;
                     case '2':
@@ -52,30 +48,51 @@ namespace Webshop_GruppE.Methods
                     case 'b':
                         Helpers.CustomerHomePage(customerId, boughtProducts);
                         break;
-                    
+
                 }
-                
+
             }
         }
 
         public static void RemoveProductFromShoppingList(int customerId, List<int> boughtProducts)
-        {          
-                Console.Write("Input product Id: ");
-                int.TryParse(Console.ReadLine(), out int itemId);
+        {
+            using (var myDB = new MyDbContext())
+            {
+                var removeItemFromList = myDB.ShoppingCarts
+                                   .Include(c => c.ShoppingCartItems)
+                                   .ThenInclude(p => p.Product)
+                                   .FirstOrDefault(c => c.CustomerId == customerId);
 
-                for (int i = 0; i < boughtProducts.Count; i++)
+                
+
+                Console.Write("Input product Id: ");
+                int.TryParse(Console.ReadLine(), out var productId);
+
+                if (removeItemFromList != null)
                 {
-                    if (boughtProducts[i] == itemId)
+                    //int.TryParse(Console.ReadLine(), out int itemId);
+                    foreach (var shoppingItem in removeItemFromList.ShoppingCartItems)
                     {
-                        boughtProducts.Remove(itemId);
-                        Console.WriteLine("You've succesfully removed an item from your shopping cart.");
+                        var product = shoppingItem.Product;
+
+                        if (product.Id == productId)
+                        {                            
+                            myDB.Remove(product);
+                        }
                     }
+                        
+                    
+                    Console.WriteLine("You've succesfully removed an item from your shopping cart.");
+                    myDB.SaveChanges();
                 }
-            
+                            
+                        
+                    
+
                 Console.ReadKey(true);
                 Helpers.CustomerHomePage(customerId, boughtProducts);
-            
-            
+
+            }
 
         }
         public static void AddProductToShoppingCart()

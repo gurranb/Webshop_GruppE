@@ -26,6 +26,7 @@ namespace Webshop_GruppE.Models
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<ShippingInfo> ShippingInfos { get; set; }
         public DbSet<ShoppingCart> ShoppingCarts { get; set;}
+        public DbSet<SelectTopDealItem> SelectTopDealItems { get;set; }
 
     }
 }

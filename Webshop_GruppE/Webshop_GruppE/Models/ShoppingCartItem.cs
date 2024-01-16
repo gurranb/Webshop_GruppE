@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Webshop_GruppE.Models
 {
-    internal class Category
+    internal class ShoppingCartItem
     {
         public int Id { get; set; }
-        public string? CategoryName { get; set; }
-        
+        public Product Product { get; set; }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE
@@ -96,23 +97,21 @@ namespace Webshop_GruppE
         {
             using (var database = new MyDbContext())
             {
-                List<string> productsText = new List<string>();
+                List<string> productText = new List<string>();
+                var productList = database.SelectTopDealItems
+                    .Include(c => c.Product).ToList();
 
-
-
-                foreach (var products in database.Products)
-                {
-                    if(products.SelectedProduct == true)
-                    {
-                        productsText.Add("Id: " + products.Id + " " + "Name: " + products.Name + " Pris: " + products.Price + "$");
-                    }                   
+                foreach(var product in productList)
+                {                  
+                    productText.Add(product.Product.Name + " " + product.Product.Price + "$");
+                    
                 }
 
-                if (productsText.Count == 0)
+                if (productText.Count == 0)
                 {
-                    productsText.Add("Empty");
+                    productText.Add("Empty");
                 }
-                var productsWindow = new Window("Fashion Deals", 60, 25, productsText);
+                var productsWindow = new Window("Fashion Deals", 60, 25, productText);
                 productsWindow.DrawWindow();
             }
         }

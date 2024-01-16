@@ -11,5 +11,7 @@ namespace Webshop_GruppE.Models
         public int Id { get; set; }
         public int? CustomerId { get; set; }
         public int? ProductId { get; set; }
+
+        public virtual ICollection<ShoppingCartItem>? ShoppingCartItems { get; set; }
     }
 }
