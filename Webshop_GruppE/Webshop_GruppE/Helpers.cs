@@ -8,7 +8,6 @@ namespace Webshop_GruppE
 {
     internal class Helpers
     {
-
         public static void AdminLogInMenu()
         {
             while (true)
@@ -63,8 +62,6 @@ namespace Webshop_GruppE
         {
             while (true)
             {
-
-
                 using (var myDb = new MyDbContext())
                 {
                     Console.WriteLine("Input Username: ");
@@ -96,9 +93,6 @@ namespace Webshop_GruppE
                 }
             }
         }
-
-
-
         public static void SignUpAdmin()
         {
             using (var myDb = new MyDbContext())
@@ -130,7 +124,6 @@ namespace Webshop_GruppE
             Console.ReadKey(true);
             Console.Clear();
         }
-
         public static void AdminHomePage(int adminId)
         {
             Console.Clear();
@@ -189,7 +182,6 @@ namespace Webshop_GruppE
                 }
             }
         }
-
         public static void SupplierMenu(int adminId)
         {
             Console.Clear();
@@ -220,7 +212,6 @@ namespace Webshop_GruppE
                 }
             }
         }
-
         public static void AddSupplier(int adminId)
         {
             using (var myDb = new MyDbContext())
@@ -426,11 +417,10 @@ namespace Webshop_GruppE
                         var customerId = (from c in myDb.Customers
                                           where c.CustomerUserName == userName
                                           select c.Id).SingleOrDefault();
-                        
+
                         CustomerHomePage(customerId);
                     }
                 }
-
             }
         }
 
@@ -596,15 +586,15 @@ namespace Webshop_GruppE
                         {
                             case 'y':
                                 var stockBalance = (from c in myDb.Products
-                                                     where c.Id == chosenProduct.Id
-                                                     select c).FirstOrDefault();
+                                                    where c.Id == chosenProduct.Id
+                                                    select c).FirstOrDefault();
                                 Console.WriteLine("How many? ");
                                 int.TryParse(Console.ReadLine(), out int purchaseAmount);
 
-                                for(int i = 0; i < purchaseAmount; i++)
+                                for (int i = 0; i < purchaseAmount; i++)
                                 {
-                                    
-                                    if(stockBalance.StockBalance < 1)
+
+                                    if (stockBalance.StockBalance < 1)
                                     {
                                         Console.WriteLine("Product is out of stock");
                                         Console.ReadKey(true);
@@ -612,12 +602,12 @@ namespace Webshop_GruppE
                                     }
                                     stockBalance.StockBalance -= 1;
                                 }
-                                
+
                                 var shoppingCart = myDb.ShoppingCarts
                                     .Include(c => c.ShoppingCartItems)
                                     .ThenInclude(p => p.Product)
                                     .FirstOrDefault(c => c.CustomerId == customerId);
-                                
+
                                 if (shoppingCart == null)
                                 {
                                     shoppingCart = new ShoppingCart
@@ -627,14 +617,14 @@ namespace Webshop_GruppE
                                     };
                                     myDb.ShoppingCarts.Add(shoppingCart);
                                 }
-                                for(int i = 0; i < purchaseAmount; i++)
+                                for (int i = 0; i < purchaseAmount; i++)
                                 {
                                     shoppingCart.ShoppingCartItems.Add(new ShoppingCartItem
                                     {
                                         Product = chosenProduct
                                     });
                                 }
-                                
+
 
                                 Console.WriteLine("You have added " + chosenProduct.Name + " to your shopping cart.");
                                 Console.ReadKey(true);
@@ -680,8 +670,6 @@ namespace Webshop_GruppE
                 List<string> productsText = Database.DisplayAllProducts();
                 var productsWindow = new Window("Products", 70, 1, productsText);
                 productsWindow.DrawWindow();
-
-
 
                 var key = Console.ReadKey(true);
                 switch (key.KeyChar)
@@ -810,7 +798,7 @@ namespace Webshop_GruppE
 
                                     while (true)
                                     {
-                                        var key = Console.ReadKey();
+                                        var key = Console.ReadKey(true);
 
                                         switch (key.KeyChar)
                                         {
@@ -1112,15 +1100,6 @@ namespace Webshop_GruppE
                 {
                     Console.WriteLine("Invalid input, please try again.");
                 }
-
-
-
-
-
-
-
-
-
             }
 
         }
@@ -1134,7 +1113,7 @@ namespace Webshop_GruppE
 
                 var removeProduct = (from c in myDb.Products
                                      where c.Id == productId
-                                     select c).SingleOrDefault();
+                                     select c).FirstOrDefault();
 
                 if (removeProduct != null)
                 {
@@ -1232,35 +1211,39 @@ namespace Webshop_GruppE
                 }
             }
             Console.Clear();
-
         }
+        // fixa detta
         public static void RemoveCategory(int adminId)
         {
             using (var myDb = new MyDbContext())
             {
-
                 Console.Write("Input category Id: ");
                 int categoryId = int.Parse(Console.ReadLine());
                 var removeCategory = (from c in myDb.Categories
                                       where c.Id == categoryId
                                       select c).SingleOrDefault();
 
-                if (removeCategory != null)
-                {
-                    myDb.Remove(removeCategory);
-                    Console.WriteLine("You have successfully removed category Id " + categoryId);
-                    Console.ReadKey();
-                    myDb.SaveChanges();
+                var findProductInCategory = (from c in myDb.Products
+                                             where c.Categories.Count() == 0
+                                             select c).ToList();
 
+                if (removeCategory != null )                   
+                {
+                    if(findProductInCategory.Count() == 0)
+                    {
+                        myDb.Remove(removeCategory);
+                        Console.WriteLine("You have successfully removed category Id " + categoryId);
+                        Console.ReadKey();
+                        myDb.SaveChanges();
+                    }          
                 }
                 else
                 {
-                    Console.WriteLine("Error wrong ID");
+                    Console.WriteLine("Error wrong ID or there is a product still in category");
                     Console.ReadKey();
                 }
             }
             Console.Clear();
-
         }
 
         public static List<Customer> GetAllCustomers()
@@ -1283,7 +1266,7 @@ namespace Webshop_GruppE
             List<Customer> customers = GetAllCustomers();
             Console.WriteLine("{0,-5}{1,-15}{2,-15}{3,-5}{4,-15}{5,-15}{6,-10}{7,-20}{8,-15}{9,-20}{10,-20}{11,-15}",
                       "ID", "First Name", "Last Name", "Age", "Username", "Password", "Country",
-                      "Street Address", "Postal Code", "Card Number", "E-Mail", "Shopping Cart Id");
+                      "Street Address", "Postal Code", "Card Number", "E-Mail");
 
             Console.WriteLine("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
 
@@ -1292,7 +1275,7 @@ namespace Webshop_GruppE
                 Console.WriteLine($"{customer.Id,-5}{customer.FirstName,-15}{customer.LastName,-15}" +
                                   $"{customer.Age,-5}{customer.CustomerUserName,-15}{customer.CustomerPassword,-15}" +
                                   $"{customer.Country,-10}{customer.StreetAddress,-20}{customer.PostalCode,-15}" +
-                                  $"{customer.CardNumber,-20}{customer.EMailAdress,-20}{customer.ShoppingCartId,-15}");
+                                  $"{customer.CardNumber,-20}{customer.EMailAdress,-20}");
             }
 
             Console.WriteLine("\n[1] Edit first name\n[2] Edit last name\n[3] Edit Age\n[4] Edit username\n" +
@@ -1343,7 +1326,7 @@ namespace Webshop_GruppE
 
         public static void CreateTestData()
         {
-            
+
             using (var myDb = new MyDbContext())
             {
                 var testCustomer = (from c in myDb.Customers
@@ -1351,7 +1334,7 @@ namespace Webshop_GruppE
                                     select c).SingleOrDefault();
 
                 if (testCustomer == null)
-                {                   
+                {
 
                     myDb.Add(new Models.Customer()
                     {
@@ -1364,7 +1347,7 @@ namespace Webshop_GruppE
                         StreetAddress = "TestAddress",
                         PostalCode = 11111,
                         CardNumber = 11111111,
-                        EMailAdress = "test@mail.com",                      
+                        EMailAdress = "test@mail.com",
 
                     });
 
@@ -1374,10 +1357,8 @@ namespace Webshop_GruppE
                 }
                 else
                 {
-
                     Console.WriteLine("A customer test account already exists!");
                     Console.ReadKey(true);
-
                 }
 
                 var testAdmin = (from c in myDb.Admins
@@ -1389,7 +1370,7 @@ namespace Webshop_GruppE
                     myDb.Add(new Models.Admin() { FirstName = "Test", LastName = "Admin", AdminName = "TestAdmin", AdminPassword = "test1", EMailAdress = "admin@mail.com" });
                     myDb.SaveChanges();
                     Console.WriteLine("Admin Test account was successfully created!");
-                    Console.ReadKey(true);                  
+                    Console.ReadKey(true);
                 }
                 else
                 {
@@ -1398,10 +1379,10 @@ namespace Webshop_GruppE
                 }
 
                 var findCategories = (from c in myDb.Categories
-                                      where c.CategoryName == "Jackets" || c.CategoryName == "Trousers" || c.CategoryName == "Tops" 
+                                      where c.CategoryName == "Jackets" || c.CategoryName == "Trousers" || c.CategoryName == "Tops"
                                       || c.CategoryName == "Men's Clothing" || c.CategoryName == "Women's Clothing"
                                       select c).ToList();
-               
+
                 if (findCategories.Count == 0)
                 {
                     myDb.AddRange(new Models.Category() { CategoryName = "Jackets" }, new Models.Category() { CategoryName = "Trousers" }, new Models.Category() { CategoryName = "Tops" },
@@ -1448,7 +1429,6 @@ namespace Webshop_GruppE
                                    where c.Name == "Summer Jacket" && c.ProductSupplierId == 1
                                    select c).ToList();
 
-
                 if (categoryList != null && supplierList != null)
                 {
                     if (productList.Count < 1)
@@ -1464,7 +1444,6 @@ namespace Webshop_GruppE
                             ProductInfoText = "A nice jacket for the summer",
                             ProductBrand = "Summertime Jam",
                             Size = "Small"
-
                         },
                         new Models.Product()
                         {
@@ -1611,7 +1590,7 @@ namespace Webshop_GruppE
                             Size = "Large"
                         }
                         );
-                        
+
                         myDb.SaveChanges();
                         Console.WriteLine("Product data was successfully created");
                         Console.ReadKey(true);

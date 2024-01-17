@@ -11,8 +11,7 @@ namespace Webshop_GruppE.Models
         public int Id { get; set; }
         public int? CustomerId { get; set; }
         public int? ShippingId { get; set; }
-
-        
+        public Product Product { get; set; }
 
     }
 }

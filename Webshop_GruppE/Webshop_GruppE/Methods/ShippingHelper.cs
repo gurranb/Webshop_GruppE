@@ -10,7 +10,7 @@ namespace Webshop_GruppE.Methods
         {
             Console.Clear();
             LogoWindow.LogoWindowMeth(1, 1, 24, 7);
-            using(var myDb = new MyDbContext())
+            using (var myDb = new MyDbContext())
             {
                 var productList = myDb.ShoppingCarts
                                                    .Include(c => c.ShoppingCartItems)
@@ -25,11 +25,44 @@ namespace Webshop_GruppE.Methods
                 switch (key.KeyChar)
                 {
                     case '1':
-                        Console.Write("Standard delivery + 5$ total price: " + (totalMoms += 5.0f) + "$");                      
-                        int.TryParse(Console.ReadLine(), out var productId);
+                        Console.Write("Standard delivery + 5$ total price: " + (totalMoms += 5.0f) + "$");
+                        ChoosePaymentMethod(customerId);
+                        break;
+                    case '2':
+                        Console.WriteLine("Express delivery + 10$ total price: " + (totalMoms += 10f) + "$");
+                        ChoosePaymentMethod(customerId);
+                        break;
+                    case 'b':
+                        Console.WriteLine("Back");
+                        ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId);
+                        break;
+                    default:
+                        Console.WriteLine("Wrong input");
+                        Console.ReadKey();
+                        break;
+                }
+
+            }
+        }
+        public static void ChoosePaymentMethod(int customerId)
+        {
+            List<string> paymentText = new List<string> { "[1] Pay now ", "[2] Pay later ", "[B] Back" };
+            var userWindow = new Window("Payment", 30, 1, paymentText);
+            userWindow.DrawWindow();
+            using (var myDb = new MyDbContext())
+            {
+
+                var productList = myDb.ShoppingCarts
+                                                   .Include(c => c.ShoppingCartItems)
+                                                   .ThenInclude(p => p.Product)
+                                                   .FirstOrDefault(c => c.CustomerId == customerId);
+
+                var key = Console.ReadKey(true);
+                switch (key.KeyChar)
+                {
+                    case '1':                       
                         if (productList != null)
                         {
-                            //int.TryParse(Console.ReadLine(), out int itemId);
                             foreach (var shoppingItem in productList.ShoppingCartItems)
                             {
                                 myDb.Remove(shoppingItem);
@@ -38,7 +71,15 @@ namespace Webshop_GruppE.Methods
                         myDb.SaveChanges();
                         break;
                     case '2':
-                        Console.WriteLine("Express delivery + 10$ total price: " + (totalMoms += 10f) + "$");
+                        Console.WriteLine("Pay later");
+                        if (productList != null)
+                        {
+                            foreach (var shoppingItem in productList.ShoppingCartItems)
+                            {
+                                myDb.Remove(shoppingItem);
+                            }
+                        }
+                        myDb.SaveChanges();
                         break;
 
                     case 'b':
@@ -50,34 +91,6 @@ namespace Webshop_GruppE.Methods
                         Console.ReadKey();
                         break;
                 }
-            
-            }
-        }
-        public static void ChoosePaymentMethod(int customerId, List<int> boughtProducts)
-        {
-            List<string> paymentText = new List<string> { "[1] Pay now ", "[2] Pay later ", "[B] Back" };
-            var userWindow = new Window("Payment", 30, 1, paymentText);
-            userWindow.DrawWindow();
-
-            var key = Console.ReadKey(true);
-            switch (key.KeyChar)
-            {
-                case '1':
-                    Console.Write("Pay now");
-                    break;
-                case '2':
-                    Console.WriteLine("Pay later");
-
-                    break;
-
-                case 'b':
-                    Console.WriteLine("Back");
-                    ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId);
-                    break;
-                default:
-                    Console.WriteLine("Wrong input");
-                    Console.ReadKey();
-                    break;
             }
         }
     }
