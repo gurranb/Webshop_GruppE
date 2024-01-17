@@ -374,11 +374,9 @@ namespace Webshop_GruppE
                         BrowseProducts(customerId);
                         break;
                     case 's':
-                        Console.WriteLine("");
                         ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId);
                         break;
                     case 'p':
-                        Console.WriteLine("");
                         Database.DisplayCustomerDetails(customerId);
                         break;
                     case 'b':
@@ -597,10 +595,29 @@ namespace Webshop_GruppE
                         switch (answer.KeyChar)
                         {
                             case 'y':
+                                var stockBalance = (from c in myDb.Products
+                                                     where c.Id == chosenProduct.Id
+                                                     select c).FirstOrDefault();
+                                Console.WriteLine("How many? ");
+                                int.TryParse(Console.ReadLine(), out int purchaseAmount);
+
+                                for(int i = 0; i < purchaseAmount; i++)
+                                {
+                                    
+                                    if(stockBalance.StockBalance < 1)
+                                    {
+                                        Console.WriteLine("Product is out of stock");
+                                        Console.ReadKey(true);
+                                        break;
+                                    }
+                                    stockBalance.StockBalance -= 1;
+                                }
+                                
                                 var shoppingCart = myDb.ShoppingCarts
                                     .Include(c => c.ShoppingCartItems)
                                     .ThenInclude(p => p.Product)
                                     .FirstOrDefault(c => c.CustomerId == customerId);
+                                
                                 if (shoppingCart == null)
                                 {
                                     shoppingCart = new ShoppingCart
@@ -610,10 +627,15 @@ namespace Webshop_GruppE
                                     };
                                     myDb.ShoppingCarts.Add(shoppingCart);
                                 }
-                                shoppingCart.ShoppingCartItems.Add(new ShoppingCartItem
+                                for(int i = 0; i < purchaseAmount; i++)
                                 {
-                                    Product = chosenProduct
-                                });
+                                    shoppingCart.ShoppingCartItems.Add(new ShoppingCartItem
+                                    {
+                                        Product = chosenProduct
+                                    });
+                                }
+                                
+
                                 Console.WriteLine("You have added " + chosenProduct.Name + " to your shopping cart.");
                                 Console.ReadKey(true);
                                 break;
@@ -1324,7 +1346,6 @@ namespace Webshop_GruppE
             
             using (var myDb = new MyDbContext())
             {
-                bool keepAdding = true;
                 var testCustomer = (from c in myDb.Customers
                                     where c.CustomerUserName == "TestCustomer"
                                     select c).SingleOrDefault();
@@ -1355,7 +1376,6 @@ namespace Webshop_GruppE
                 {
 
                     Console.WriteLine("A customer test account already exists!");
-                    keepAdding = false;
                     Console.ReadKey(true);
 
                 }
@@ -1364,7 +1384,7 @@ namespace Webshop_GruppE
                                  where c.AdminName == "TestAdmin"
                                  select c).SingleOrDefault();
 
-                if (keepAdding == true && testAdmin == null)
+                if (testAdmin == null)
                 {
                     myDb.Add(new Models.Admin() { FirstName = "Test", LastName = "Admin", AdminName = "TestAdmin", AdminPassword = "test1", EMailAdress = "admin@mail.com" });
                     myDb.SaveChanges();

@@ -12,8 +12,6 @@ namespace Webshop_GruppE.Methods
                 Console.Clear();
                 float? totalSum = 0f;
                 float? moms = 1.25f;
-                //var productInfo = (from c in myDb.Products
-                //                   select c).ToList();
 
                 var productList = myDb.ShoppingCarts
                                    .Include(c => c.ShoppingCartItems)
@@ -32,11 +30,9 @@ namespace Webshop_GruppE.Methods
 
                 float? totalMoms = totalSum * moms;
                 Console.WriteLine("Total cost for products: " + Math.Round((decimal)totalSum, 2) + "$\nTotal cost inclusive moms: " + Math.Round((decimal)totalMoms, 2) + "$");
-                Console.ReadKey(true);
-
                 Console.WriteLine("[1] Buy all products\n[2] Remove Product\n[B] Back");
-
                 var key = Console.ReadKey(true);
+
                 switch (key.KeyChar)
                 {
                     case '1':
@@ -63,31 +59,41 @@ namespace Webshop_GruppE.Methods
                                    .ThenInclude(p => p.Product)
                                    .FirstOrDefault(c => c.CustomerId == customerId);
 
-                
-
-                Console.Write("Input product Id: ");
-                int.TryParse(Console.ReadLine(), out var productId);
-
                 if (removeItemFromList != null)
                 {
-                    //int.TryParse(Console.ReadLine(), out int itemId);
-                    foreach (var shoppingItem in removeItemFromList.ShoppingCartItems)
-                    {
-                        var product = shoppingItem.Product;
+                    Console.Write("Input product Id: ");
+                    int.TryParse(Console.ReadLine(), out var productId);
+                
+                    Console.WriteLine("How many would you like to remove?: ");
+                    int.TryParse(Console.ReadLine(), out var removeAmount);
 
-                        if (product.Id == productId)
-                        {                            
-                            myDB.Remove(product);
+
+                    if (removeAmount > 0 || removeAmount <= removeItemFromList.ShoppingCartItems.Count)
+                    {
+                        //int.TryParse(Console.ReadLine(), out int itemId);
+                        foreach (var shoppingItem in removeItemFromList.ShoppingCartItems)
+                        {
+                            var product = shoppingItem.Product;
+
+                            if (product.Id == productId)
+                            {
+                                myDB.Remove(shoppingItem);
+                                shoppingItem.Product.StockBalance += 1;
+                                removeAmount -= 1;
+                            }
+                            if(removeAmount == 0)
+                            {
+                                break;
+                            }
                         }
                     }
-                        
-                    
+
                     Console.WriteLine("You've succesfully removed an item from your shopping cart.");
                     myDB.SaveChanges();
                 }
-                            
-                        
-                    
+
+
+
 
                 Console.ReadKey(true);
                 Helpers.CustomerHomePage(customerId);

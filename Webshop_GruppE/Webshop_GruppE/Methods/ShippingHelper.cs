@@ -1,4 +1,5 @@
-﻿using Webshop_GruppE.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE.Methods
 {
@@ -9,28 +10,47 @@ namespace Webshop_GruppE.Methods
         {
             Console.Clear();
             LogoWindow.LogoWindowMeth(1, 1, 24, 7);
-            List<string> deliveryText = new List<string> { "[1] Standard delivery +5$ ", "[2] Express delivery +10$ ", "[B] Back" };
-            var userWindow = new Window("Payment", 62, 1, deliveryText);
-            userWindow.DrawWindow();
-
-            var key = Console.ReadKey(true);
-            switch (key.KeyChar)
+            using(var myDb = new MyDbContext())
             {
-                case '1':
-                    Console.Write("Standard delivery + 5$ total price: " + (totalMoms += 5.0f) + "$");
-                    break;
-                case '2':
-                    Console.WriteLine("Express delivery + 10$ total price: " + (totalMoms += 10f) + "$");
-                    break;
+                var productList = myDb.ShoppingCarts
+                                                   .Include(c => c.ShoppingCartItems)
+                                                   .ThenInclude(p => p.Product)
+                                                   .FirstOrDefault(c => c.CustomerId == customerId);
 
-                case 'b':
-                    Console.WriteLine("Back");
-                    ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId);
-                    break;
-                default:
-                    Console.WriteLine("Wrong input");
-                    Console.ReadKey();
-                    break;
+                List<string> deliveryText = new List<string> { "[1] Standard delivery +5$ ", "[2] Express delivery +10$ ", "[B] Back" };
+                var userWindow = new Window("Payment", 62, 1, deliveryText);
+                userWindow.DrawWindow();
+
+                var key = Console.ReadKey(true);
+                switch (key.KeyChar)
+                {
+                    case '1':
+                        Console.Write("Standard delivery + 5$ total price: " + (totalMoms += 5.0f) + "$");                      
+                        int.TryParse(Console.ReadLine(), out var productId);
+                        if (productList != null)
+                        {
+                            //int.TryParse(Console.ReadLine(), out int itemId);
+                            foreach (var shoppingItem in productList.ShoppingCartItems)
+                            {
+                                myDb.Remove(shoppingItem);
+                            }
+                        }
+                        myDb.SaveChanges();
+                        break;
+                    case '2':
+                        Console.WriteLine("Express delivery + 10$ total price: " + (totalMoms += 10f) + "$");
+                        break;
+
+                    case 'b':
+                        Console.WriteLine("Back");
+                        ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId);
+                        break;
+                    default:
+                        Console.WriteLine("Wrong input");
+                        Console.ReadKey();
+                        break;
+                }
+            
             }
         }
         public static void ChoosePaymentMethod(int customerId, List<int> boughtProducts)
