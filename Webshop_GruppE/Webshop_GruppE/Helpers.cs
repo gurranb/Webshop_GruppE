@@ -1223,24 +1223,28 @@ namespace Webshop_GruppE
                                       where c.Id == categoryId
                                       select c).SingleOrDefault();
 
-                var findProductInCategory = (from c in myDb.Products
-                                             where c.Categories.Count() == 0
-                                             select c).ToList();
-
-                if (removeCategory != null )                   
+                if (removeCategory != null )   
                 {
-                    if(findProductInCategory.Count() == 0)
+                    var findProductInCategory = myDb.Products.Include(p => p.Categories)
+                                               .Where(p => p.Categories.Any(c => c.Id == categoryId)).ToList();
+
+                    if (findProductInCategory.Count() == 0)
                     {
                         myDb.Remove(removeCategory);
                         Console.WriteLine("You have successfully removed category Id " + categoryId);
-                        Console.ReadKey();
+                        Console.ReadKey(true);
                         myDb.SaveChanges();
-                    }          
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: There are still products in the category. Remove or move the products before deleting the category.");
+                        Console.ReadKey(true);
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Error wrong ID or there is a product still in category");
-                    Console.ReadKey();
+                    Console.WriteLine("Error wrong ID or category not found.");
+                    Console.ReadKey(true);
                 }
             }
             Console.Clear();
