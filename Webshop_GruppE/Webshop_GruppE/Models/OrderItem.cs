@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Webshop_GruppE.Models
 {
-    internal class Order
+    internal class OrderItem
     {
         public int Id { get; set; }
-        public int? CustomerId { get; set; }
-        public virtual ICollection<OrderItem>? OrderItems { get; set; }
+        public Product Product { get; set; }
+
     }
 }
