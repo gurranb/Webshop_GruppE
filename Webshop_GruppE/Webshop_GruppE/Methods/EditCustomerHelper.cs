@@ -40,7 +40,7 @@ namespace Webshop_GruppE.Methods
 
                 }
                 Console.Clear();
-                Helpers.ListCustomers(adminId);
+                AdminHelper.ListCustomers(adminId);
             }
         }
 
@@ -75,7 +75,7 @@ namespace Webshop_GruppE.Methods
 
                 }
                 Console.Clear();
-                Helpers.ListCustomers(adminId);
+                AdminHelper.ListCustomers(adminId);
             }
         }
         public static void EditCustomerAge(int adminId)
@@ -109,7 +109,7 @@ namespace Webshop_GruppE.Methods
 
                 }
                 Console.Clear();
-                Helpers.ListCustomers(adminId);
+                AdminHelper.ListCustomers(adminId);
             }
         }
 
@@ -144,7 +144,7 @@ namespace Webshop_GruppE.Methods
 
                 }
                 Console.Clear();
-                Helpers.ListCustomers(adminId);
+                AdminHelper.ListCustomers(adminId);
             }
         }
 
@@ -179,7 +179,7 @@ namespace Webshop_GruppE.Methods
 
                 }
                 Console.Clear();
-                Helpers.ListCustomers(adminId);
+                AdminHelper.ListCustomers(adminId);
             }
         }
         public static void EditCustomerCountry(int adminId)
@@ -213,7 +213,7 @@ namespace Webshop_GruppE.Methods
 
                 }
                 Console.Clear();
-                Helpers.ListCustomers(adminId);
+                AdminHelper.ListCustomers(adminId);
             }
         }
 
@@ -248,7 +248,7 @@ namespace Webshop_GruppE.Methods
 
                 }
                 Console.Clear();
-                Helpers.ListCustomers(adminId);
+                AdminHelper.ListCustomers(adminId);
             }
         }
 
@@ -283,7 +283,7 @@ namespace Webshop_GruppE.Methods
 
                 }
                 Console.Clear();
-                Helpers.ListCustomers(adminId);
+                AdminHelper.ListCustomers(adminId);
             }
         }
 
@@ -318,7 +318,7 @@ namespace Webshop_GruppE.Methods
 
                 }
                 Console.Clear();
-                Helpers.ListCustomers(adminId);
+                AdminHelper.ListCustomers(adminId);
             }
         }
 
@@ -353,7 +353,7 @@ namespace Webshop_GruppE.Methods
 
                 }
                 Console.Clear();
-                Helpers.ListCustomers(adminId);
+                AdminHelper.ListCustomers(adminId);
             }
         }
     }

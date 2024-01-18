@@ -42,7 +42,7 @@ namespace Webshop_GruppE.Methods
                         RemoveProductFromShoppingList(customerId);
                         break;
                     case 'b':
-                        Helpers.CustomerHomePage(customerId);
+                        CustomerHelper.CustomerHomePage(customerId);
                         break;
 
                 }
@@ -85,6 +85,7 @@ namespace Webshop_GruppE.Methods
                             {
                                 break;
                             }
+
                         }
                     }
 
@@ -96,7 +97,7 @@ namespace Webshop_GruppE.Methods
 
 
                 Console.ReadKey(true);
-                Helpers.CustomerHomePage(customerId);
+                CustomerHelper.CustomerHomePage(customerId);
 
             }
 

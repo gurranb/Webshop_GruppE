@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Webshop_GruppE.Methods;
 using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE
@@ -28,13 +29,13 @@ namespace Webshop_GruppE
                 switch (key.KeyChar)
                 {
                     case 'a':
-                        Helpers.AdminLogInMenu();
+                        SignInSignUpHelper.AdminLogInMenu();
                         break;
                     case 'u':
-                        Helpers.CustomerLogInMenu();
+                        SignInSignUpHelper.CustomerLogInMenu();
                         break;
                     case 'c':
-                        Helpers.CreateTestData();
+                        CreateTestDataHelper.CreateTestData();
                         break;
                     case 'e':
                         Environment.Exit(0);

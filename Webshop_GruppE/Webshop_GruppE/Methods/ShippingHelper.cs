@@ -65,32 +65,17 @@ namespace Webshop_GruppE.Methods
                                     .Include(c => c.OrderItems)
                                     .ThenInclude(p => p.Product)
                                     .FirstOrDefault(c => c.CustomerId == customerId);
-                        //if (orderList != null) 
-                        //{
-                        //    var newOrderList = new Order() { CustomerId = customerId, OrderItems = new List<OrderItem>()};
-                        //    myDb.Orders.Add(newOrderList);
-                        //    Console.WriteLine("Order confirmed");
-                        //    Console.ReadKey(true);
-                        //}
-                        //foreach (var orderItem in orderList.OrderItems) 
-                        //{
-                        //    orderItem
-                        //}
+                        
                         if (productList != null)
-                        {
-                            //orderList = new OrderItem() 
-                            //{
-                            //    Order = new List<ShoppingCartItem>()
-                            //};
-                            //myDb.ShoppingCarts.Add(order);
+                        {                          
                             foreach (var shoppingItem in productList.ShoppingCartItems)
-                            {
-                                var newOrderList = new Order();   
+                            {  
                                 myDb.Remove(shoppingItem);
                             }
                         }
                         myDb.SaveChanges();
                         break;
+
                     case '2':
                         Console.WriteLine("Pay later");
                         if (productList != null)

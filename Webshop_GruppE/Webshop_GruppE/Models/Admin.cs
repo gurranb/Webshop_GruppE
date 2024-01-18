@@ -15,6 +15,6 @@ namespace Webshop_GruppE.Models
         public string? AdminName { get; set; }
         public string? AdminPassword { get; set; }       
         public string? EMailAdress { get; set; }
-        //public virtual User? User { get; set; }
+        
     }
 }
