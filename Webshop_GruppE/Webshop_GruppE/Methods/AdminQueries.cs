@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,16 +12,87 @@ namespace Webshop_GruppE.Methods
 {
     internal class AdminQueries
     {
+        public static void LinqMethods()
+        {
+            using (var myDb = new MyDbContext())
+            {
+                var products = myDb.Products.ToList();
 
-        
+                Console.WriteLine("[1] Highest/Lowest Price\n[2] Highest stockvalue\n[3] Products out of stock\n" +
+                    "[4] Products that starts with...\n[B] Back");
+                var key = Console.ReadKey(true);
+                switch (key.KeyChar)
+                {
+                    case '1':
+                        var maxPrice = (from c in myDb.Products
+                                        select c.Price).Max();
+                        var minPrice = (from c in myDb.Products
+                                        select c.Price).Min();
+                        foreach(var product in products)
+                        {
+                            if (product.Price == maxPrice)
+                            {
+                                Console.WriteLine("Highest Price: " + product.Name + " Cost: " + product.Price + "$");
+                            }
+                            if (product.Price == minPrice)
+                            {
+                                Console.WriteLine("Lowest Price: " + product.Name + " Cost: " + product.Price + "$");
+                            }
+                        }
+                        break;
+                    case '2':
+                        var highestAmount = (from c in myDb.Products
+                                             select c.StockBalance).Max();
+                        foreach(var product in products)
+                        {
+                            if (product.StockBalance == highestAmount)
+                            {
+                                Console.WriteLine("Highest stock value: " + product.Name + " Units in stock " + product.StockBalance + " units");
+                            }
+                        }
+                        break;
+                    case '3':                        
+                        foreach(var product in products)
+                        {
+                            if(product.StockBalance == 0)
+                            {
+                                Console.WriteLine("Product " + product.Name + " is out of stock! Resupply as soon as possible!");
+                            }
+                        }
+                        break;
 
-        
-        
-        
+                    case '4':
+                        Console.Write("Input letter: ");
 
-        
+                        var inputCharacter = Console.ReadLine() ;
 
-        public static void AdminQueriesMeth() 
+                        if (!int.TryParse(inputCharacter, out var number))
+                        {
+                            inputCharacter = inputCharacter.Substring(0, 1).ToUpper();
+                            foreach (var product in products)
+                            {
+                                if (product.Name.StartsWith(inputCharacter))
+                                {
+                                    Console.WriteLine("Starts with a " + inputCharacter + ": " + product.Name);
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error: No numbers");
+                        }
+                        break;
+                    case 'b':                      
+                        break;
+                }
+                Console.ReadKey(true);
+                Console.Clear();
+            }
+                    
+        }
+
+        public static void AdminQueriesMethods() 
         {
 
             //Högsta och Lägsta pris.

@@ -14,9 +14,9 @@ namespace Webshop_GruppE.Methods
                 float? moms = 1.25f;
 
                 var productList = myDb.ShoppingCarts
-                                   .Include(c => c.ShoppingCartItems)
-                                   .ThenInclude(p => p.Product)
-                                   .FirstOrDefault(c => c.CustomerId == customerId);
+                                   .Include(c => c.ShoppingCartItems.OrderBy(c => c.Product.Id))
+                                   .ThenInclude(p => p.Product).
+                                   Where(c => c.CustomerId == customerId).FirstOrDefault();
 
 
 
@@ -68,7 +68,7 @@ namespace Webshop_GruppE.Methods
                         {
                             Console.WriteLine("Error: Shoppingcart is empty!");
                             Console.ReadKey(true);
-                            CustomerHelper.CustomerHomePage(customerId);
+                            DisplayAllShoppingCartProducts(customerId);
                         }                       
                         break;
                     case '2':
@@ -82,8 +82,7 @@ namespace Webshop_GruppE.Methods
                         else
                         {
                             Console.WriteLine("Error: Shoppingcart is empty!");
-                            Console.ReadKey(true);
-                            CustomerHelper.CustomerHomePage(customerId);
+                            Console.ReadKey(true);                           
                         }
                         break;
                     case 'b':
@@ -164,6 +163,7 @@ namespace Webshop_GruppE.Methods
                 }
             }
             Console.Clear();
+            DisplayAllShoppingCartProducts(customerId);
         }
        
         public static void RemoveProductFromShoppingList(int customerId)
@@ -185,7 +185,6 @@ namespace Webshop_GruppE.Methods
 
                     if (removeAmount > 0 || removeAmount <= removeItemFromList.ShoppingCartItems.Count)
                     {
-                        //int.TryParse(Console.ReadLine(), out int itemId);
                         foreach (var shoppingItem in removeItemFromList.ShoppingCartItems)
                         {
                             var product = shoppingItem.Product;
@@ -208,8 +207,7 @@ namespace Webshop_GruppE.Methods
                     myDB.SaveChanges();
                     DisplayAllShoppingCartProducts(customerId);
                 }
-                Console.ReadKey(true);
-                CustomerHelper.CustomerHomePage(customerId);
+                Console.ReadKey(true);              
 
             }
 
