@@ -12,25 +12,27 @@ namespace Webshop_GruppE.Methods
 {
     internal class AdminHelper
     {
-        public static void AdminHomePage(int adminId)
+        public static async Task AdminHomePage(int adminId)
         {
             Console.Clear();
-
+           
             while (true)
             {
                 using (var myDb = new MyDbContext())
                 {
+                    Task<List<string>> productList = ProductOverview(adminId);
                     var adminUserName = (from c in myDb.Admins
                                          where c.Id == adminId
                                          select c.AdminName).SingleOrDefault();
                     LogoWindow.LogoWindowMeth(1, 1, 24, 7);
-                    List<string> adminText = new List<string> { "[1] Edit products", "[2] Edit categories", "[3] Edit suppliers", "[4] Product overview", "[P] Profile page", "[C] Customer page", "[Q] Queries", "[L] Logout" };
+                    List<string> adminText = new List<string> { "[1] Edit products", "[2] Edit categories", "[3] Edit suppliers", "[4] Product overview", 
+                        "[P] Profile page", "[C] Customer page", "[Q] Queries", "[L] Logout" };
+                    
                     var adminWindow = new Window("Welcome " + adminUserName, 1, 10, adminText);
                     adminWindow.DrawWindow();
-                }
-                var key = Console.ReadKey(true);
 
-                switch (key.KeyChar)
+                    var key2 = Console.ReadKey(true);
+                    switch (key2.KeyChar)
                 {
                     case '1':
                         AdminProductMenuHelper.ProductMenu(adminId);
@@ -41,8 +43,12 @@ namespace Webshop_GruppE.Methods
                     case '3':
                         AdminSupplierMenuHelper.SupplierMenu(adminId);
                         break;
-                    case '4':
-                        ProductOverview(adminId);
+                    case '4':                       
+                        var productsWindow = new Window("Product Overview", 1, 1, await productList);
+                        productsWindow.DrawWindow();
+
+                        Console.WriteLine("Press any key to return!");
+                        Console.ReadKey();
                         break;                   
                     case 'p':
                         DisplayDatabase.DisplayAdminDetails(adminId);
@@ -62,10 +68,12 @@ namespace Webshop_GruppE.Methods
                         Console.Clear();
                         break;
                 }
+                }
+                var key = Console.ReadKey(true);
             }
         }
         
-        public static void ProductOverview(int adminId)
+        public static async Task<List<string>> ProductOverview(int adminId)
         {
             Console.Clear();
             using (var myDb = new MyDbContext())
@@ -75,19 +83,15 @@ namespace Webshop_GruppE.Methods
                 foreach (var products in myDb.Products)
                 {
                     productList.Add($"Id: {products.Id,-5}Name: {products.Name,-17}Price: {products.Price + "$", -10}Units In Stock: {products.StockBalance, -5}" +
-                        $"Product Supplier Id:{products.ProductSupplierId, -5}Product Info:{products.ProductInfoText}");
+                        $"Product Supplier Id: {products.ProductSupplierId, -5}Product Info: {products.ProductInfoText}");
                 }
 
                 if (productList.Count == 0)
                 {
                     productList.Add("Empty");
                 }
-                var productsWindow = new Window("Product Overview", 1, 1, productList);
-                productsWindow.DrawWindow();
 
-                Console.WriteLine("Press any key to return!");
-                Console.ReadKey();
-                AdminHomePage(adminId);
+                return productList;
             }
         }       
 

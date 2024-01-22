@@ -11,7 +11,6 @@ namespace Webshop_GruppE.Models
     {
         public int Id { get; set; }
         public string? Name { get; set; }
-        public bool? SelectedProduct { get; set; }
         public float? Price { get; set; }
         public int? ProductSupplierId { get; set; }
         public string? ProductInfoText { get; set; }

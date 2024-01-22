@@ -6,14 +6,14 @@ namespace Webshop_GruppE
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             
-            StartScreen();
+            await StartScreen();
 
         }
 
-        public static void StartScreen()
+        public static async Task StartScreen()
         {
             Console.Clear();
             
@@ -28,7 +28,7 @@ namespace Webshop_GruppE
                 switch (key.KeyChar)
                 {
                     case 'a':
-                        SignInSignUpHelper.AdminLogInMenu();
+                       await SignInSignUpHelper.AdminLogInMenu();
                         break;
                     case 'c':
                         SignInSignUpHelper.CustomerLogInMenu();

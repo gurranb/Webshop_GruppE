@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Webshop_GruppE.Models;
@@ -9,7 +10,7 @@ namespace Webshop_GruppE.Methods
 {
     internal class SignInSignUpHelper
     {
-        public static void AdminLogInMenu()
+        public static async Task AdminLogInMenu()
         {
             while (true)
             {
@@ -30,7 +31,7 @@ namespace Webshop_GruppE.Methods
                         case '1':
                             if (emergencyLogIn == 1)
                             {
-                                AdminHelper.AdminHomePage(1);
+                                await AdminHelper.AdminHomePage(1);
                             }
                             else
                             {
@@ -59,7 +60,7 @@ namespace Webshop_GruppE.Methods
 
             }
         }
-        public static void AdminLogIn()
+        public static async Task AdminLogIn()
         {
             while (true)
             {
@@ -89,7 +90,7 @@ namespace Webshop_GruppE.Methods
                                        where c.AdminPassword == password
                                        select c.Id).SingleOrDefault();
 
-                        AdminHelper.AdminHomePage(adminId);
+                        await AdminHelper.AdminHomePage(adminId);
                     }
                 }
             }
@@ -215,49 +216,58 @@ namespace Webshop_GruppE.Methods
         {
             using (var myDb = new MyDbContext())
             {
-
-                Console.Write("Input your first name: ");
-                string customerFirstName = Console.ReadLine();
-                Console.Write("Input your last name: ");
-                string customerLastName = Console.ReadLine();
-                Console.Write("Input your age: ");
-                int.TryParse(Console.ReadLine(), out int customerAge);
-                Console.Write("Input your user name: ");
-                string customerUserName = Console.ReadLine();
-                Console.Write("Input your password: ");
-                string customerPassword = Console.ReadLine();
-                Console.Write("Input your country: ");
-                string customerCountry = Console.ReadLine();
-                Console.Write("Input your street adress: ");
-                string customerStreetAddress = Console.ReadLine();
-                Console.Write("Input your postal code: ");
-                int.TryParse(Console.ReadLine(), out int customerPostalCode);
-                Console.Write("Input card number: ");
-                int.TryParse(Console.ReadLine(), out int customerCardNumber);
-                Console.Write("Input your mail address: ");
-                string customerMailAddress = Console.ReadLine();
-
-                myDb.Add(new Models.Customer
+                try
                 {
-                    FirstName = customerFirstName,
-                    LastName = customerLastName,
-                    Age = customerAge,
-                    CustomerUserName = customerUserName,
-                    CustomerPassword = customerPassword,
-                    Country = customerCountry,
-                    StreetAddress = customerStreetAddress,
-                    PostalCode = customerPostalCode,
-                    CardNumber = customerCardNumber,
-                    EMailAdress = customerMailAddress,
-                });
+                    Console.Write("Input your first name: ");
+                    string customerFirstName = Console.ReadLine();
+                    Console.Write("Input your last name: ");
+                    string customerLastName = Console.ReadLine();
+                    Console.Write("Input your age: ");
+                    int.TryParse(Console.ReadLine(), out int customerAge);
+                    Console.Write("Input your user name: ");
+                    string customerUserName = Console.ReadLine();
+                    Console.Write("Input your password: ");
+                    string customerPassword = Console.ReadLine();
+                    Console.Write("Input your country: ");
+                    string customerCountry = Console.ReadLine();
+                    Console.Write("Input your street adress: ");
+                    string customerStreetAddress = Console.ReadLine();
+                    Console.Write("Input your postal code: ");
+                    int.TryParse(Console.ReadLine(), out int customerPostalCode);
+                    Console.Write("Input card number: ");
+                    int.TryParse(Console.ReadLine(), out int customerCardNumber);
+                    Console.Write("Input your mail address: ");
+                    string customerMailAddress = Console.ReadLine();
 
-                Console.WriteLine("You have successfully created your account!");
+                    myDb.Add(new Models.Customer
+                    {
+                        FirstName = customerFirstName,
+                        LastName = customerLastName,
+                        Age = customerAge,
+                        CustomerUserName = customerUserName,
+                        CustomerPassword = customerPassword,
+                        Country = customerCountry,
+                        StreetAddress = customerStreetAddress,
+                        PostalCode = customerPostalCode,
+                        CardNumber = customerCardNumber,
+                        EMailAdress = customerMailAddress,
+                    });
+
+                    Console.WriteLine("You have successfully created your account!");
+                    Console.ReadKey(true);
+                    myDb.SaveChanges();
+
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Error: Unable to create account");
+                }
+                
+               
                 Console.ReadKey(true);
-                myDb.SaveChanges();
-
+                Console.Clear();
             }
-            Console.ReadKey(true);
-            Console.Clear();
+           
         }
     }
 }
