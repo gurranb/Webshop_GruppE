@@ -51,7 +51,7 @@ namespace Webshop_GruppE.Methods
                         ListCustomers(adminId);
                         break;
                     case 'q':
-                        Console.WriteLine("Queries");
+                        AdminQueries.AdminQueriesMeth();
                         break;
                     case 'l':
                         Program.StartScreen();

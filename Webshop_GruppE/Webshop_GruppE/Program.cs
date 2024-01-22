@@ -20,21 +20,20 @@ namespace Webshop_GruppE
             while (true)
             {
                 LogoWindow.LogoWindowMeth(1, 1, 24, 7);
-                List<string> loginText = new List<string> {"Login as", "[A] Admin", "[U] User", "[C] Ceate test data", "[E] Exit" };
+                List<string> loginText = new List<string> {"Login as", "[A] Admin", "[C] Customer", "[T] Create test data", "[E] Exit" };
                 var loginWindow = new Window("Welcome to FashionCode website", 0, 10, loginText);
                 loginWindow.DrawWindow();
-                var key = Console.ReadKey(true);
 
-                // ändra så detta blir snyggare
+                var key = Console.ReadKey(true);
                 switch (key.KeyChar)
                 {
                     case 'a':
                         SignInSignUpHelper.AdminLogInMenu();
                         break;
-                    case 'u':
+                    case 'c':
                         SignInSignUpHelper.CustomerLogInMenu();
                         break;
-                    case 'c':
+                    case 't':
                         CreateTestDataHelper.CreateTestData();
                         break;
                     case 'e':

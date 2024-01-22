@@ -214,31 +214,5 @@ namespace Webshop_GruppE.Methods
             }
 
         }
-        public static void AddProductToShoppingCart()
-        {
-
-        }
-
-        //public static List<Product> GetAllProducts()
-        //{
-        //    var connstring = "Server=.\\SQLExpress;Database=FashionCode;Trusted_Connection=True;TrustServerCertificate=True;";
-        //    string sql = "SELECT * FROM Products";
-        //    List<Product> products = new List<Product>();
-        //    using (var myDb = new SqlConnection(connstring))
-        //    {
-        //        products = myDb.Query<Product>(sql).ToList();
-        //    }
-        //    return products;
-        //}
-
-        //public static void ListAllProducts(int customerId)
-        //{
-        //    List<Product> products = GetAllProducts();
-
-        //    foreach(var product in products)
-        //    {
-        //        Console.WriteLine(product.Name);
-        //    }
-        //}
     }
 }
