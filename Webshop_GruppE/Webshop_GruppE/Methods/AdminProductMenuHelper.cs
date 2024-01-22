@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore.Storage;
 using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE.Methods
@@ -16,43 +12,41 @@ namespace Webshop_GruppE.Methods
             while (true)
             {
                 LogoWindow.LogoWindowMeth(1, 1, 24, 7);
-                List<string> productText = new List<string> { "[A] Add Product", "[E] Edit Product", "[R] Remove Product", "[B] Back" };
+                List<string> productText = new List<string> { "[A] Add product", "[E] Edit product", "[R] Remove product", "[B] Back" };
                 var productWindow = new Window("Product Menu", 1, 10, productText);
                 productWindow.DrawWindow();
 
-                List<string> categoryText = Database.DisplayAllCategories();
-                var categoryWindow = new Window("Categories", 1, 17, categoryText);
+                List<string> categoryText = DisplayDatabase.DisplayAllCategories();
+                var categoryWindow = new Window("Categories", 35, 10, categoryText);
                 categoryWindow.DrawWindow();
 
-                List<string> supplierText = Database.DisplayAllSuppliers();
+                List<string> supplierText = DisplayDatabase.DisplayAllSuppliers();
                 var supplierWindow = new Window("Suppliers", 27, 1, supplierText);
                 supplierWindow.DrawWindow();
 
-                List<string> productsText = Database.DisplayAllProducts();
-                var productsWindow = new Window("Products", 70, 1, productsText);
+                List<string> productsText = DisplayDatabase.DisplayAllProducts();
+                var productsWindow = new Window("Products", 84, 1, productsText);
                 productsWindow.DrawWindow();
 
                 var key = Console.ReadKey(true);
                 switch (key.KeyChar)
                 {
                     case 'a':
-                        Console.WriteLine("Add Product");
                         AddProduct(adminId);
                         break;
                     case 'e':
-                        Console.WriteLine("Edit Product");
-                        EditProduct(adminId);
+                        EditProductMenu(adminId);
                         break;
                     case 'r':
-                        Console.WriteLine("Remove Product");
                         RemoveProduct(adminId);
                         break;
                     case 'b':
-                        Console.WriteLine("Back");
                         AdminHelper.AdminHomePage(adminId);
                         break;
                     default:
-                        Console.WriteLine("Wrong Input");
+                        Console.WriteLine("Wrong input!");
+                        Console.ReadKey(true);
+                        Console.Clear();
                         break;
                 }
             }
@@ -64,7 +58,7 @@ namespace Webshop_GruppE.Methods
             {
                 while (true)
                 {
-                    Console.Write("Type Category ID: ");
+                    Console.Write("Add product.\nType category Id: ");
 
                     int.TryParse(Console.ReadLine(), out int category);
 
@@ -74,15 +68,15 @@ namespace Webshop_GruppE.Methods
 
                     if (category3 != null && category3.Any())
                     {
-                        Console.Write("Type Product Name: ");
+                        Console.Write("Type product name: ");
                         string productName = Console.ReadLine();
 
-                        Console.Write("Type product Price: ");
+                        Console.Write("Type product price: ");
                         float.TryParse(Console.ReadLine(), out float productPrice);
 
                         if (productPrice != null && productPrice > 0)
                         {
-                            Console.Write("Type productsupplier ID: ");
+                            Console.Write("Type product supplier Id: ");
                             int.TryParse(Console.ReadLine(), out int productSupplierId);
 
                             var productSupplierId2 = (from c in myDb.ProductSuppliers
@@ -102,9 +96,11 @@ namespace Webshop_GruppE.Methods
                                 string sizeText = "";
                                 while (chosenSize == false)
                                 {
-                                    Console.WriteLine("Size Guide\n1.Small\t2.Medium\t3.Large");
-                                    Console.Write("Type size: ");
-                                    productSize = int.Parse(Console.ReadLine());
+
+                                    Console.WriteLine("Size guide:\n" +
+                                        "1.Small    2.Medium    3.Large");
+                                    Console.Write("Type size Id: ");
+                                    int.TryParse(Console.ReadLine(), out productSize);
 
                                     switch (productSize)
                                     {
@@ -154,7 +150,7 @@ namespace Webshop_GruppE.Methods
 
                                 if (stockBalance != null && stockBalance > 0)
                                 {
-                                    Console.WriteLine("Show product in selected deals frontpage? Type Y/N");
+                                    Console.WriteLine("Show product in selected deals frontpage? Y/N");
                                     bool selectedProduct = true;
 
                                     while (true)
@@ -181,6 +177,7 @@ namespace Webshop_GruppE.Methods
 
 
                                         Console.WriteLine("You have added " + productName + " to the list");
+                                        Console.ReadKey(true);
                                         ProductMenu(adminId);
                                     }
                                 }
@@ -190,7 +187,7 @@ namespace Webshop_GruppE.Methods
                                     Console.ReadLine();
                                     ProductMenu(adminId);
                                 }
-                               
+
                             }
                             else
                             {
@@ -215,14 +212,14 @@ namespace Webshop_GruppE.Methods
                 }
             }
         }
-        public static void EditProduct(int adminId)
+        public static void EditProductMenu(int adminId)
         {
             using (var myDb = new MyDbContext())
             {
                 LogoWindow.LogoWindowMeth(1, 1, 24, 7);
                 List<string> changeProductText = new List<string> { "[1] Edit product name", "[2] Edit product price", "[3] Edit product supplier Id",
                         "[4] Edit product info", "[5] Edit product stock balance", "[6] Edit if on deal", "[B] Back" };
-                var changeProductWindow = new Window("Change Product Menu", 1, 13, changeProductText);
+                var changeProductWindow = new Window("Edit Product Menu", 1, 13, changeProductText);
                 changeProductWindow.DrawWindow();
 
                 var key = Console.ReadKey(true);
@@ -251,6 +248,8 @@ namespace Webshop_GruppE.Methods
                         break;
                     default:
                         Console.WriteLine("Wrong input!");
+                        Console.ReadKey(true);
+                        Console.Clear();
                         break;
                 }
             }
@@ -261,7 +260,7 @@ namespace Webshop_GruppE.Methods
             using (var myDb = new MyDbContext())
             {
 
-                Console.Write("Input product Id: ");
+                Console.Write("Edit product name\nInput product Id: ");
                 int.TryParse(Console.ReadLine(), out int productId);
                 var productId2 = (from c in myDb.Products
                                   where c.Id == productId
@@ -294,27 +293,39 @@ namespace Webshop_GruppE.Methods
             using (var myDb = new MyDbContext())
             {
 
-                Console.Write("Input product Id: ");
-                int productId = int.Parse(Console.ReadLine());
-                Console.Write("Input new product price: ");
-                float productPrice2 = float.Parse(Console.ReadLine());
+                Console.Write("Edit product price\nInput product Id: ");
+                int.TryParse(Console.ReadLine(), out int productId);
+
                 var newPrice = (from c in myDb.Products
                                 where c.Id == productId
                                 select c).SingleOrDefault();
 
                 if (newPrice != null)
                 {
-                    newPrice.Price = productPrice2;
-                    Console.WriteLine("You have successfully changed the product price to " + productPrice2 + " $");
-                    Console.ReadKey();
-                    myDb.SaveChanges();
+                    Console.Write("Input new product price: ");
+                    float.TryParse(Console.ReadLine(), out float productPrice2);
+
+                    if (productPrice2 < 0.1f)
+                    {
+                        Console.WriteLine("Error, " + productPrice2 + " is an incorrect price Value");
+                        Console.ReadKey(true);
+                    }
+                    else
+                    {
+                        newPrice.Price = productPrice2;
+                        Console.WriteLine("You have successfully changed the product price to " + productPrice2 + " $");
+                        Console.ReadKey(true);
+                        myDb.SaveChanges();
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Error wrong ID");
-                    Console.ReadKey();
+                    Console.WriteLine("Error: Product does not exist!");
+                    Console.ReadKey(true);
                 }
             }
+
+
             Console.Clear();
         }
 
@@ -322,24 +333,38 @@ namespace Webshop_GruppE.Methods
         {
             using (var myDb = new MyDbContext())
             {
-                Console.Write("Input product Id: ");
-                int productId = int.Parse(Console.ReadLine());
-                Console.Write("Input new product supplier Id: ");
-                int productSupplierId2 = int.Parse(Console.ReadLine());
-                var newSupplierId = (from c in myDb.Products
+                Console.Write("Edit product supplier.\nInput product Id: ");
+                int.TryParse(Console.ReadLine(), out int productId);
+
+                var findProductId = (from c in myDb.Products
                                      where c.Id == productId
                                      select c).SingleOrDefault();
 
-                if (newSupplierId != null)
+                if (findProductId != null)
                 {
-                    newSupplierId.ProductSupplierId = productSupplierId2;
-                    Console.WriteLine("You have successfully changed the product supplier Id to " + productSupplierId2);
-                    Console.ReadKey();
-                    myDb.SaveChanges();
+                    Console.Write("Input new product supplier Id: ");
+                    int.TryParse(Console.ReadLine(), out int productSupplierId2);
+
+                    var findSupplerId = (from c in myDb.ProductSuppliers
+                                         where c.Id == productSupplierId2
+                                         select c).SingleOrDefault();
+
+                    if(findSupplerId != null)
+                    {
+                        findProductId.ProductSupplierId = productSupplierId2;
+                        Console.WriteLine("You have successfully changed the product supplier Id to " + productSupplierId2);
+                        Console.ReadKey();
+                        myDb.SaveChanges();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: Wrong ID");
+                        Console.ReadKey(true);
+                    }       
                 }
                 else
                 {
-                    Console.WriteLine("Error wrong ID");
+                    Console.WriteLine("Error: Wrong Id!");
                     Console.ReadKey();
                 }
             }
@@ -351,24 +376,26 @@ namespace Webshop_GruppE.Methods
             using (var myDb = new MyDbContext())
             {
 
-                Console.Write("Input product Id: ");
-                int productId = int.Parse(Console.ReadLine());
-                Console.WriteLine("Input new product info: ");
-                string productInfo2 = Console.ReadLine();
+                Console.Write("Edit product info.\nInput product Id: ");
+                int.TryParse(Console.ReadLine(), out int productId);
+                
                 var newProductInfo = (from c in myDb.Products
                                       where c.Id == productId
                                       select c).SingleOrDefault();
 
                 if (newProductInfo != null)
                 {
+                    Console.WriteLine("Input new product info: ");
+                    string productInfo2 = Console.ReadLine();
+
                     newProductInfo.ProductInfoText = productInfo2;
                     Console.WriteLine("You have successfully changed the product info to\n" + productInfo2);
-                    Console.ReadKey();
+                    Console.ReadKey(true);
                     myDb.SaveChanges();
                 }
                 else
                 {
-                    Console.WriteLine("Error wrong ID");
+                    Console.WriteLine("Error: Wrong ID");
                     Console.ReadKey();
                 }
             }
@@ -379,20 +406,30 @@ namespace Webshop_GruppE.Methods
             using (var myDb = new MyDbContext())
             {
 
-                Console.Write("Input product Id: ");
-                int productId = int.Parse(Console.ReadLine());
-                Console.Write("Input new stock balance: ");
-                int productStockBalance2 = int.Parse(Console.ReadLine());
+                Console.Write("Edit products in stock.\nInput product Id: ");
+                int.TryParse(Console.ReadLine(), out int productId);
+        
                 var newStockBalance = (from c in myDb.Products
                                        where c.Id == productId
                                        select c).SingleOrDefault();
 
                 if (newStockBalance != null)
                 {
-                    newStockBalance.StockBalance = productStockBalance2;
-                    Console.WriteLine("You have successfully changed the product stock balance to: " + productStockBalance2 + " units");
-                    Console.ReadKey();
-                    myDb.SaveChanges();
+                    Console.Write("Input new stock balance: ");
+                    int.TryParse(Console.ReadLine(), out int productStockBalance2);
+
+                    if(productStockBalance2 !> 0)
+                    {
+                        newStockBalance.StockBalance = productStockBalance2;
+                        Console.WriteLine("You have successfully changed the product stock balance to: " + productStockBalance2 + " units");
+                        Console.ReadKey(true);
+                        myDb.SaveChanges();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: Invalid stockvalue!");
+                        Console.ReadKey(true);
+                    }                 
                 }
                 else
                 {
@@ -406,35 +443,47 @@ namespace Webshop_GruppE.Methods
         {
             using (var myDb = new MyDbContext())
             {
+                var dealText = DisplayDatabase.DisplayChosenProducts();
+                var dealWindow = new Window("Fashion Deals", 35, 20, dealText);
+                dealWindow.DrawWindow();
 
-                Console.Write("Input product Id: ");
+                Console.Write("Select product for frontpage.\nInput product Id: ");
                 int.TryParse(Console.ReadLine(), out int productId);
 
                 var selectedProduct = (from c in myDb.Products
                                        where c.Id == productId
                                        select c).FirstOrDefault();
-                if (selectedProduct != null)
-                {
-                    var productList = (from c in myDb.SelectTopDealItems
-                                       select c).ToList();
-                    myDb.Add(new Models.SelectTopDealItem { Product = selectedProduct });
 
-                    if (productList.Count <= 5)
+                var selectedDeal = (from c in myDb.SelectTopDealItems
+                                             where c.Product.Id == productId
+                                             select c).FirstOrDefault();
+                var productList = (from c in myDb.SelectTopDealItems
+                                   select c).ToList();
+                if (productList.Count <= 5)
+                {
+                    if (selectedProduct != null && selectedDeal == null)
                     {
+
+                        myDb.Add(new Models.SelectTopDealItem { Product = selectedProduct });
                         myDb.SaveChanges();
                         Console.WriteLine("Items successfully added to deals!");
                         Console.ReadKey(true);
+
                     }
                     else
                     {
-                        Console.WriteLine("Too many items in product deals, please remove at least one");
+                        Console.WriteLine("Error: Wrong Id or product already exists in deals window!.");
+                        Console.ReadKey(true);
                     }
-
+                    
                 }
                 else
                 {
-                    Console.WriteLine("Invalid input, please try again.");
+                    Console.WriteLine("Too many items in product deals, please remove at least one");
+                    Console.ReadKey(true);
                 }
+                
+                Console.Clear();
             }
 
         }
@@ -443,7 +492,7 @@ namespace Webshop_GruppE.Methods
             using (var myDb = new MyDbContext())
             {
 
-                Console.Write("Input product Id: ");
+                Console.Write("Remove product.\nInput product Id: ");
                 int.TryParse(Console.ReadLine(), out int productId);
 
                 var removeProduct = (from c in myDb.Products

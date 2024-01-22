@@ -17,7 +17,7 @@ namespace Webshop_GruppE.Methods
             while (true)
             {
                 LogoWindow.LogoWindowMeth(1, 1, 24, 7);
-                Database.DisplayChosenProducts();
+                var productText = DisplayDatabase.DisplayChosenProducts();
                 using (var myDb = new MyDbContext())
                 {
                     var customerUserName = (from c in myDb.Customers
@@ -27,6 +27,9 @@ namespace Webshop_GruppE.Methods
                     List<string> userText = new List<string> { "[1] Search Products", "[2] Browse Products", "[S] Shopping Cart", "[P] Profile Page", "[B] Buy Products", "[L] Logout" };
                     var userWindow = new Window("Welcome " + customerUserName, 1, 10, userText);
                     userWindow.DrawWindow();
+
+                    var productsWindow = new Window("Fashion Deals", 30, 1, productText);
+                    productsWindow.DrawWindow();
                 }
 
                 var key = Console.ReadKey(true);
@@ -45,7 +48,7 @@ namespace Webshop_GruppE.Methods
                         ShoppingCartHelper.DisplayAllShoppingCartProducts(customerId);
                         break;
                     case 'p':
-                        Database.DisplayCustomerDetails(customerId);
+                        DisplayDatabase.DisplayCustomerDetails(customerId);
                         break;
                     case 'b':
                         PurchaseProduct(customerId);
@@ -105,11 +108,11 @@ namespace Webshop_GruppE.Methods
 
         public static void BrowseProducts(int customerId)
         {
-            Console.Clear();
+            
             LogoWindow.LogoWindowMeth(1, 1, 24, 7);
 
-            List<string> categoryText = Database.DisplayAllCategories();
-            var categoryWindow = new Window("Category List", 30, 1, categoryText);
+            List<string> categoryText = DisplayDatabase.DisplayAllCategories();
+            var categoryWindow = new Window("Category List", 30, 10, categoryText);
             categoryWindow.DrawWindow();
 
             Console.Write("Input Category Id: ");
@@ -218,7 +221,7 @@ namespace Webshop_GruppE.Methods
                                 }
 
 
-                                Console.WriteLine("You have added " + chosenProduct.Name + " to your shopping cart.");
+                                Console.WriteLine("You have added " + chosenProduct.Name + " x" + purchaseAmount + " to your shopping cart.");
                                 Console.ReadKey(true);
                                 break;
                             case 'n':

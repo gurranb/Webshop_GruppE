@@ -5,7 +5,7 @@ using Webshop_GruppE.Models;
 
 namespace Webshop_GruppE
 {
-    internal class Database
+    internal class DisplayDatabase
     {
         public static void DisplayCustomerDetails(int customerId)
         {
@@ -30,7 +30,7 @@ namespace Webshop_GruppE
                 {
                     customerText.Add("Empty");
                 }
-                var categoryWindow = new Window("Customer Details", 55, 10, customerText);
+                var categoryWindow = new Window("Customer Details", 70, 1, customerText);
                 categoryWindow.DrawWindow();
             }
         }
@@ -64,7 +64,7 @@ namespace Webshop_GruppE
 
                 foreach (var supplier in database.ProductSuppliers)
                 {
-                    supplierText.Add("Id: " + supplier.Id + " " + "Name: " + supplier.Name);
+                    supplierText.Add($"Id: {supplier.Id, -5} Name: {supplier.Name, -17}  Country:  {supplier.Country}");
                 }
 
                 if (supplierText.Count == 0)
@@ -93,17 +93,19 @@ namespace Webshop_GruppE
             }
         }
 
-        public static void DisplayChosenProducts()
+        public static List<string> DisplayChosenProducts()
         {
             using (var database = new MyDbContext())
             {
                 List<string> productText = new List<string>();
+                //var productList = (from c in database.SelectTopDealItems
+                //    select c).ToList();
                 var productList = database.SelectTopDealItems
                     .Include(c => c.Product).ToList();
 
-                foreach(var product in productList)
+                foreach (var product in productList)
                 {                  
-                    productText.Add(product.Product.Name + " " + product.Product.Price + "$");
+                    productText.Add($"Id: {product.Product.Id, -5}{product.Product.Name,-16}{product.Product.Price + "$"}");
                     
                 }
 
@@ -111,8 +113,7 @@ namespace Webshop_GruppE
                 {
                     productText.Add("Empty");
                 }
-                var productsWindow = new Window("Fashion Deals", 60, 25, productText);
-                productsWindow.DrawWindow();
+                return productText;
             }
         }
 
@@ -124,7 +125,8 @@ namespace Webshop_GruppE
 
                 foreach (var products in database.Products)
                 {
-                    productsText.Add("Id: " + products.Id + " " + "Name: " + products.Name + " Brand: " + products.ProductBrand);
+                    productsText.Add($"Id: {products.Id,-5}Name: {products.Name,-20}Price: {products.Price + "$", -10}" +
+                        $"Supplier: {products.ProductSupplierId, -5}Stockbalance: {products.StockBalance, -4}Units");
                 }
 
                 if (productsText.Count == 0)

@@ -18,11 +18,11 @@ namespace Webshop_GruppE.Methods
             {
                 LogoWindow.LogoWindowMeth(1, 1, 24, 7);
 
-                List<string> categoryText = new List<string> { "[A] Add Category", "[E] Edit Category", "[R] Remove Category", "[B] Back" };
+                List<string> categoryText = new List<string> { "[A] Add category", "[E] Edit category", "[R] Remove category", "[B] Back" };
                 var categoryWindow = new Window("Category Menu", 1, 10, categoryText);
                 categoryWindow.DrawWindow();
 
-                List<string> categoryText2 = Database.DisplayAllCategories();
+                List<string> categoryText2 = DisplayDatabase.DisplayAllCategories();
                 var categoryWindow2 = new Window("Category List", 30, 1, categoryText2);
                 categoryWindow2.DrawWindow();
 
@@ -32,7 +32,7 @@ namespace Webshop_GruppE.Methods
                     case 'a':
                         AddCategory(adminId);
                         break;
-                    case 'c':
+                    case 'e':
                         EditCategory(adminId);
                         break;
                     case 'r':
@@ -43,7 +43,7 @@ namespace Webshop_GruppE.Methods
                         AdminHelper.AdminHomePage(adminId);
                         break;
                     default:
-                        Console.WriteLine("Wrong Input");
+                        Console.WriteLine("Wrong input");
                         break;
                 }
 
@@ -54,7 +54,7 @@ namespace Webshop_GruppE.Methods
         {
             using (var myDb = new MyDbContext())
             {
-                Console.Write("Type Category Name: ");
+                Console.Write("Add category.\nType category name: ");
                 string categoryName = Console.ReadLine();
                 myDb.Add(new Models.Category { CategoryName = categoryName });
                 myDb.SaveChanges();
@@ -69,16 +69,18 @@ namespace Webshop_GruppE.Methods
             using (var myDb = new MyDbContext())
             {
 
-                Console.Write("Input category Id: ");
-                int categoryId = int.Parse(Console.ReadLine());
-                Console.Write("Input new category Name: ");
-                string categoryName2 = Console.ReadLine();
+                Console.Write("Edit category.\nInput category Id: ");
+                int.TryParse(Console.ReadLine(), out int categoryId);
+                
                 var newName = (from c in myDb.Categories
                                where c.Id == categoryId
                                select c).SingleOrDefault();
 
                 if (newName != null)
                 {
+                    Console.Write("Input new category name: ");
+                    string categoryName2 = Console.ReadLine();
+
                     newName.CategoryName = categoryName2;
                     Console.WriteLine("You have successfully changed the category Name to " + categoryName2);
                     Console.ReadKey();
@@ -96,8 +98,8 @@ namespace Webshop_GruppE.Methods
         {
             using (var myDb = new MyDbContext())
             {
-                Console.Write("Input category Id: ");
-                int categoryId = int.Parse(Console.ReadLine());
+                Console.Write("Remove category.\nInput category Id: ");
+                int.TryParse(Console.ReadLine(), out int categoryId);
                 var removeCategory = (from c in myDb.Categories
                                       where c.Id == categoryId
                                       select c).SingleOrDefault();

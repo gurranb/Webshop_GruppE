@@ -13,8 +13,7 @@ namespace Webshop_GruppE.Methods
         {
             using (var myDb = new MyDbContext())
             {
-                Console.WriteLine("Edit first name\n");
-                Console.Write("Input customer Id: ");
+                Console.Write("Edit first name.\nInput customer Id: ");
                 int.TryParse(Console.ReadLine(), out int nameId);
                 var firstName2 = (from c in myDb.Customers
                                   where c.Id == nameId

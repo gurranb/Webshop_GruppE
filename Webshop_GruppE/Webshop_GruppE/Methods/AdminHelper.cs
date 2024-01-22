@@ -24,7 +24,7 @@ namespace Webshop_GruppE.Methods
                                          where c.Id == adminId
                                          select c.AdminName).SingleOrDefault();
                     LogoWindow.LogoWindowMeth(1, 1, 24, 7);
-                    List<string> adminText = new List<string> { "[1] Edit Products", "[2] Edit Categories", "[3] Edit Suppliers", "[4] Product Overview", "[P] Profile Page", "[C] Customer Page", "[Q] Queries", "[L] Logout" };
+                    List<string> adminText = new List<string> { "[1] Edit products", "[2] Edit categories", "[3] Edit suppliers", "[4] Product overview", "[P] Profile page", "[C] Customer page", "[Q] Queries", "[L] Logout" };
                     var adminWindow = new Window("Welcome " + adminUserName, 1, 10, adminText);
                     adminWindow.DrawWindow();
                 }
@@ -45,7 +45,7 @@ namespace Webshop_GruppE.Methods
                         ProductOverview(adminId);
                         break;                   
                     case 'p':
-                        Database.DisplayAdminDetails(adminId);
+                        DisplayDatabase.DisplayAdminDetails(adminId);
                         break;
                     case 'c':
                         ListCustomers(adminId);
@@ -59,6 +59,7 @@ namespace Webshop_GruppE.Methods
                     default:
                         Console.WriteLine("Wrong Input");
                         Console.ReadKey(true);
+                        Console.Clear();
                         break;
                 }
             }
@@ -66,21 +67,22 @@ namespace Webshop_GruppE.Methods
         
         public static void ProductOverview(int adminId)
         {
+            Console.Clear();
             using (var myDb = new MyDbContext())
             {
                 List<string> productList = new List<string>();
 
                 foreach (var products in myDb.Products)
                 {
-                    productList.Add("Id: " + products.Id + " " + " Name: " + products.Name + " Price: " + products.Price + "$" + " Units In Stock: " + products.StockBalance +
-                        " Product Supplier Id: " + products.ProductSupplierId + " Product Info: " + products.ProductInfoText);
+                    productList.Add($"Id: {products.Id,-5}Name: {products.Name,-17}Price: {products.Price + "$", -10}Units In Stock: {products.StockBalance, -5}" +
+                        $"Product Supplier Id:{products.ProductSupplierId, -5}Product Info:{products.ProductInfoText}");
                 }
 
                 if (productList.Count == 0)
                 {
                     productList.Add("Empty");
                 }
-                var productsWindow = new Window("Product Overview", 1, 30, productList);
+                var productsWindow = new Window("Product Overview", 1, 1, productList);
                 productsWindow.DrawWindow();
 
                 Console.WriteLine("Press any key to return!");
@@ -162,6 +164,8 @@ namespace Webshop_GruppE.Methods
                     break;
                 default:
                     Console.WriteLine("Wrong Input");
+                    Console.ReadKey(true);
+                    AdminHomePage(adminId);
                     break;
             }
             Console.ReadKey(true);
