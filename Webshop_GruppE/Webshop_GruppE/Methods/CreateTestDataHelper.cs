@@ -35,7 +35,19 @@ namespace Webshop_GruppE.Methods
                         EMailAdress = "test@mail.com",
 
                     });
+                   
+                    myDb.SaveChanges();
 
+                    var testCustomerId = (from c in myDb.Customers
+                                          select c.Id).Max();
+
+                    var shoppingCart = new ShoppingCart
+                    {
+                        CustomerId = testCustomerId,
+                        ShoppingCartItems = new List<ShoppingCartItem>()
+                    };
+                    
+                    myDb.ShoppingCarts.Add(shoppingCart);
                     myDb.SaveChanges();
                     Console.WriteLine("Customer Test account was successfully created!");
                     Console.ReadKey(true);
