@@ -146,8 +146,7 @@ namespace Webshop_GruppE.Methods
                     {
                         case '1':
                             if (emergencyLogIn == 1)
-                            {
-                                List<int> boughtProducts = new List<int>();
+                            {                               
                                 CustomerHelper.CustomerHomePage(1);
                             }
                             else

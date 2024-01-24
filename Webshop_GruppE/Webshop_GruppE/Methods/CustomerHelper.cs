@@ -172,7 +172,7 @@ namespace Webshop_GruppE.Methods
                     if (chosenProduct != null)
                     {
                         Console.WriteLine("Id: " + chosenProduct.Id + " " + " Name: " + chosenProduct.Name + " Price: " + chosenProduct.Price + " Units In Stock: " + chosenProduct.StockBalance +
-                             " Product Info: " + chosenProduct.ProductInfoText);
+                             " Product Info: " + chosenProduct.ProductInfoText + " Product Size: " + chosenProduct.Size);
                         Console.WriteLine("Buy this product? y/n");
                         var answer = Console.ReadKey(true);
 

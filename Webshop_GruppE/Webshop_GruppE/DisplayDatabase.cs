@@ -97,9 +97,7 @@ namespace Webshop_GruppE
         {
             using (var database = new MyDbContext())
             {
-                List<string> productText = new List<string>();
-                //var productList = (from c in database.SelectTopDealItems
-                //    select c).ToList();
+                List<string> productText = new List<string>();               
                 var productList = database.SelectTopDealItems
                     .Include(c => c.Product).ToList();
 

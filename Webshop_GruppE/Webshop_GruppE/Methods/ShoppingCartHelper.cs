@@ -20,18 +20,20 @@ namespace Webshop_GruppE.Methods
 
 
 
-                if (productList != null && productList.ShoppingCartItems.Count > 0)
+                if (productList != null) //&& productList.ShoppingCartItems.Count > 0)
                 {
                     Product previousProduct = null;
                     foreach (var shoppingItem in productList.ShoppingCartItems)
                     {
                         int x = 0;
                         var product = shoppingItem.Product;
+
                         if (product != previousProduct)
                         {
                             foreach (var shoppingItem2 in productList.ShoppingCartItems)
                             {
                                 var product2 = shoppingItem2.Product;
+
                                 if (product.Id == product2.Id)
                                 {
                                     x++;

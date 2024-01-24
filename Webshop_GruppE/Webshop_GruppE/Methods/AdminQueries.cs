@@ -51,21 +51,34 @@ namespace Webshop_GruppE.Methods
                             }
                         }
                         break;
-                    case '3':                        
-                        foreach(var product in products)
+                    case '3':
+                        var outOfStockProducts = (from c in myDb.Products
+                                                  where c.StockBalance == 0
+                                                  select c).ToList();
+                        if(outOfStockProducts.Count != 0)
                         {
-                            if(product.StockBalance == 0)
+                            foreach (var product in products)
                             {
-                                Console.WriteLine("Product " + product.Name + " is out of stock! Resupply as soon as possible!");
+
+                                if (product.StockBalance == 0)
+                                {
+                                    Console.WriteLine("Product " + product.Name + " is out of stock! Resupply as soon as possible!");
+                                }
                             }
                         }
+                        else
+                        {
+                            Console.WriteLine("No products are out of stock!");
+                            Console.ReadKey(true);
+                        }
+                        
                         break;
 
                     case '4':
                         Console.Write("Input letter: ");
 
                         var inputCharacter = Console.ReadLine() ;
-
+                        List<string> productList = new List<string>() ;
                         if (!int.TryParse(inputCharacter, out var number))
                         {
                             inputCharacter = inputCharacter.Substring(0, 1).ToUpper();
@@ -73,9 +86,20 @@ namespace Webshop_GruppE.Methods
                             {
                                 if (product.Name.StartsWith(inputCharacter))
                                 {
-                                    Console.WriteLine("Starts with a " + inputCharacter + ": " + product.Name);
+                                    productList.Add("Starts with a " + inputCharacter + ": " + product.Name);
                                 }
 
+                            }
+                            if(productList.Count > 0)
+                            {
+                                foreach (var product in productList)
+                                {
+                                    Console.WriteLine(product);
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Error! No products starts with the letter " + inputCharacter + "!");
                             }
                         }
                         else

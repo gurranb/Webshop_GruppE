@@ -49,17 +49,14 @@ namespace Webshop_GruppE.Methods
             userWindow.DrawWindow();
             using (var myDb = new MyDbContext())
             {
-
                 var productList = myDb.ShoppingCarts
                                                    .Include(c => c.ShoppingCartItems)
                                                    .ThenInclude(p => p.Product)
                                                    .FirstOrDefault(c => c.CustomerId == customerId);
-
                 var key = Console.ReadKey(true);
                 Console.Clear();
                 switch (key.KeyChar)
                 {
-
                     case '1':
                         var orderList = myDb.Orders
                                     .Include(c => c.OrderItems)

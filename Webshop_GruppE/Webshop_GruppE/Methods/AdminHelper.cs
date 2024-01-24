@@ -1,12 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
 using Webshop_GruppE.Models;
-using Dapper;
 
 namespace Webshop_GruppE.Methods
 {
@@ -15,7 +9,7 @@ namespace Webshop_GruppE.Methods
         public static async Task AdminHomePage(int adminId)
         {
             Console.Clear();
-           
+
             while (true)
             {
                 using (var myDb = new MyDbContext())
@@ -25,54 +19,55 @@ namespace Webshop_GruppE.Methods
                                          where c.Id == adminId
                                          select c.AdminName).SingleOrDefault();
                     LogoWindow.LogoWindowMeth(1, 1, 24, 7);
-                    List<string> adminText = new List<string> { "[1] Edit products", "[2] Edit categories", "[3] Edit suppliers", "[4] Product overview", 
+                    List<string> adminText = new List<string> { "[1] Edit products", "[2] Edit categories", "[3] Edit suppliers", "[4] Product overview",
                         "[P] Profile page", "[C] Customer page", "[Q] Queries", "[L] Logout" };
-                    
+
                     var adminWindow = new Window("Welcome " + adminUserName, 1, 10, adminText);
                     adminWindow.DrawWindow();
 
-                    var key2 = Console.ReadKey(true);
-                    switch (key2.KeyChar)
-                {
-                    case '1':
-                        AdminProductMenuHelper.ProductMenu(adminId);
-                        break;
-                    case '2':
-                        AdminCategoryMenuHelper.CategoryMenu(adminId);
-                        break;
-                    case '3':
-                        AdminSupplierMenuHelper.SupplierMenu(adminId);
-                        break;
-                    case '4':                       
-                        var productsWindow = new Window("Product Overview", 1, 1, await productList);
-                        productsWindow.DrawWindow();
+                    var key = Console.ReadKey(true);
+                    switch (key.KeyChar)
+                    {
+                        case '1':
+                            AdminProductMenuHelper.ProductMenu(adminId);
+                            break;
+                        case '2':
+                            AdminCategoryMenuHelper.CategoryMenu(adminId);
+                            break;
+                        case '3':
+                            AdminSupplierMenuHelper.SupplierMenu(adminId);
+                            break;
+                        case '4':
+                            Console.Clear();
+                            var productsWindow = new Window("Product Overview", 1, 1, await productList);
+                            productsWindow.DrawWindow();
 
-                        Console.WriteLine("Press any key to return!");
-                        Console.ReadKey();
-                        break;                   
-                    case 'p':
-                        DisplayDatabase.DisplayAdminDetails(adminId);
-                        break;
-                    case 'c':
-                        ListCustomers(adminId);
-                        break;
-                    case 'q':
-                        AdminQueries.LinqMethods();
-                        break;
-                    case 'l':
-                        Program.StartScreen();
-                        break;
-                    default:
-                        Console.WriteLine("Wrong Input");
-                        Console.ReadKey(true);
-                        Console.Clear();
-                        break;
+                            Console.WriteLine("Press any key to return!");
+                            Console.ReadKey(true);
+                            break;
+                        case 'p':
+                            DisplayDatabase.DisplayAdminDetails(adminId);
+                            break;
+                        case 'c':
+                            ListCustomers(adminId);
+                            break;
+                        case 'q':
+                            AdminQueries.LinqMethods();
+                            break;
+                        case 'l':
+                            Program.StartScreen();
+                            break;
+                        default:
+                            Console.WriteLine("Wrong Input");
+                            Console.ReadKey(true);
+                            Console.Clear();
+                            break;
+                    }
                 }
-                }
-                var key = Console.ReadKey(true);
+
             }
         }
-        
+
         public static async Task<List<string>> ProductOverview(int adminId)
         {
             Console.Clear();
@@ -82,8 +77,8 @@ namespace Webshop_GruppE.Methods
 
                 foreach (var products in myDb.Products)
                 {
-                    productList.Add($"Id: {products.Id,-5}Name: {products.Name,-17}Price: {products.Price + "$", -10}Units In Stock: {products.StockBalance, -5}" +
-                        $"Product Supplier Id: {products.ProductSupplierId, -5}Product Info: {products.ProductInfoText}");
+                    productList.Add($"Id: {products.Id,-5}Name: {products.Name,-17}Price: {products.Price + "$",-10}Units In Stock: {products.StockBalance,-5}" +
+                        $"Product Supplier Id: {products.ProductSupplierId,-5}Product Info: {products.ProductInfoText}");
                 }
 
                 if (productList.Count == 0)
@@ -93,7 +88,7 @@ namespace Webshop_GruppE.Methods
 
                 return productList;
             }
-        }       
+        }
 
         public static List<Customer> GetAllCustomers()
         {
