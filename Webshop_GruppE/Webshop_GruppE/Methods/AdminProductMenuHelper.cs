@@ -28,6 +28,10 @@ namespace Webshop_GruppE.Methods
                 var productsWindow = new Window("Products", 84, 1, productsText);
                 productsWindow.DrawWindow();
 
+                var dealText = DisplayDatabase.DisplayChosenProducts();
+                var dealWindow = new Window("Fashion Deals", 35, 20, dealText);
+                dealWindow.DrawWindow();
+
                 var key = Console.ReadKey(true);
                 switch (key.KeyChar)
                 {
@@ -216,11 +220,28 @@ namespace Webshop_GruppE.Methods
         {
             using (var myDb = new MyDbContext())
             {
+                Console.Clear();
                 LogoWindow.LogoWindowMeth(1, 1, 24, 7);
                 List<string> changeProductText = new List<string> { "[1] Edit product name", "[2] Edit product price", "[3] Edit product supplier Id",
                         "[4] Edit product info", "[5] Edit product stock balance", "[6] Edit if on deal", "[B] Back" };
-                var changeProductWindow = new Window("Edit Product Menu", 1, 13, changeProductText);
+                var changeProductWindow = new Window("Edit Product Menu", 1, 10, changeProductText);
                 changeProductWindow.DrawWindow();
+
+                List<string> categoryText = DisplayDatabase.DisplayAllCategories();
+                var categoryWindow = new Window("Categories", 35, 10, categoryText);
+                categoryWindow.DrawWindow();
+
+                List<string> supplierText = DisplayDatabase.DisplayAllSuppliers();
+                var supplierWindow = new Window("Suppliers", 27, 1, supplierText);
+                supplierWindow.DrawWindow();
+
+                List<string> productsText = DisplayDatabase.DisplayAllProducts();
+                var productsWindow = new Window("Products", 84, 1, productsText);
+                productsWindow.DrawWindow();
+
+                var dealText = DisplayDatabase.DisplayChosenProducts();
+                var dealWindow = new Window("Fashion Deals", 35, 20, dealText);
+                dealWindow.DrawWindow();
 
                 var key = Console.ReadKey(true);
                 switch (key.KeyChar)
