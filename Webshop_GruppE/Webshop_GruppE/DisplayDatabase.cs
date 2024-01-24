@@ -54,6 +54,7 @@ namespace Webshop_GruppE
                 }
                 var categoryWindow = new Window("Admin Details", 25, 10, adminText);
                 categoryWindow.DrawWindow();
+                Console.ReadKey(true);
             }
         }
         public static List<string> DisplayAllSuppliers()
